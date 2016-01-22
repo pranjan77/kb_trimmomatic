@@ -53,43 +53,6 @@ class kb_trimmomaticTest(unittest.TestCase):
     def getContext(self):
         return self.__class__.ctx
 
-    def test_filter_contigs_ok(self):
-        obj_name = "contigset.1"
-        contig1 = {'id': '1', 'length': 10, 'md5': 'md5', 'sequence': 'agcttttcat'}
-        contig2 = {'id': '2', 'length': 5, 'md5': 'md5', 'sequence': 'agctt'}
-        contig3 = {'id': '3', 'length': 12, 'md5': 'md5', 'sequence': 'agcttttcatgg'}
-        obj1 = {'contigs': [contig1, contig2, contig3], 'id': 'id', 'md5': 'md5', 'name': 'name', 
-                'source': 'source', 'source_id': 'source_id', 'type': 'type'}
-        self.getWsClient().save_objects({'workspace': self.getWsName(), 'objects':
-            [{'type': 'KBaseGenomes.ContigSet', 'name': obj_name, 'data': obj1}]})
-        ret = self.getImpl().filter_contigs(self.getContext(), {'workspace': self.getWsName(), 
-            'contigset_id': obj_name, 'min_length': '10'})
-        obj2 = self.getWsClient().get_objects([{'ref': self.getWsName()+'/'+obj_name}])[0]['data']
-        self.assertEqual(len(obj2['contigs']), 2)
-        self.assertTrue(len(obj2['contigs'][0]['sequence']) >= 10)
-        self.assertTrue(len(obj2['contigs'][1]['sequence']) >= 10)
-        self.assertEqual(ret[0]['n_initial_contigs'], 3)
-        self.assertEqual(ret[0]['n_contigs_removed'], 1)
-        self.assertEqual(ret[0]['n_contigs_remaining'], 2)
-
-    def test_filter_contigs_err1(self):
-        with self.assertRaises(ValueError) as context:
-            self.getImpl().filter_contigs(self.getContext(), {'workspace': self.getWsName(), 
-                'contigset_id': 'fake', 'min_length': 10})
-        self.assertTrue('Error loading original ContigSet object' in str(context.exception))
-
-    def test_filter_contigs_err2(self):
-        with self.assertRaises(ValueError) as context:
-            self.getImpl().filter_contigs(self.getContext(), {'workspace': self.getWsName(), 
-                'contigset_id': 'fake', 'min_length': '-10'})
-        self.assertTrue('min_length parameter shouldn\'t be negative' in str(context.exception))
-
-    def test_filter_contigs_err3(self):
-        with self.assertRaises(ValueError) as context:
-            self.getImpl().filter_contigs(self.getContext(), {'workspace': self.getWsName(), 
-                'contigset_id': 'fake', 'min_length': 'ten'})
-        self.assertTrue('Cannot parse integer from min_length parameter' in str(context.exception))
-
     def test_trimmomatic_ok(self):
         print "run trim"
         #ctx={'token':self.token}
@@ -107,8 +70,8 @@ class kb_trimmomaticTest(unittest.TestCase):
         input_params['leading_min_quality']='1'
         input_params['trailing_min_quality']='1'
         input_params['sliding_window_size']='4'
-        input_params['sliding_window_min_quality']='15'
-        input_params['min_length']='100'
+        input_params['sliding_window_min_quality']='5'
+        input_params['min_length']='80'
         input_params['output_read_library']='testing'
         input_params['output_ws'] = input_params['input_ws']
         result=self.getImpl().runTrimmomatic(self.getContext(), input_params)
