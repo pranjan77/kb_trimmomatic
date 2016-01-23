@@ -197,19 +197,11 @@ This sample module contains one small method - filter_contigs.
             read_count_forward_only = match.group(2)
             read_count_reverse_only = match.group(3)
 
-            #upload reads forward paired
+            #upload paired reads
             cmdstring = " ".join( ('ws-tools fastX2reads --inputfile', 'forward_paired_' + forward_reads['file_name'], 
+                                   '--inputfile2', 'reverse_paired_' + reverse_reads['file_name'],
                                    '--wsurl', self.workspaceURL, '--shockurl', self.shockURL, '--outws', input_params['output_ws'],
-                                   '--outobj', input_params['output_read_library'] + '_forward_paired', '--readcount', read_count_paired ) )
-
-            cmdProcess = subprocess.Popen(cmdstring, stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell=True, env=env)
-            stdout, stderr = cmdProcess.communicate()
-            report += "cmdstring: " + cmdstring + " stdout: " + stdout + " stderr: " + stderr
-
-            #upload reads reverse paired
-            cmdstring = " ".join( ('ws-tools fastX2reads --inputfile', 'reverse_paired_' + reverse_reads['file_name'], 
-                                   '--wsurl', self.workspaceURL, '--shockurl', self.shockURL, '--outws', input_params['output_ws'],
-                                   '--outobj', input_params['output_read_library'] + '_reverse_paired', '--readcount', read_count_paired ) )
+                                   '--outobj', input_params['output_read_library'] + '_paired', '--readcount', read_count_paired ) )
 
             cmdProcess = subprocess.Popen(cmdstring, stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell=True, env=env)
             stdout, stderr = cmdProcess.communicate()
