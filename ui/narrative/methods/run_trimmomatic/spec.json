@@ -241,7 +241,7 @@
 	"behavior": {
 		"service-mapping": {
 			"url": "",
-			"name": "Trimmomatic",
+			"name": "kb_trimmomatic",
 			"method": "runTrimmomatic",
 			"input_mapping": [
 				{
