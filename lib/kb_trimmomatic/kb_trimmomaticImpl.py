@@ -118,6 +118,8 @@ This sample module contains one small method - filter_contigs.
         token = ctx['token']
         wsClient = workspaceService(self.workspaceURL, token=token)
         headers = {'Authorization': 'OAuth '+token}
+        env = os.environ.copy()
+        env['KB_AUTH_TOKEN'] = token
 
         if ('output_ws' not in input_params or input_params['output_ws'] is None):
             input_params['output_ws'] = input_params['input_ws']
@@ -200,7 +202,7 @@ This sample module contains one small method - filter_contigs.
                                    '--wsurl', self.workspaceURL, '--shockurl', self.shockURL, '--outws', input_params['output_ws'],
                                    '--outobj', input_params['output_read_library'] + '_forward_paired', '--readcount', read_count_paired ) )
 
-            cmdProcess = subprocess.Popen(cmdstring, stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell=True)
+            cmdProcess = subprocess.Popen(cmdstring, stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell=True, env=env)
             stdout, stderr = cmdProcess.communicate()
             report += "cmdstring: " + cmdstring + " stdout: " + stdout + " stderr: " + stderr
 
@@ -209,7 +211,7 @@ This sample module contains one small method - filter_contigs.
                                    '--wsurl', self.workspaceURL, '--shockurl', self.shockURL, '--outws', input_params['output_ws'],
                                    '--outobj', input_params['output_read_library'] + '_reverse_paired', '--readcount', read_count_paired ) )
 
-            cmdProcess = subprocess.Popen(cmdstring, stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell=True)
+            cmdProcess = subprocess.Popen(cmdstring, stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell=True, env=env)
             stdout, stderr = cmdProcess.communicate()
             report += "cmdstring: " + cmdstring + " stdout: " + stdout + " stderr: " + stderr
 
@@ -218,7 +220,7 @@ This sample module contains one small method - filter_contigs.
                                    '--wsurl', self.workspaceURL, '--shockurl', self.shockURL, '--outws', input_params['output_ws'],
                                    '--outobj', input_params['output_read_library'] + '_forward_unpaired', '--readcount', read_count_forward_only ) )
 
-            cmdProcess = subprocess.Popen(cmdstring, stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell=True)
+            cmdProcess = subprocess.Popen(cmdstring, stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell=True, env=env)
             stdout, stderr = cmdProcess.communicate()
             report += "cmdstring: " + cmdstring + " stdout: " + stdout + " stderr: " + stderr
 
@@ -227,7 +229,7 @@ This sample module contains one small method - filter_contigs.
                                    '--wsurl', self.workspaceURL, '--shockurl', self.shockURL, '--outws', input_params['output_ws'],
                                    '--outobj', input_params['output_read_library'] + '_reverse_unpaired', '--readcount', read_count_reverse_only ) )
 
-            cmdProcess = subprocess.Popen(cmdstring, stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell=True)
+            cmdProcess = subprocess.Popen(cmdstring, stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell=True, env=env)
             stdout, stderr = cmdProcess.communicate()
             report += "cmdstring: " + cmdstring + " stdout: " + stdout + " stderr: " + stderr
 
@@ -254,9 +256,9 @@ This sample module contains one small method - filter_contigs.
             #upload reads
             cmdstring = " ".join( ('ws-tools fastX2reads --inputfile', 'trimmed_' + readLibrary['data']['handle']['file_name'], 
                                    '--wsurl', self.workspaceURL, '--shockurl', self.shockURL, '--outws', input_params['output_ws'],
-                                   '--outobj', input_params['output_read_library'], '--readcount', readcount, '--token', token ) )
+                                   '--outobj', input_params['output_read_library'], '--readcount', readcount ) )
 
-            cmdProcess = subprocess.Popen(cmdstring, stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell=True)
+            cmdProcess = subprocess.Popen(cmdstring, stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell=True, env=env)
             stdout, stderr = cmdProcess.communicate()
             report += "cmdstring: " + cmdstring + " stdout: " + stdout + " stderr: " + stderr
         #END runTrimmomatic
