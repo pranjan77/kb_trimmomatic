@@ -30,6 +30,12 @@ This sample module contains one small method - filter_contigs.
     TRIMMOMATIC = 'java -jar /kb/module/Trimmomatic-0.33/trimmomatic-0.33.jar'
     ADAPTER_DIR = '/kb/module/Trimmomatic-0.33/adapters/'
 
+    def log(self, target, message):
+        if target is not None:
+            target.append(message)
+        print(message)
+        sys.stdout.flush()
+
 
     def parse_trimmomatic_steps(self, input_params):
         # validate input parameters and return string defining trimmomatic steps
@@ -115,6 +121,8 @@ This sample module contains one small method - filter_contigs.
         # ctx is the context object
         # return variables are: report
         #BEGIN runTrimmomatic
+        console = []
+        self.log(console, 'Running Trimmomatic with paramseters: ')
         token = ctx['token']
         wsClient = workspaceService(self.workspaceURL, token=token)
         headers = {'Authorization': 'OAuth '+token}
