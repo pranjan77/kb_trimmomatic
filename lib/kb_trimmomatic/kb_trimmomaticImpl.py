@@ -210,6 +210,12 @@ This sample module contains one small method - filter_contigs.
             cmdProcess = subprocess.Popen(cmdstring, stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell=True)
 
             stdout, stderr = cmdProcess.communicate()
+
+            while True:
+                line = stdout.readline()
+                if not line: break
+                self.log(console, line.replace('\n', ''))
+                
             report += "cmdstring: " + cmdstring + " stdout: " + stdout + " stderr " + stderr
 
 
