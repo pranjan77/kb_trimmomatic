@@ -6,6 +6,7 @@ import requests
 import subprocess
 import os
 import re
+from pprint import pprint, pformat
 #END_HEADER
 
 
@@ -121,8 +122,10 @@ This sample module contains one small method - filter_contigs.
         # ctx is the context object
         # return variables are: report
         #BEGIN runTrimmomatic
+
         console = []
         self.log(console, 'Running Trimmomatic with paramseters: ')
+
         token = ctx['token']
         wsClient = workspaceService(self.workspaceURL, token=token)
         headers = {'Authorization': 'OAuth '+token}
@@ -134,6 +137,9 @@ This sample module contains one small method - filter_contigs.
 
         trimmomatic_params  = self.parse_trimmomatic_steps(input_params)
         trimmomatic_options = input_params['read_type'] + ' -' + input_params['quality_encoding']
+
+        self.log(console, pformat(trimmomatic_params))
+        self.log(console, pformat(trimmomatic_options))
 
         report = ''
 
@@ -157,16 +163,21 @@ This sample module contains one small method - filter_contigs.
             else:
                 reverse_reads={}
 
+            self.log(console, "Downloading Paired End reads file...")
             forward_reads_file = open(forward_reads['file_name'], 'w', 0)
             r = requests.get(forward_reads['url']+'/node/'+forward_reads['id']+'?download', stream=True, headers=headers)
             for chunk in r.iter_content(1024):
                 forward_reads_file.write(chunk)
 
+            self.log(console, 'done')
+
             if 'interleaved' in readLibrary['data'] and readLibrary['data']['interleaved']:
                 if re.search('gz', forward_reads['file_name'], re.I):
                     bcmdstring = 'gunzip -c ' + forward_reads['file_name']
+                    self.log(console, "Reads are gzip'd and interleaved, uncompressing and deinterleaving.")
                 else:    
                     bcmdstring = 'cat ' + forward_reads['file_name'] 
+                    self.log(console, "Reads are interleaved, deinterleaving.")
 
                 
                 cmdstring = bcmdstring + '| (paste - - - - - - - -  | tee >(cut -f 1-4 | tr "\t" "\n" > forward.fastq) | cut -f 5-8 | tr "\t" "\n" > reverse.fastq )'
@@ -175,14 +186,16 @@ This sample module contains one small method - filter_contigs.
 
                 # Check return status
                 report = "cmdstring: " + cmdstring + " stdout: " + stdout + " stderr: " + stderr
-                
+                self.log(console, 'done')
                 forward_reads['file_name']='forward.fastq'
                 reverse_reads['file_name']='reverse.fastq'
             else:
+                self.log(console, 'Downloading reverse reads.')
                 reverse_reads_file = open(reverse_reads['file_name'], 'w', 0)
                 r = requests.get(reverse_reads['url']+'/node/'+reverse_reads['id']+'?download', stream=True, headers=headers)
                 for chunk in r.iter_content(1024):
                     reverse_reads_file.write(chunk)
+                self.log(console, 'done')
 
             cmdstring = " ".join( (self.TRIMMOMATIC, trimmomatic_options, 
                             forward_reads['file_name'], 
@@ -193,6 +206,7 @@ This sample module contains one small method - filter_contigs.
                             'reverse_unpaired_' +reverse_reads['file_name'],
                             trimmomatic_params) )
 
+            self.log(console, 'Starting Trimmomatic')
             cmdProcess = subprocess.Popen(cmdstring, stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell=True)
 
             stdout, stderr = cmdProcess.communicate()
