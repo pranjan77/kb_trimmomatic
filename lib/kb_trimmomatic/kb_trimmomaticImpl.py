@@ -344,6 +344,7 @@ This sample module contains one small method - filter_contigs.
                 ]
             })[0]
 
+        output = { 'report_name': reportName, 'report_ref': str(report_obj_info[6]) + '/' + str(report_obj_info[0]) + '/' + str(report_obj_info[4]) }
 
         #END runTrimmomatic
 
@@ -352,4 +353,4 @@ This sample module contains one small method - filter_contigs.
             raise ValueError('Method runTrimmomatic return value ' +
                              'report is not type basestring as required.')
         # return the results
-        return [report]
+        return [output]
