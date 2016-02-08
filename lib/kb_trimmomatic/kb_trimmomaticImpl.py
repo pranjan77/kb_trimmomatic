@@ -7,6 +7,7 @@ import subprocess
 import os
 import re
 from pprint import pprint, pformat
+import uuid
 #END_HEADER
 
 
@@ -132,6 +133,13 @@ This sample module contains one small method - filter_contigs.
         env = os.environ.copy()
         env['KB_AUTH_TOKEN'] = token
 
+        #load provenance
+        provenance = [{}]
+        if 'provenance' in ctx:
+            provenance = ctx['provenance']
+        # add additional info to provenance here, in this case the input data object reference
+        provenance[0]['input_ws_objects']=[input_params['input_ws']+'/'+input_params['input_read_library']]
+
         if ('output_ws' not in input_params or input_params['output_ws'] is None):
             input_params['output_ws'] = input_params['input_ws']
 
@@ -142,11 +150,15 @@ This sample module contains one small method - filter_contigs.
         self.log(console, pformat(trimmomatic_options))
 
         report = ''
+        reportObj = {'objects_created':[], 
+                     'text_message':''}
 
 
         try:
             readLibrary = wsClient.get_objects([{'name': input_params['input_read_library'], 
                                                             'workspace' : input_params['input_ws']}])[0]
+            info = readLibrary['info']
+
         except Exception as e:
             raise ValueError('Unable to get read library object from workspace: (' + input_params['input_ws']+ '/' + input_params['input_read_library'] +')' + str(e))
 
@@ -221,6 +233,10 @@ This sample module contains one small method - filter_contigs.
                 if not line: break
                 self.log(console, line.replace('\n', ''))
 
+            cmdProcess.stdout.close()
+            cmdProcess.wait()
+            self.log(console, 'return code: ' + str(cmdProcess.returncode))
+
             report += "\n".join(outputlines)
             #report += "cmdstring: " + cmdstring + " stdout: " + stdout + " stderr " + stderr
 
@@ -232,6 +248,7 @@ This sample module contains one small method - filter_contigs.
             read_count_reverse_only = match.group(3)
 
             #upload paired reads
+            self.log(console, 'Uploading trimmed paired reads.\n')
             cmdstring = " ".join( ('ws-tools fastX2reads --inputfile', 'forward_paired_' + forward_reads['file_name'], 
                                    '--inputfile2', 'reverse_paired_' + reverse_reads['file_name'],
                                    '--wsurl', self.workspaceURL, '--shockurl', self.shockURL, '--outws', input_params['output_ws'],
@@ -240,8 +257,11 @@ This sample module contains one small method - filter_contigs.
             cmdProcess = subprocess.Popen(cmdstring, stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell=True, env=env)
             stdout, stderr = cmdProcess.communicate()
             report += "cmdstring: " + cmdstring + " stdout: " + stdout + " stderr: " + stderr
+            reportObj['objects_created'].append({'ref':input_params['input_ws']+'/'+input_params['output_read_library']+'_paired', 
+                        'description':'Trimmed Paired-End Reads'})
 
             #upload reads forward unpaired
+            self.log(console, 'Uploading trimmed unpaired forward reads.\n')
             cmdstring = " ".join( ('ws-tools fastX2reads --inputfile', 'forward_unpaired_' + forward_reads['file_name'], 
                                    '--wsurl', self.workspaceURL, '--shockurl', self.shockURL, '--outws', input_params['output_ws'],
                                    '--outobj', input_params['output_read_library'] + '_forward_unpaired', '--readcount', read_count_forward_only ) )
@@ -249,8 +269,11 @@ This sample module contains one small method - filter_contigs.
             cmdProcess = subprocess.Popen(cmdstring, stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell=True, env=env)
             stdout, stderr = cmdProcess.communicate()
             report += "cmdstring: " + cmdstring + " stdout: " + stdout + " stderr: " + stderr
+            reportObj['objects_created'].append({'ref':input_params['input_ws']+'/'+input_params['output_read_library']+'_forward_unpaired', 
+                        'description':'Trimmed Unpaired Forward Reads'})
 
             #upload reads reverse unpaired
+            self.log(console, 'Uploading trimmed unpaired reverse reads.\n')
             cmdstring = " ".join( ('ws-tools fastX2reads --inputfile', 'reverse_unpaired_' + reverse_reads['file_name'], 
                                    '--wsurl', self.workspaceURL, '--shockurl', self.shockURL, '--outws', input_params['output_ws'],
                                    '--outobj', input_params['output_read_library'] + '_reverse_unpaired', '--readcount', read_count_reverse_only ) )
@@ -258,22 +281,36 @@ This sample module contains one small method - filter_contigs.
             cmdProcess = subprocess.Popen(cmdstring, stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell=True, env=env)
             stdout, stderr = cmdProcess.communicate()
             report += "cmdstring: " + cmdstring + " stdout: " + stdout + " stderr: " + stderr
+            reportObj['objects_created'].append({'ref':input_params['input_ws']+'/'+input_params['output_read_library']+'_reverse_unpaired', 
+                        'description':'Trimmed Unpaired Reverse Reads'})
 
         else:
+            self.log(console, "Downloading Single End reads file...")
             if 'handle' in readLibrary['data']:
                 reads_file = open(readLibrary['data']['handle']['file_name'], 'w', 0)
                 r = requests.get(readLibrary['data']['handle']['url']+'/node/'+readLibrary['data']['handle']['id']+'?download', stream=True, headers=headers)
                 for chunk in r.iter_content(1024):
                     reads_file.write(chunk)
+            self.log(console, "done.\n")
 
             cmdstring = " ".join( (self.TRIMMOMATIC, trimmomatic_options,
                             readLibrary['data']['handle']['file_name'],
                             'trimmed_' + readLibrary['data']['handle']['file_name'],
                             trimmomatic_params) )
 
-            cmdProcess = subprocess.Popen(cmdstring, stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell=True)
-            stdout, stderr = cmdProcess.communicate()
-            report = "cmdstring: " + cmdstring + " stdout: " + stdout + " stderr: " + stderr
+            cmdProcess = subprocess.Popen(cmdstring, stdout=subprocess.PIPE, stderr=subprocess.STDOUT, shell=True)
+
+            report += "cmdstring: " + cmdstring
+
+            outputlines = []
+
+            while True:
+                line = cmdProcess.stdout.readline()
+                outputlines.append(line)
+                if not line: break
+                self.log(console, line.replace('\n', ''))
+
+            report += "\n".join(outputlines)
 
             #get read count
             match = re.search(r'Surviving: (\d+)', report)
@@ -287,6 +324,27 @@ This sample module contains one small method - filter_contigs.
             cmdProcess = subprocess.Popen(cmdstring, stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell=True, env=env)
             stdout, stderr = cmdProcess.communicate()
             report += "cmdstring: " + cmdstring + " stdout: " + stdout + " stderr: " + stderr
+            reportObj['objects_created'].append({'ref':input_params['input_ws']+'/'+input_params['output_read_library'], 
+                        'description':'Trimmed Reads'})
+
+        # save report object
+        reportObj['text_message'] = report
+        reportName = 'trimmomatic_report' + str(hex(uuid.getnode()))
+        report_obj_info = wsClient.save_objects({
+                'id':info[6],
+                'objects':[
+                    {
+                        'type':'KBaseReport.Report',
+                        'data':reportObj,
+                        'name':reportName,
+                        'meta':{},
+                        'hidden':1,
+                        'provenance':provenance
+                    }
+                ]
+            })[0]
+
+
         #END runTrimmomatic
 
         # At some point might do deeper type checking...
