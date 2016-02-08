@@ -207,16 +207,22 @@ This sample module contains one small method - filter_contigs.
                             trimmomatic_params) )
 
             self.log(console, 'Starting Trimmomatic')
-            cmdProcess = subprocess.Popen(cmdstring, stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell=True)
+            cmdProcess = subprocess.Popen(cmdstring, stdout=subprocess.PIPE, stderr=subprocess.STDOUT, shell=True)
 
-            stdout, stderr = cmdProcess.communicate()
+            #stdout, stderr = cmdProcess.communicate()
+
+            report += "cmdstring: " + cmdstring
+
+            outputlines = []
 
             while True:
-                line = stdout.readline()
+                line = cmdProcess.stdout.readline()
+                outputlines.append(line)
                 if not line: break
                 self.log(console, line.replace('\n', ''))
-                
-            report += "cmdstring: " + cmdstring + " stdout: " + stdout + " stderr " + stderr
+
+            report += "\n".join(outputlines)
+            #report += "cmdstring: " + cmdstring + " stdout: " + stdout + " stderr " + stderr
 
 
             #get read counts
