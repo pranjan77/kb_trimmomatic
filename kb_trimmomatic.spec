@@ -33,7 +33,12 @@ module kb_trimmomatic {
         string output_read_library;
     } TrimmomaticInput;
 
+    typedef structure {
+        string report_name;
+        string report_ref;
+    } TrimmomaticOutput;
+
     funcdef runTrimmomatic(TrimmomaticInput input_params) 
-        returns (string report) 
+        returns (TrimmomaticOutput output) 
         authentication required;
 };

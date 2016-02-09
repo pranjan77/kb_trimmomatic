@@ -140,37 +140,19 @@ public class KbTrimmomaticClient {
     }
 
     /**
-     * <p>Original spec-file function name: filter_contigs</p>
-     * <pre>
-     * Filter contigs in a ContigSet by DNA length
-     * </pre>
-     * @param   params   instance of type {@link us.kbase.kbtrimmomatic.FilterContigsParams FilterContigsParams}
-     * @return   instance of type {@link us.kbase.kbtrimmomatic.FilterContigsResults FilterContigsResults}
-     * @throws IOException if an IO exception occurs
-     * @throws JsonClientException if a JSON RPC exception occurs
-     */
-    public FilterContigsResults filterContigs(FilterContigsParams params, RpcContext... jsonRpcContext) throws IOException, JsonClientException {
-        List<Object> args = new ArrayList<Object>();
-        args.add(params);
-        TypeReference<List<FilterContigsResults>> retType = new TypeReference<List<FilterContigsResults>>() {};
-        List<FilterContigsResults> res = caller.jsonrpcCall("kb_trimmomatic.filter_contigs", args, retType, true, true, jsonRpcContext);
-        return res.get(0);
-    }
-
-    /**
      * <p>Original spec-file function name: runTrimmomatic</p>
      * <pre>
      * </pre>
      * @param   inputParams   instance of type {@link us.kbase.kbtrimmomatic.TrimmomaticInput TrimmomaticInput}
-     * @return   parameter "report" of String
+     * @return   parameter "output" of type {@link us.kbase.kbtrimmomatic.TrimmomaticOutput TrimmomaticOutput}
      * @throws IOException if an IO exception occurs
      * @throws JsonClientException if a JSON RPC exception occurs
      */
-    public String runTrimmomatic(TrimmomaticInput inputParams, RpcContext... jsonRpcContext) throws IOException, JsonClientException {
+    public TrimmomaticOutput runTrimmomatic(TrimmomaticInput inputParams, RpcContext... jsonRpcContext) throws IOException, JsonClientException {
         List<Object> args = new ArrayList<Object>();
         args.add(inputParams);
-        TypeReference<List<String>> retType = new TypeReference<List<String>>() {};
-        List<String> res = caller.jsonrpcCall("kb_trimmomatic.runTrimmomatic", args, retType, true, true, jsonRpcContext);
+        TypeReference<List<TrimmomaticOutput>> retType = new TypeReference<List<TrimmomaticOutput>>() {};
+        List<TrimmomaticOutput> res = caller.jsonrpcCall("kb_trimmomatic.runTrimmomatic", args, retType, true, true, jsonRpcContext);
         return res.get(0);
     }
 }

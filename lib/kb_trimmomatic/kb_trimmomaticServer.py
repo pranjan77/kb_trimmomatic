@@ -60,9 +60,6 @@ class JSONObjectEncoder(json.JSONEncoder):
 sync_methods = {}
 async_run_methods = {}
 async_check_methods = {}
-async_run_methods['kb_trimmomatic.filter_contigs_async'] = ['kb_trimmomatic', 'filter_contigs']
-async_check_methods['kb_trimmomatic.filter_contigs_check'] = ['kb_trimmomatic', 'filter_contigs']
-sync_methods['kb_trimmomatic.filter_contigs'] = True
 async_run_methods['kb_trimmomatic.runTrimmomatic_async'] = ['kb_trimmomatic', 'runTrimmomatic']
 async_check_methods['kb_trimmomatic.runTrimmomatic_check'] = ['kb_trimmomatic', 'runTrimmomatic']
 sync_methods['kb_trimmomatic.runTrimmomatic'] = True
@@ -337,10 +334,6 @@ class Application(object):
         self.serverlog.set_log_level(6)
         self.rpc_service = JSONRPCServiceCustom()
         self.method_authentication = dict()
-        self.rpc_service.add(impl_kb_trimmomatic.filter_contigs,
-                             name='kb_trimmomatic.filter_contigs',
-                             types=[dict])
-        self.method_authentication['kb_trimmomatic.filter_contigs'] = 'required'
         self.rpc_service.add(impl_kb_trimmomatic.runTrimmomatic,
                              name='kb_trimmomatic.runTrimmomatic',
                              types=[dict])

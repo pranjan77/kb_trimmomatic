@@ -121,7 +121,7 @@ This sample module contains one small method - filter_contigs.
 
     def runTrimmomatic(self, ctx, input_params):
         # ctx is the context object
-        # return variables are: report
+        # return variables are: output
         #BEGIN runTrimmomatic
 
         console = []
@@ -349,8 +349,8 @@ This sample module contains one small method - filter_contigs.
         #END runTrimmomatic
 
         # At some point might do deeper type checking...
-        if not isinstance(report, basestring):
+        if not isinstance(output, dict):
             raise ValueError('Method runTrimmomatic return value ' +
-                             'report is not type basestring as required.')
+                             'output is not type dict as required.')
         # return the results
         return [output]

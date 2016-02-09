@@ -110,114 +110,9 @@ sub new
 
 
 
-=head2 filter_contigs
-
-  $return = $obj->filter_contigs($params)
-
-=over 4
-
-=item Parameter and return types
-
-=begin html
-
-<pre>
-$params is a kb_trimmomatic.FilterContigsParams
-$return is a kb_trimmomatic.FilterContigsResults
-FilterContigsParams is a reference to a hash where the following keys are defined:
-	workspace has a value which is a kb_trimmomatic.workspace_name
-	contigset_id has a value which is a kb_trimmomatic.contigset_id
-	min_length has a value which is an int
-workspace_name is a string
-contigset_id is a string
-FilterContigsResults is a reference to a hash where the following keys are defined:
-	new_contigset_ref has a value which is a kb_trimmomatic.ws_contigset_id
-	n_initial_contigs has a value which is an int
-	n_contigs_removed has a value which is an int
-	n_contigs_remaining has a value which is an int
-ws_contigset_id is a string
-
-</pre>
-
-=end html
-
-=begin text
-
-$params is a kb_trimmomatic.FilterContigsParams
-$return is a kb_trimmomatic.FilterContigsResults
-FilterContigsParams is a reference to a hash where the following keys are defined:
-	workspace has a value which is a kb_trimmomatic.workspace_name
-	contigset_id has a value which is a kb_trimmomatic.contigset_id
-	min_length has a value which is an int
-workspace_name is a string
-contigset_id is a string
-FilterContigsResults is a reference to a hash where the following keys are defined:
-	new_contigset_ref has a value which is a kb_trimmomatic.ws_contigset_id
-	n_initial_contigs has a value which is an int
-	n_contigs_removed has a value which is an int
-	n_contigs_remaining has a value which is an int
-ws_contigset_id is a string
-
-
-=end text
-
-=item Description
-
-Filter contigs in a ContigSet by DNA length
-
-=back
-
-=cut
-
- sub filter_contigs
-{
-    my($self, @args) = @_;
-
-# Authentication: required
-
-    if ((my $n = @args) != 1)
-    {
-	Bio::KBase::Exceptions::ArgumentValidationError->throw(error =>
-							       "Invalid argument count for function filter_contigs (received $n, expecting 1)");
-    }
-    {
-	my($params) = @args;
-
-	my @_bad_arguments;
-        (ref($params) eq 'HASH') or push(@_bad_arguments, "Invalid type for argument 1 \"params\" (value was \"$params\")");
-        if (@_bad_arguments) {
-	    my $msg = "Invalid arguments passed to filter_contigs:\n" . join("", map { "\t$_\n" } @_bad_arguments);
-	    Bio::KBase::Exceptions::ArgumentValidationError->throw(error => $msg,
-								   method_name => 'filter_contigs');
-	}
-    }
-
-    my $result = $self->{client}->call($self->{url}, $self->{headers}, {
-	method => "kb_trimmomatic.filter_contigs",
-	params => \@args,
-    });
-    if ($result) {
-	if ($result->is_error) {
-	    Bio::KBase::Exceptions::JSONRPC->throw(error => $result->error_message,
-					       code => $result->content->{error}->{code},
-					       method_name => 'filter_contigs',
-					       data => $result->content->{error}->{error} # JSON::RPC::ReturnObject only supports JSONRPC 1.1 or 1.O
-					      );
-	} else {
-	    return wantarray ? @{$result->result} : $result->result->[0];
-	}
-    } else {
-        Bio::KBase::Exceptions::HTTP->throw(error => "Error invoking method filter_contigs",
-					    status_line => $self->{client}->status_line,
-					    method_name => 'filter_contigs',
-				       );
-    }
-}
- 
-
-
 =head2 runTrimmomatic
 
-  $report = $obj->runTrimmomatic($input_params)
+  $output = $obj->runTrimmomatic($input_params)
 
 =over 4
 
@@ -227,7 +122,7 @@ Filter contigs in a ContigSet by DNA length
 
 <pre>
 $input_params is a kb_trimmomatic.TrimmomaticInput
-$report is a string
+$output is a kb_trimmomatic.TrimmomaticOutput
 TrimmomaticInput is a reference to a hash where the following keys are defined:
 	input_ws has a value which is a kb_trimmomatic.workspace_name
 	output_ws has a value which is a kb_trimmomatic.workspace_name
@@ -247,6 +142,9 @@ TrimmomaticInput is a reference to a hash where the following keys are defined:
 	min_length has a value which is an int
 	output_read_library has a value which is a string
 workspace_name is a string
+TrimmomaticOutput is a reference to a hash where the following keys are defined:
+	report_name has a value which is a string
+	report_ref has a value which is a string
 
 </pre>
 
@@ -255,7 +153,7 @@ workspace_name is a string
 =begin text
 
 $input_params is a kb_trimmomatic.TrimmomaticInput
-$report is a string
+$output is a kb_trimmomatic.TrimmomaticOutput
 TrimmomaticInput is a reference to a hash where the following keys are defined:
 	input_ws has a value which is a kb_trimmomatic.workspace_name
 	output_ws has a value which is a kb_trimmomatic.workspace_name
@@ -275,6 +173,9 @@ TrimmomaticInput is a reference to a hash where the following keys are defined:
 	min_length has a value which is an int
 	output_read_library has a value which is a string
 workspace_name is a string
+TrimmomaticOutput is a reference to a hash where the following keys are defined:
+	report_name has a value which is a string
+	report_ref has a value which is a string
 
 
 =end text
@@ -391,37 +292,6 @@ sub _validate_version {
 
 
 
-=head2 contigset_id
-
-=over 4
-
-
-
-=item Description
-
-A string representing a ContigSet id.
-
-
-=item Definition
-
-=begin html
-
-<pre>
-a string
-</pre>
-
-=end html
-
-=begin text
-
-a string
-
-=end text
-
-=back
-
-
-
 =head2 workspace_name
 
 =over 4
@@ -446,108 +316,6 @@ a string
 =begin text
 
 a string
-
-=end text
-
-=back
-
-
-
-=head2 FilterContigsParams
-
-=over 4
-
-
-
-=item Definition
-
-=begin html
-
-<pre>
-a reference to a hash where the following keys are defined:
-workspace has a value which is a kb_trimmomatic.workspace_name
-contigset_id has a value which is a kb_trimmomatic.contigset_id
-min_length has a value which is an int
-
-</pre>
-
-=end html
-
-=begin text
-
-a reference to a hash where the following keys are defined:
-workspace has a value which is a kb_trimmomatic.workspace_name
-contigset_id has a value which is a kb_trimmomatic.contigset_id
-min_length has a value which is an int
-
-
-=end text
-
-=back
-
-
-
-=head2 ws_contigset_id
-
-=over 4
-
-
-
-=item Description
-
-The workspace ID for a ContigSet data object.
-@id ws KBaseGenomes.ContigSet
-
-
-=item Definition
-
-=begin html
-
-<pre>
-a string
-</pre>
-
-=end html
-
-=begin text
-
-a string
-
-=end text
-
-=back
-
-
-
-=head2 FilterContigsResults
-
-=over 4
-
-
-
-=item Definition
-
-=begin html
-
-<pre>
-a reference to a hash where the following keys are defined:
-new_contigset_ref has a value which is a kb_trimmomatic.ws_contigset_id
-n_initial_contigs has a value which is an int
-n_contigs_removed has a value which is an int
-n_contigs_remaining has a value which is an int
-
-</pre>
-
-=end html
-
-=begin text
-
-a reference to a hash where the following keys are defined:
-new_contigset_ref has a value which is a kb_trimmomatic.ws_contigset_id
-n_initial_contigs has a value which is an int
-n_contigs_removed has a value which is an int
-n_contigs_remaining has a value which is an int
-
 
 =end text
 
@@ -614,6 +382,38 @@ crop_length has a value which is an int
 head_crop_length has a value which is an int
 min_length has a value which is an int
 output_read_library has a value which is a string
+
+
+=end text
+
+=back
+
+
+
+=head2 TrimmomaticOutput
+
+=over 4
+
+
+
+=item Definition
+
+=begin html
+
+<pre>
+a reference to a hash where the following keys are defined:
+report_name has a value which is a string
+report_ref has a value which is a string
+
+</pre>
+
+=end html
+
+=begin text
+
+a reference to a hash where the following keys are defined:
+report_name has a value which is a string
+report_ref has a value which is a string
 
 
 =end text
