@@ -57,7 +57,7 @@ class kb_trimmomaticTest(unittest.TestCase):
         print "run trim"
         #ctx={'token':self.token}
         input_params={}
-        input_params['input_ws']='psdehal:1446073144048'
+        input_params['input_ws']='psdehal:1455129043845'
         input_params['input_read_library']='rhodo.art.q20.int.PE.reads'
         input_params['read_type']='PE'
         input_params['quality_encoding']='phred33'
