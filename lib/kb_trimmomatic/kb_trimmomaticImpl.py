@@ -332,7 +332,7 @@ This sample module contains one small method - filter_contigs.
 
         # save report object
         reportObj['text_message'] = report
-        reportName = 'trimmomatic_report' + str(hex(uuid.getnode()))
+        reportName = 'trimmomatic_report_' + str(hex(uuid.getnode()))
         report_obj_info = wsClient.save_objects({
                 'id':info[6],
                 'objects':[
