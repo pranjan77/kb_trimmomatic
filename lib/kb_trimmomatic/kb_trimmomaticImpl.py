@@ -223,7 +223,7 @@ This sample module contains one small method - filter_contigs.
 
             #stdout, stderr = cmdProcess.communicate()
 
-            report += "cmdstring: " + cmdstring
+            #report += "cmdstring: " + cmdstring
 
             outputlines = []
 
@@ -237,15 +237,21 @@ This sample module contains one small method - filter_contigs.
             cmdProcess.wait()
             self.log(console, 'return code: ' + str(cmdProcess.returncode))
 
-            report += "\n".join(outputlines)
+            #report += "\n".join(outputlines)
             #report += "cmdstring: " + cmdstring + " stdout: " + stdout + " stderr " + stderr
 
 
             #get read counts
-            match = re.search(r'Both Surviving: (\d+).*?Forward Only Surviving: (\d+).*?Reverse Only Surviving: (\d+)', report)
-            read_count_paired = match.group(1)
-            read_count_forward_only = match.group(2)
-            read_count_reverse_only = match.group(3)
+            match = re.search(r'Input Read Pairs: (\d+).*?Both Surviving: (\d+).*?Forward Only Surviving: (\d+).*?Reverse Only Surviving: (\d+)', report)
+            input_read_count = match.group(1)
+            read_count_paired = match.group(2)
+            read_count_forward_only = match.group(3)
+            read_count_reverse_only = match.group(4)
+
+            report = "\n".join('Input Read Pairs: ', input_read_count, 
+                'Both Surviving: ', read_count_paired, 
+                'Forward Only Surviving: ', read_count_forward_only,
+                'Reverse Only Surviving: ', read_count_reverse_only)
 
             #upload paired reads
             self.log(console, 'Uploading trimmed paired reads.\n')
@@ -257,7 +263,7 @@ This sample module contains one small method - filter_contigs.
             cmdProcess = subprocess.Popen(cmdstring, stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell=True, env=env)
             stdout, stderr = cmdProcess.communicate()
             print("cmdstring: " + cmdstring + " stdout: " + stdout + " stderr: " + stderr)
-            report += "cmdstring: " + cmdstring + " stdout: " + stdout + " stderr: " + stderr
+            #report += "cmdstring: " + cmdstring + " stdout: " + stdout + " stderr: " + stderr
             reportObj['objects_created'].append({'ref':input_params['input_ws']+'/'+input_params['output_read_library']+'_paired', 
                         'description':'Trimmed Paired-End Reads'})
 
@@ -270,7 +276,7 @@ This sample module contains one small method - filter_contigs.
             cmdProcess = subprocess.Popen(cmdstring, stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell=True, env=env)
             stdout, stderr = cmdProcess.communicate()
             print("cmdstring: " + cmdstring + " stdout: " + stdout + " stderr: " + stderr)
-            report += "cmdstring: " + cmdstring + " stdout: " + stdout + " stderr: " + stderr
+            #report += "cmdstring: " + cmdstring + " stdout: " + stdout + " stderr: " + stderr
             reportObj['objects_created'].append({'ref':input_params['input_ws']+'/'+input_params['output_read_library']+'_forward_unpaired', 
                         'description':'Trimmed Unpaired Forward Reads'})
 
@@ -283,7 +289,7 @@ This sample module contains one small method - filter_contigs.
             cmdProcess = subprocess.Popen(cmdstring, stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell=True, env=env)
             stdout, stderr = cmdProcess.communicate()
             print("cmdstring: " + cmdstring + " stdout: " + stdout + " stderr: " + stderr)
-            report += "cmdstring: " + cmdstring + " stdout: " + stdout + " stderr: " + stderr
+            #report += "cmdstring: " + cmdstring + " stdout: " + stdout + " stderr: " + stderr
             reportObj['objects_created'].append({'ref':input_params['input_ws']+'/'+input_params['output_read_library']+'_reverse_unpaired', 
                         'description':'Trimmed Unpaired Reverse Reads'})
 
@@ -303,7 +309,7 @@ This sample module contains one small method - filter_contigs.
 
             cmdProcess = subprocess.Popen(cmdstring, stdout=subprocess.PIPE, stderr=subprocess.STDOUT, shell=True)
 
-            report += "cmdstring: " + cmdstring
+            #report += "cmdstring: " + cmdstring
 
             outputlines = []
 
