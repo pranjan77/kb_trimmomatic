@@ -3,6 +3,7 @@ import sys
 import traceback
 from biokbase.workspace.client import Workspace as workspaceService
 import requests
+requests.packages.urllib3.disable_warnings()
 import subprocess
 import os
 import re
