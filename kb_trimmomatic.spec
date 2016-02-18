@@ -20,10 +20,10 @@ module kb_trimmomatic {
         string input_read_library;
         string adapterFa;
         int seed_mismatches;
-        int palindrom_clip_threshold;
+        int palindrome_clip_threshold;
         int simple_clip_threshold;
         string quality_encoding;
-        int slinding_window_size;
+        int sliding_window_size;
         int sliding_window_min_quality;
         int leading_min_quality;
         int trailing_min_quality;

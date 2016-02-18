@@ -237,21 +237,23 @@ This sample module contains one small method - filter_contigs.
             cmdProcess.wait()
             self.log(console, 'return code: ' + str(cmdProcess.returncode))
 
-            #report += "\n".join(outputlines)
+            report += "\n".join(outputlines)
             #report += "cmdstring: " + cmdstring + " stdout: " + stdout + " stderr " + stderr
 
 
             #get read counts
-            match = re.search(r'Input Read Pairs: (\d+).*?Both Surviving: (\d+).*?Forward Only Surviving: (\d+).*?Reverse Only Surviving: (\d+)', report)
+            match = re.search(r'Input Read Pairs: (\d+).*?Both Surviving: (\d+).*?Forward Only Surviving: (\d+).*?Reverse Only Surviving: (\d+).*?Dropped: (\d+)', report)
             input_read_count = match.group(1)
             read_count_paired = match.group(2)
             read_count_forward_only = match.group(3)
             read_count_reverse_only = match.group(4)
+            read_count_dropped = match.group(5)
 
-            report = "\n".join('Input Read Pairs: ', input_read_count, 
-                'Both Surviving: ', read_count_paired, 
-                'Forward Only Surviving: ', read_count_forward_only,
-                'Reverse Only Surviving: ', read_count_reverse_only)
+            report = "\n".join( ('Input Read Pairs: '+ input_read_count, 
+                'Both Surviving: '+ read_count_paired, 
+                'Forward Only Surviving: '+ read_count_forward_only,
+                'Reverse Only Surviving: '+ read_count_reverse_only,
+                'Dropped: '+ read_count_dropped) )
 
             #upload paired reads
             self.log(console, 'Uploading trimmed paired reads.\n')
