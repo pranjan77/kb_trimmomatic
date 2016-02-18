@@ -176,13 +176,13 @@ This sample module contains one small method - filter_contigs.
             else:
                 reverse_reads={}
 
-            self.log(console, "Downloading Paired End reads file...")
+            self.log(console, "\nDownloading Paired End reads file...")
             forward_reads_file = open(forward_reads['file_name'], 'w', 0)
             r = requests.get(forward_reads['url']+'/node/'+forward_reads['id']+'?download', stream=True, headers=headers)
             for chunk in r.iter_content(1024):
                 forward_reads_file.write(chunk)
 
-            self.log(console, 'done')
+            self.log(console, 'done\n')
 
             if 'interleaved' in readLibrary['data'] and readLibrary['data']['interleaved']:
                 if re.search('gz', forward_reads['file_name'], re.I):
@@ -199,7 +199,7 @@ This sample module contains one small method - filter_contigs.
 
                 # Check return status
                 report = "cmdstring: " + cmdstring + " stdout: " + stdout + " stderr: " + stderr
-                self.log(console, 'done')
+                self.log(console, 'done\n')
                 forward_reads['file_name']='forward.fastq'
                 reverse_reads['file_name']='reverse.fastq'
             else:
@@ -208,7 +208,7 @@ This sample module contains one small method - filter_contigs.
                 r = requests.get(reverse_reads['url']+'/node/'+reverse_reads['id']+'?download', stream=True, headers=headers)
                 for chunk in r.iter_content(1024):
                     reverse_reads_file.write(chunk)
-                self.log(console, 'done')
+                self.log(console, 'done\n')
 
             cmdstring = " ".join( (self.TRIMMOMATIC, trimmomatic_options, 
                             forward_reads['file_name'], 
@@ -222,9 +222,6 @@ This sample module contains one small method - filter_contigs.
             self.log(console, 'Starting Trimmomatic')
             cmdProcess = subprocess.Popen(cmdstring, stdout=subprocess.PIPE, stderr=subprocess.STDOUT, shell=True)
 
-            #stdout, stderr = cmdProcess.communicate()
-
-            #report += "cmdstring: " + cmdstring
 
             outputlines = []
 
@@ -236,7 +233,7 @@ This sample module contains one small method - filter_contigs.
 
             cmdProcess.stdout.close()
             cmdProcess.wait()
-            self.log(console, 'return code: ' + str(cmdProcess.returncode))
+            self.log(console, 'return code: ' + str(cmdProcess.returncode) + '\n')
 
             report += "\n".join(outputlines)
             #report += "cmdstring: " + cmdstring + " stdout: " + stdout + " stderr " + stderr
@@ -257,7 +254,7 @@ This sample module contains one small method - filter_contigs.
                 'Dropped: '+ read_count_dropped) )
 
             #upload paired reads
-            self.log(console, 'Uploading trimmed paired reads.\n')
+            self.log(console, 'Uploading trimmed paired reads.')
             cmdstring = " ".join( ('ws-tools fastX2reads --inputfile', 'forward_paired_' + forward_reads['file_name'], 
                                    '--inputfile2', 'reverse_paired_' + reverse_reads['file_name'],
                                    '--wsurl', self.workspaceURL, '--shockurl', self.shockURL, '--outws', input_params['output_ws'],
@@ -271,7 +268,7 @@ This sample module contains one small method - filter_contigs.
                         'description':'Trimmed Paired-End Reads'})
 
             #upload reads forward unpaired
-            self.log(console, 'Uploading trimmed unpaired forward reads.\n')
+            self.log(console, '\nUploading trimmed unpaired forward reads.')
             cmdstring = " ".join( ('ws-tools fastX2reads --inputfile', 'forward_unpaired_' + forward_reads['file_name'], 
                                    '--wsurl', self.workspaceURL, '--shockurl', self.shockURL, '--outws', input_params['output_ws'],
                                    '--outobj', input_params['output_read_library'] + '_forward_unpaired', '--readcount', read_count_forward_only ) )
@@ -284,7 +281,7 @@ This sample module contains one small method - filter_contigs.
                         'description':'Trimmed Unpaired Forward Reads'})
 
             #upload reads reverse unpaired
-            self.log(console, 'Uploading trimmed unpaired reverse reads.\n')
+            self.log(console, '\nUploading trimmed unpaired reverse reads.')
             cmdstring = " ".join( ('ws-tools fastX2reads --inputfile', 'reverse_unpaired_' + reverse_reads['file_name'], 
                                    '--wsurl', self.workspaceURL, '--shockurl', self.shockURL, '--outws', input_params['output_ws'],
                                    '--outobj', input_params['output_read_library'] + '_reverse_unpaired', '--readcount', read_count_reverse_only ) )
