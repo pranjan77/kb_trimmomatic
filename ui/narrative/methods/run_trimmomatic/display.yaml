@@ -3,7 +3,7 @@
 #
 name: Trimmomatic Read Trimming
 tooltip: |
-	Trim illumina reads
+	Trimmomatic: A flexible read trimming tool for Illumina NGS data
 screenshots: []
 
 icon: icon.png
@@ -134,4 +134,13 @@ parameters :
 			This module removes reads that fall below the specified minimal length. Reads removed by this step will be counted and included in the "dropped reads" count presented in the trimmomatic summary.
 
 description : |
-	<p>This is a quick Narrative Method for running Trimmomatic pairedend illumina read trimming.</p>
+	<p>This is a Narrative Method for running Trimmomatic: A flexible read trimming tool for Illumina NGS data. 
+	Trimmomatic is written by <a href url="http://www.usadellab.org/cms/index.php?page=BolgerAnthony">Anthony Bolger</a> from the <a href url="http://www.usadellab.org">Björn Usadel Lab</a>. 
+	 </p>
+
+publications :
+    -
+        pmid: 24695404
+        display-text : |
+            'Bolger AM, Lohse M, Usadel B., (2014) Trimmomatic: a flexible trimmer for Illumina sequence data. Bioinformatics. 2014 Aug 1;30(15):2114-20. doi: 10.1093/bioinformatics/btu170.'
+        link: http://www.ncbi.nlm.nih.gov/pubmed/24695404
