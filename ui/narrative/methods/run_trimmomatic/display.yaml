@@ -152,17 +152,36 @@ description : |
 	 <li>Palindrome Clip Threshold: Using the same scoring as above, the pair of reads are aligned. Suggested value around 30.</li>
 	 </ul>
 	 </li>
-	 <li>Crop reads: Removes bases, regardless of quality, from the end of the read, so that the read has maximally the specified length after this step has been performed. Steps performed after Crop migh further shorten the read.</li>
-	 <li>Head Crop: Removes the specifed number of bases, regardless of quality, from the beginning of the read.</li>
-	 <li>Leading Minimum Quality: Remove low quality bases from the beginning. As long as a base has a value below this threshold, the base is removed and the next base will be investigated.</li>
-	 <li>Trailing Minimum Quality: Remove low quality bases from the end. As long as a base has a value below this threshold, the base is removed and the next base is investigated. This approach can be used for removing the special illumina 'low quality segment' regions (which have a quality score of 2), but Sliding Window is recommended for this.</li>
+	 <li>Crop reads: Removes bases, regardless of quality, from the end of the read, so that the read has maximally the specified length after this step has been performed. Steps performed after Crop migh further shorten the read.
+	 <ul>
+	 <li>Crop length: Number of bp to keep, from the start of the read.</li>
+	 </li>
+	 <li>Head Crop: Removes the specifed number of bases, regardless of quality, from the beginning of the read.
+	 <ul>
+	 <li>Head crop length: Number of bp to remove from start of the read.</li>
+	 </ul>
+	 </li>
+	 <li>Leading Minimum Quality: Remove low quality bases from the beginning. As long as a base has a value below this threshold, the base is removed and the next base will be investigated.
+	 <ul>
+	 <li>Leading minimum quality: Minimum quality score.</li>
+	 </ul>
+	 </li>
+	 <li>Trailing Minimum Quality: Remove low quality bases from the end. As long as a base has a value below this threshold, the base is removed and the next base is investigated. This approach can be used for removing the special illumina 'low quality segment' regions (which have a quality score of 2), but Sliding Window is recommended for this.
+	 <ul>
+	 <li>Trailing minimum quality: Minimum quality score.</li>
+	 </ul>
+	 </li>
 	 <li>Sliding Window: Perfors sliding window trimming by cutting once the average quality within the window falls below specified threshold. By considering multiple bases, a single poor quality base will not cause the removal of high quality data later in the read.
 	 <ul>
 	 <li>Sliding Window Size: length of window in bp.</li>
 	 <li>Sliding Window Minimum Quality: The average quality required.</li> 
 	 </ul>
 	 </li>
-	 <li>Minimum Read Length: This removes reads that fall below the specifed minimum length. Reads removed by this step are included in the 'dropped reads' count.</li>
+	 <li>Minimum Read Length: This removes reads that fall below the specifed minimum length. Reads removed by this step are included in the 'dropped reads' count.
+	 <ul>
+	 <li>Minimum read length: Length in bp.</li>
+	 </ul>
+	 </li>
 	 </ol>
 
 
