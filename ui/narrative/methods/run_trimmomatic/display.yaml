@@ -138,12 +138,21 @@ description : |
 	Trimmomatic is written by <a href url="http://www.usadellab.org/cms/index.php?page=BolgerAnthony">Anthony Bolger</a> from the <a href url="http://www.usadellab.org">Bjorn Usadel Lab</a>. 
 	 </p>
 	 <br>
-	 Version: 0.33: <a href url="http://www.usadellab.org/cms/uploads/supplementary/Trimmomatic/Trimmomatic-0.35.zip">binary</a>, <a href url="http://www.usadellab.org/cms/uploads/supplementary/Trimmomatic/Trimmomatic-Src-0.35.zip">source</a>, <a href url="http://www.usadellab.org/cms/uploads/supplementary/Trimmomatic/TrimmomaticManual_V0.32.pdf">manual</a>.
+	 Trimmomatic version: 0.33: <a href url="http://www.usadellab.org/cms/uploads/supplementary/Trimmomatic/Trimmomatic-0.35.zip">binary</a>, <a href url="http://www.usadellab.org/cms/uploads/supplementary/Trimmomatic/Trimmomatic-Src-0.35.zip">source</a>, <a href url="http://www.usadellab.org/cms/uploads/supplementary/Trimmomatic/TrimmomaticManual_V0.32.pdf">manual</a>.
 	 <br>
 	 <h3>Description</h3>
 	 <p>Trimmomatic performs a variety of useful trimming tasks for illumina paired-end and single ended data. These tasks are performed as a series of steps. At least one step must be specified and steps are run in order.</p>
 	 <p>The current steps are:</p>
-	 <li>Adapter Clipping: 
+	 <ol>
+	 <li>Adapter Clipping: This step will remove Illumina adapters from the reads. To use this, you must select one of the predefined adapter sets and set parameters for match criteria. Suggested adapter sequences are provided for TruSeq2 (as used in GAII machines) and TruSeq3 (as used by HiSeq and MiSeq machines), for both single-end and paired-end mode. You can find more information on the adapters in the <a href url="http://www.usadellab.org/cms/uploads/supplementary/Trimmomatic/TrimmomaticManual_V0.32.pdf">Trimmomatic manual</a>.
+	 <li>Adapters: </li></li>
+	 <li>Crop reads: </li>
+	 <li>Head Crop: </li>
+	 <li>Leading Minimum Quality: </li>
+	 <li>Trailing Minimum Quality: </li>
+	 <li>Sliding Window: </li>
+	 <li>Minimum Read Length: </li>
+	 </ol>
 
 
 publications :
