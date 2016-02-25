@@ -156,6 +156,7 @@ description : |
 	 <ul>
 	 <li>Crop length: Number of bp to keep, from the start of the read.</li>
 	 </li>
+	 </ul>
 	 <li>Head Crop: Removes the specifed number of bases, regardless of quality, from the beginning of the read.
 	 <ul>
 	 <li>Head crop length: Number of bp to remove from start of the read.</li>
