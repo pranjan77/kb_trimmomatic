@@ -134,9 +134,17 @@ parameters :
 			This module removes reads that fall below the specified minimal length. Reads removed by this step will be counted and included in the "dropped reads" count presented in the trimmomatic summary.
 
 description : |
-	<p>This is a Narrative Method for running Trimmomatic: A flexible read trimming tool for Illumina NGS data. 
-	Trimmomatic is written by <a href url="http://www.usadellab.org/cms/index.php?page=BolgerAnthony">Anthony Bolger</a> from the <a href url="http://www.usadellab.org">Björn Usadel Lab</a>. 
+	<p>This is a Narrative Method for running <a href url="http://www.usadellab.org/cms/?page=trimmomatic">Trimmomatic: A flexible read trimming tool for Illumina NGS data.</a> 
+	Trimmomatic is written by <a href url="http://www.usadellab.org/cms/index.php?page=BolgerAnthony">Anthony Bolger</a> from the <a href url="http://www.usadellab.org">Bjorn Usadel Lab</a>. 
 	 </p>
+	 <br>
+	 Version: 0.33: <a href url="http://www.usadellab.org/cms/uploads/supplementary/Trimmomatic/Trimmomatic-0.35.zip">binary</a>, <a href url="http://www.usadellab.org/cms/uploads/supplementary/Trimmomatic/Trimmomatic-Src-0.35.zip">source</a>, <a href url="http://www.usadellab.org/cms/uploads/supplementary/Trimmomatic/TrimmomaticManual_V0.32.pdf">manual</a>.
+	 <br>
+	 <h3>Description</h3>
+	 <p>Trimmomatic performs a variety of useful trimming tasks for illumina paired-end and single ended data. These tasks are performed as a series of steps. At least one step must be specified and steps are run in order.</p>
+	 <p>The current steps are:</p>
+	 <li>Adapter Clipping: 
+
 
 publications :
     -
