@@ -147,16 +147,22 @@ description : |
 	 <li>Adapter Clipping: This step will remove Illumina adapters from the reads. To use this, you must select one of the predefined adapter sets and set parameters for match criteria. Suggested adapter sequences are provided for TruSeq2 (as used in GAII machines) and TruSeq3 (as used by HiSeq and MiSeq machines), for both single-end and paired-end mode. You can find more information on the adapters in the <a href url="http://www.usadellab.org/cms/uploads/supplementary/Trimmomatic/TrimmomaticManual_V0.32.pdf">Trimmomatic manual</a>.
 	 <ul>
 	 <li>Adapters: Select one of the predefined adapter sets.</li>
-	 <li>Seed Mismatches: The maximum number of mismatches that will allow a full match to be prefromed.</li>
-	 <li>Palindrome Clip Threshold: </li>
+	 <li>Seed Mismatches: The maximum number of mismatches that will allow a full match to be performed. To speed up search, short sections of each adapter (upto 16bp) is tested at all possible positions to find "seeds" that trigger a full alignment. This Seed Mismatch parameters specifies the allowable mismatches for a seed.</li>
+	 <li>Simple Clip Threshold: Alignment minimum score threshold for match, suggested values between 7-15. Score equals 0.6 per match minus Q/10 per mismatch.</li>
+	 <li>Palindrome Clip Threshold: Using the same scoring as above, the pair of reads are aligned. Suggested value around 30.</li>
 	 </ul>
 	 </li>
-	 <li>Crop reads: </li>
-	 <li>Head Crop: </li>
-	 <li>Leading Minimum Quality: </li>
-	 <li>Trailing Minimum Quality: </li>
-	 <li>Sliding Window: </li>
-	 <li>Minimum Read Length: </li>
+	 <li>Crop reads: Removes bases, regardless of quality, from the end of the read, so that the read has maximally the specified length after this step has been performed. Steps performed after Crop migh further shorten the read.</li>
+	 <li>Head Crop: Removes the specifed number of bases, regardless of quality, from the beginning of the read.</li>
+	 <li>Leading Minimum Quality: Remove low quality bases from the beginning. As long as a base has a value below this threshold, the base is removed and the next base will be investigated.</li>
+	 <li>Trailing Minimum Quality: Remove low quality bases from the end. As long as a base has a value below this threshold, the base is removed and the next base is investigated. This approach can be used for removing the special illumina 'low quality segment' regions (which have a quality score of 2), but Sliding Window is recommended for this.</li>
+	 <li>Sliding Window: Perfors sliding window trimming by cutting once the average quality within the window falls below specified threshold. By considering multiple bases, a single poor quality base will not cause the removal of high quality data later in the read.
+	 <ul>
+	 <li>Sliding Window Size: length of window in bp.</li>
+	 <li>Sliding Window Minimum Quality: The average quality required.</li> 
+	 </ul>
+	 </li>
+	 <li>Minimum Read Length: This removes reads that fall below the specifed minimum length. Reads removed by this step are included in the 'dropped reads' count.</li>
 	 </ol>
 
 
