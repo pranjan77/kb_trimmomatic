@@ -172,7 +172,7 @@ description : |
 	 <li><b>Trailing minimum quality</b>: Minimum quality score.</li>
 	 </ul>
 	 
-	 <h4>Sliding Window:</h4> Perfors sliding window trimming by cutting once the average quality within the window falls below specified threshold. By considering multiple bases, a single poor quality base will not cause the removal of high quality data later in the read.
+	 <h4>Sliding Window:</h4> Performs sliding window trimming by cutting once the average quality within the window falls below specified threshold. By considering multiple bases, a single poor quality base will not cause the removal of high quality data later in the read.
 	 <ul>
 	 <li><b>Sliding Window Size</b>: length of window in bp.</li>
 	 <li><b>Sliding Window Minimum Quality</b>: The average quality required.</li> 
