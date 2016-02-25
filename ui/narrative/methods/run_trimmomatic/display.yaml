@@ -66,7 +66,7 @@ parameters :
 		ui-name : |
 			Seed mismatches
 		short-hint : |
-			Maximum mismatch count which will still allow a full mismatch.
+			Maximum mismatch count which will still allow a full match.
 		long-hint : |
 			Specifies the maximum mismatch count which will still allow a full match to be performed.
 	palindrome_clip_threshold : 
@@ -145,7 +145,12 @@ description : |
 	 <p>The current steps are:</p>
 	 <ol>
 	 <li>Adapter Clipping: This step will remove Illumina adapters from the reads. To use this, you must select one of the predefined adapter sets and set parameters for match criteria. Suggested adapter sequences are provided for TruSeq2 (as used in GAII machines) and TruSeq3 (as used by HiSeq and MiSeq machines), for both single-end and paired-end mode. You can find more information on the adapters in the <a href url="http://www.usadellab.org/cms/uploads/supplementary/Trimmomatic/TrimmomaticManual_V0.32.pdf">Trimmomatic manual</a>.
-	 <li>Adapters: </li></li>
+	 <ul>
+	 <li>Adapters: Select one of the predefined adapter sets.</li>
+	 <li>Seed Mismatches: The maximum number of mismatches that will allow a full match to be prefromed.</li>
+	 <li>Palindrome Clip Threshold: </li>
+	 </ul>
+	 </li>
 	 <li>Crop reads: </li>
 	 <li>Head Crop: </li>
 	 <li>Leading Minimum Quality: </li>
