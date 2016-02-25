@@ -1,12 +1,12 @@
 #
 # define display information
 #
-name: Trimmomatic Read Trimming
+name: Trimmomatic - Read Trimming
 tooltip: |
 	Trimmomatic: A flexible read trimming tool for Illumina NGS data
 screenshots: []
 
-icon: icon.png
+icon: trimmomatic-orange.png
 
 #
 # define a set of similar methods that might be useful to the user
