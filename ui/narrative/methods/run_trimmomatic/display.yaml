@@ -134,17 +134,17 @@ parameters :
 			This module removes reads that fall below the specified minimal length. Reads removed by this step will be counted and included in the "dropped reads" count presented in the trimmomatic summary.
 
 description : |
-	<p>This is a Narrative Method for running <a href url="http://www.usadellab.org/cms/?page=trimmomatic">Trimmomatic: A flexible read trimming tool for Illumina NGS data.</a> 
-	Trimmomatic is written by <a href url="http://www.usadellab.org/cms/index.php?page=BolgerAnthony">Anthony Bolger</a> from the <a href url="http://www.usadellab.org">Bjorn Usadel Lab</a>. 
+	<p>This is a Narrative Method for running <a href="http://www.usadellab.org/cms/?page=trimmomatic">Trimmomatic: A flexible read trimming tool for Illumina NGS data.</a> 
+	Trimmomatic is written by <a href="http://www.usadellab.org/cms/index.php?page=BolgerAnthony">Anthony Bolger</a> from the <a href="http://www.usadellab.org">Bjorn Usadel Lab</a>. 
 	 </p>
 	 <br>
-	 Trimmomatic version: 0.33: <a href url="http://www.usadellab.org/cms/uploads/supplementary/Trimmomatic/Trimmomatic-0.35.zip">binary</a>, <a href url="http://www.usadellab.org/cms/uploads/supplementary/Trimmomatic/Trimmomatic-Src-0.35.zip">source</a>, <a href url="http://www.usadellab.org/cms/uploads/supplementary/Trimmomatic/TrimmomaticManual_V0.32.pdf">manual</a>.
+	 Trimmomatic version: 0.33: <a href="http://www.usadellab.org/cms/uploads/supplementary/Trimmomatic/Trimmomatic-0.35.zip">binary</a>, <a href="http://www.usadellab.org/cms/uploads/supplementary/Trimmomatic/Trimmomatic-Src-0.35.zip">source</a>, <a href="http://www.usadellab.org/cms/uploads/supplementary/Trimmomatic/TrimmomaticManual_V0.32.pdf">manual</a>.
 	 <br>
 	 <h3>Description</h3>
 	 <p>Trimmomatic performs a variety of useful trimming tasks for illumina paired-end and single ended data. These tasks are performed as a series of steps. At least one step must be specified and steps are run in order.</p>
 	 <p>The current steps are:</p>
 	 
-	 <h4>Adapter Clipping:</h4> This step will remove Illumina adapters from the reads. To use this, you must select one of the predefined adapter sets and set parameters for match criteria. Suggested adapter sequences are provided for TruSeq2 (as used in GAII machines) and TruSeq3 (as used by HiSeq and MiSeq machines), for both single-end and paired-end mode. You can find more information on the adapters in the <a href url="http://www.usadellab.org/cms/uploads/supplementary/Trimmomatic/TrimmomaticManual_V0.32.pdf">Trimmomatic manual</a>.
+	 <h4>Adapter Clipping:</h4> This step will remove Illumina adapters from the reads. To use this, you must select one of the predefined adapter sets and set parameters for match criteria. Suggested adapter sequences are provided for TruSeq2 (as used in GAII machines) and TruSeq3 (as used by HiSeq and MiSeq machines), for both single-end and paired-end mode. You can find more information on the adapters in the <a href="http://www.usadellab.org/cms/uploads/supplementary/Trimmomatic/TrimmomaticManual_V0.32.pdf">Trimmomatic manual</a>.
 	 <ul>
 	 <li><b>Adapters</b>: Select one of the predefined adapter sets.</li>
 	 <li><b>Seed Mismatches</b>: The maximum number of mismatches that will allow a full match to be performed. To speed up search, short sections of each adapter (upto 16bp) is tested at all possible positions to find "seeds" that trigger a full alignment. This Seed Mismatch parameters specifies the allowable mismatches for a seed.</li>
