@@ -207,7 +207,7 @@ This sample module contains one small method - filter_contigs.
             else:
                 self.log(console, 'Downloading reverse reads.')
                 reverse_reads_file = open(reverse_reads['file_name'], 'w', 0)
-                print(forward_reads['url']+'/node/'+reverse_reads['id']+'?download')
+                print(reverse_reads['url']+'/node/'+reverse_reads['id']+'?download')
                 r = requests.get(reverse_reads['url']+'/node/'+reverse_reads['file_name']+'?download', stream=True, headers=headers)
                 for chunk in r.iter_content(1024):
                     reverse_reads_file.write(chunk)
