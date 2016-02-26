@@ -265,7 +265,7 @@ This sample module contains one small method - filter_contigs.
 
             cmdProcess = subprocess.Popen(cmdstring, stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell=True, env=env)
             stdout, stderr = cmdProcess.communicate()
-            print("cmdstring: " + cmdstring + " stdout: " + stdout + " stderr: " + stderr)
+            #print("cmdstring: " + cmdstring + " stdout: " + stdout + " stderr: " + stderr)
             #report += "cmdstring: " + cmdstring + " stdout: " + stdout + " stderr: " + stderr
             reportObj['objects_created'].append({'ref':input_params['input_ws']+'/'+input_params['output_read_library']+'_paired', 
                         'description':'Trimmed Paired-End Reads'})
@@ -278,7 +278,7 @@ This sample module contains one small method - filter_contigs.
 
             cmdProcess = subprocess.Popen(cmdstring, stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell=True, env=env)
             stdout, stderr = cmdProcess.communicate()
-            print("cmdstring: " + cmdstring + " stdout: " + stdout + " stderr: " + stderr)
+            #print("cmdstring: " + cmdstring + " stdout: " + stdout + " stderr: " + stderr)
             #report += "cmdstring: " + cmdstring + " stdout: " + stdout + " stderr: " + stderr
             reportObj['objects_created'].append({'ref':input_params['input_ws']+'/'+input_params['output_read_library']+'_forward_unpaired', 
                         'description':'Trimmed Unpaired Forward Reads'})
@@ -291,7 +291,7 @@ This sample module contains one small method - filter_contigs.
 
             cmdProcess = subprocess.Popen(cmdstring, stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell=True, env=env)
             stdout, stderr = cmdProcess.communicate()
-            print("cmdstring: " + cmdstring + " stdout: " + stdout + " stderr: " + stderr)
+            #print("cmdstring: " + cmdstring + " stdout: " + stdout + " stderr: " + stderr)
             #report += "cmdstring: " + cmdstring + " stdout: " + stdout + " stderr: " + stderr
             reportObj['objects_created'].append({'ref':input_params['input_ws']+'/'+input_params['output_read_library']+'_reverse_unpaired', 
                         'description':'Trimmed Unpaired Reverse Reads'})
@@ -335,7 +335,7 @@ This sample module contains one small method - filter_contigs.
 
             cmdProcess = subprocess.Popen(cmdstring, stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell=True, env=env)
             stdout, stderr = cmdProcess.communicate()
-            report += "cmdstring: " + cmdstring + " stdout: " + stdout + " stderr: " + stderr
+            #report += "cmdstring: " + cmdstring + " stdout: " + stdout + " stderr: " + stderr
             reportObj['objects_created'].append({'ref':input_params['input_ws']+'/'+input_params['output_read_library'], 
                         'description':'Trimmed Reads'})
 
