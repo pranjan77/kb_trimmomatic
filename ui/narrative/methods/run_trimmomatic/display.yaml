@@ -192,3 +192,5 @@ publications :
         display-text : |
             'Bolger AM, Lohse M, Usadel B., (2014) Trimmomatic: a flexible trimmer for Illumina sequence data. Bioinformatics. 2014 Aug 1;30(15):2114-20. doi: 10.1093/bioinformatics/btu170.'
         link: http://www.ncbi.nlm.nih.gov/pubmed/24695404
+    -
+    	link: http://www.usadellab.org/cms/?page=trimmomatic
