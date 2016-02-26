@@ -178,6 +178,7 @@ This sample module contains one small method - filter_contigs.
 
             self.log(console, "\nDownloading Paired End reads file...")
             forward_reads_file = open(forward_reads['file_name'], 'w', 0)
+            print(forward_reads['url']+'/node/'+forward_reads['id']+'?download')
             r = requests.get(forward_reads['url']+'/node/'+forward_reads['id']+'?download', stream=True, headers=headers)
             for chunk in r.iter_content(1024):
                 forward_reads_file.write(chunk)
