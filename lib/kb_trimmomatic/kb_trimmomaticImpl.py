@@ -182,7 +182,8 @@ This sample module contains one small method - filter_contigs.
             r = requests.get(forward_reads['url']+'/node/'+forward_reads['id']+'?download', stream=True, headers=headers)
             for chunk in r.iter_content(1024):
                 forward_reads_file.write(chunk)
-
+            forward_reads_file.close()
+            self.log(console, sum(1 for line in open(forward_reads['file_name'])))
             self.log(console, 'done\n')
 
             if 'interleaved' in readLibrary['data'] and readLibrary['data']['interleaved']:
@@ -206,9 +207,11 @@ This sample module contains one small method - filter_contigs.
             else:
                 self.log(console, 'Downloading reverse reads.')
                 reverse_reads_file = open(reverse_reads['file_name'], 'w', 0)
+                print(forward_reads['url']+'/node/'+reverse_reads['id']+'?download')
                 r = requests.get(reverse_reads['url']+'/node/'+reverse_reads['file_name']+'?download', stream=True, headers=headers)
                 for chunk in r.iter_content(1024):
                     reverse_reads_file.write(chunk)
+                    self.log(console, sum(1 for line in open(reverse_reads['file_name'])))
                 self.log(console, 'done\n')
 
             cmdstring = " ".join( (self.TRIMMOMATIC, trimmomatic_options, 
