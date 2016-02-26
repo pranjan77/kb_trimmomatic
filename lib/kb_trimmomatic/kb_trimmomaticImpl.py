@@ -53,9 +53,8 @@ This sample module contains one small method - filter_contigs.
         if 'quality_encoding' not in input_params and input_params['quality_encoding'] is not None:
             raise ValueError('quality_encoding not defined')
         elif input_params['quality_encoding'] not in ('phred33', 'phred64'):
-            #raise ValueError('quality_encoding must be phred33 or phred64')
-            print('quality_encoding must be phred33 or phred64')
-            sys.exit(2)
+            raise ValueError('quality_encoding must be phred33 or phred64')
+            
 
         # set adapter trimming
         if ('adapterFa' in input_params and input_params['adapterFa'] is not None and
@@ -71,10 +70,7 @@ This sample module contains one small method - filter_contigs.
                ('seed_mismatches' in input_params and input_params['seed_mismatches'] is not None) or
                ('palindrome_clip_threshold' in input_params and input_params['palindrome_clip_threshold'] is not None) or
                ('simple_clip_threshold' in input_params and input_params['simple_clip_threshold'] is not None) ):
-            #raise ValueError('Adapter Cliping requires Adapter, Seed Mismatches, Palindrome Clip Threshold and Simple Clip Threshold')
-            print('Adapter Cliping requires Adapter, Seed Mismatches, Palindrome Clip Threshold and Simple Clip Threshold')
-            sys.exit(2)
-
+            raise ValueError('Adapter Cliping requires Adapter, Seed Mismatches, Palindrome Clip Threshold and Simple Clip Threshold')
 
         # set Crop
         if 'crop_length' in input_params and input_params['crop_length'] is not None:
