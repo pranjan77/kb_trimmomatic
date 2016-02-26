@@ -211,7 +211,7 @@ This sample module contains one small method - filter_contigs.
                 r = requests.get(reverse_reads['url']+'/node/'+reverse_reads['file_name']+'?download', stream=True, headers=headers)
                 for chunk in r.iter_content(1024):
                     reverse_reads_file.write(chunk)
-                    self.log(console, sum(1 for line in open(reverse_reads['file_name'])))
+                self.log(console, sum(1 for line in open(reverse_reads['file_name'])))
                 self.log(console, 'done\n')
 
             cmdstring = " ".join( (self.TRIMMOMATIC, trimmomatic_options, 
