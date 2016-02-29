@@ -60,7 +60,7 @@ class kb_trimmomaticTest(unittest.TestCase):
         input_params['input_ws']='psdehal:1455758523413'
         input_params['input_read_library']='g460'
         input_params['read_type']='PE'
-        input_params['quality_encoding']=None
+        input_params['quality_encoding']='phred33'
         input_params['adapterFa']='TruSeq3-PE.fa'
         input_params['seed_mismatches']='2'
         input_params['palindrome_clip_threshold']='30'

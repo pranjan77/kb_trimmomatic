@@ -117,6 +117,10 @@ This sample module contains one small method - filter_contigs.
         #BEGIN_CONSTRUCTOR
         self.workspaceURL = config['workspace-url']
         self.shockURL = config['shock-url']
+        self.scratch = os.path.abspath(config['scratch'])
+        if not os.path.exists(self.scratch):
+            os.makedirs(self.scratch)
+        os.chdir(self.scratch)
         #END_CONSTRUCTOR
         pass
 
@@ -178,6 +182,7 @@ This sample module contains one small method - filter_contigs.
 
             self.log(console, "\nDownloading Paired End reads file...")
             forward_reads_file = open(forward_reads['file_name'], 'w', 0)
+            print("cwd: " + str(os.getcwd()) )
             
             r = requests.get(forward_reads['url']+'/node/'+forward_reads['id']+'?download', stream=True, headers=headers)
             for chunk in r.iter_content(1024):
@@ -212,6 +217,15 @@ This sample module contains one small method - filter_contigs.
                     reverse_reads_file.write(chunk)
                 reverse_reads_file.close()
                 self.log(console, 'done\n')
+
+                if re.search('gz', reverse_reads['file_name'], re.I):
+                    bcmdstring = 'gunzip ' + reverse_reads['file_name'] + ' ' + forward_reads['file_name']
+                    self.log(console, "Reads are compressed, uncompressing.")
+                    cmdProcess = subprocess.Popen(bcmdstring, stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell=True, executable='/bin/bash')
+                    stdout, stderr = cmdProcess.communicate()
+                    self.log(console, "\n".join(stdout, stderr, "done"))
+                    reverse_reads['file_name'] = re.sub(r'\.gz\Z', '', reverse_reads['file_name'])
+                    forward_reads['file_name'] = re.sub(r'\.gz\Z', '', forward_reads['file_name'])
 
             cmdstring = " ".join( (self.TRIMMOMATIC, trimmomatic_options, 
                             forward_reads['file_name'], 
