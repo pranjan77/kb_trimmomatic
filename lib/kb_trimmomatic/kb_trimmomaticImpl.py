@@ -169,19 +169,30 @@ This sample module contains one small method - filter_contigs.
 
 
         if input_params['read_type'] == 'PE':
+
+            fr_type = ''
+            rv_type = ''
             if 'lib1' in readLibrary['data']:
                 forward_reads = readLibrary['data']['lib1']['file']
+                # type is required if lib1 is present
+                fr_type = '.' + data['lib1']['type']
             elif 'handle_1' in readLibrary['data']:
                 forward_reads = readLibrary['data']['handle_1']
             if 'lib2' in readLibrary['data']:
                 reverse_reads = readLibrary['data']['lib2']['file']
+                # type is required if lib2 is present
+                rv_type = '.' + data['lib2']['type']
             elif 'handle_2' in readLibrary['data']:
                 reverse_reads = readLibrary['data']['handle_2']
             else:
                 reverse_reads={}
 
+            fr_file_name = forward_reads['id'] + fr_type
+            if 'file_name' in forward_reads:
+                fr_file_name = forward_reads['file_name']
+
             self.log(console, "\nDownloading Paired End reads file...")
-            forward_reads_file = open(forward_reads['file_name'], 'w', 0)
+            forward_reads_file = open(fr_file_name, 'w', 0)
             print("cwd: " + str(os.getcwd()) )
             
             r = requests.get(forward_reads['url']+'/node/'+forward_reads['id']+'?download', stream=True, headers=headers)
@@ -191,11 +202,11 @@ This sample module contains one small method - filter_contigs.
             self.log(console, 'done\n')
 
             if 'interleaved' in readLibrary['data'] and readLibrary['data']['interleaved']:
-                if re.search('gz', forward_reads['file_name'], re.I):
-                    bcmdstring = 'gunzip -c ' + forward_reads['file_name']
+                if re.search('gz', fr_file_name, re.I):
+                    bcmdstring = 'gunzip -c ' + fr_file_name
                     self.log(console, "Reads are gzip'd and interleaved, uncompressing and deinterleaving.")
                 else:    
-                    bcmdstring = 'cat ' + forward_reads['file_name'] 
+                    bcmdstring = 'cat ' + fr_file_name 
                     self.log(console, "Reads are interleaved, deinterleaving.")
 
                 
@@ -206,11 +217,14 @@ This sample module contains one small method - filter_contigs.
                 # Check return status
                 report = "cmdstring: " + cmdstring + " stdout: " + stdout + " stderr: " + stderr
                 self.log(console, 'done\n')
-                forward_reads['file_name']='forward.fastq'
-                reverse_reads['file_name']='reverse.fastq'
+                fr_file_name='forward.fastq'
+                rev_file_name='reverse.fastq'
             else:
                 self.log(console, 'Downloading reverse reads.')
-                reverse_reads_file = open(reverse_reads['file_name'], 'w', 0)
+                rev_file_name = reverse_reads['id'] + rv_type
+                if 'file_name' in reverse_reads:
+                    rev_file_name = reverse_reads['file_name']
+                reverse_reads_file = open(rev_file_name, 'w', 0)
 
                 r = requests.get(reverse_reads['url']+'/node/'+reverse_reads['id']+'?download', stream=True, headers=headers)
                 for chunk in r.iter_content(1024):
@@ -218,22 +232,22 @@ This sample module contains one small method - filter_contigs.
                 reverse_reads_file.close()
                 self.log(console, 'done\n')
 
-                if re.search('gz', reverse_reads['file_name'], re.I):
-                    bcmdstring = 'gunzip ' + reverse_reads['file_name'] + ' ' + forward_reads['file_name']
+                if re.search('gz', rev_file_name, re.I):
+                    bcmdstring = 'gunzip ' + rev_file_name + ' ' + fr_file_name
                     self.log(console, "Reads are compressed, uncompressing.")
                     cmdProcess = subprocess.Popen(bcmdstring, stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell=True, executable='/bin/bash')
                     stdout, stderr = cmdProcess.communicate()
                     self.log(console, "\n".join(stdout, stderr, "done"))
-                    reverse_reads['file_name'] = re.sub(r'\.gz\Z', '', reverse_reads['file_name'])
-                    forward_reads['file_name'] = re.sub(r'\.gz\Z', '', forward_reads['file_name'])
+                    rev_file_name = re.sub(r'\.gz\Z', '', rev_file_name)
+                    fr_file_name = re.sub(r'\.gz\Z', '', fr_file_name)
 
             cmdstring = " ".join( (self.TRIMMOMATIC, trimmomatic_options, 
-                            forward_reads['file_name'], 
-                            reverse_reads['file_name'],
-                            'forward_paired_'   +forward_reads['file_name'],
-                            'forward_unpaired_' +forward_reads['file_name'],
-                            'reverse_paired_'   +reverse_reads['file_name'],
-                            'reverse_unpaired_' +reverse_reads['file_name'],
+                            fr_file_name, 
+                            rev_file_name,
+                            'forward_paired_'   +fr_file_name,
+                            'forward_unpaired_' +fr_file_name,
+                            'reverse_paired_'   +rev_file_name,
+                            'reverse_unpaired_' +rev_file_name,
                             trimmomatic_params) )
 
             self.log(console, 'Starting Trimmomatic')
@@ -272,8 +286,8 @@ This sample module contains one small method - filter_contigs.
 
             #upload paired reads
             self.log(console, 'Uploading trimmed paired reads.')
-            cmdstring = " ".join( ('ws-tools fastX2reads --inputfile', 'forward_paired_' + forward_reads['file_name'], 
-                                   '--inputfile2', 'reverse_paired_' + reverse_reads['file_name'],
+            cmdstring = " ".join( ('ws-tools fastX2reads --inputfile', 'forward_paired_' + fr_file_name, 
+                                   '--inputfile2', 'reverse_paired_' + rev_file_name,
                                    '--wsurl', self.workspaceURL, '--shockurl', self.shockURL, '--outws', input_params['output_ws'],
                                    '--outobj', input_params['output_read_library'] + '_paired', '--readcount', read_count_paired ) )
 
@@ -286,7 +300,7 @@ This sample module contains one small method - filter_contigs.
 
             #upload reads forward unpaired
             self.log(console, '\nUploading trimmed unpaired forward reads.')
-            cmdstring = " ".join( ('ws-tools fastX2reads --inputfile', 'forward_unpaired_' + forward_reads['file_name'], 
+            cmdstring = " ".join( ('ws-tools fastX2reads --inputfile', 'forward_unpaired_' + fr_file_name, 
                                    '--wsurl', self.workspaceURL, '--shockurl', self.shockURL, '--outws', input_params['output_ws'],
                                    '--outobj', input_params['output_read_library'] + '_forward_unpaired', '--readcount', read_count_forward_only ) )
 
@@ -299,7 +313,7 @@ This sample module contains one small method - filter_contigs.
 
             #upload reads reverse unpaired
             self.log(console, '\nUploading trimmed unpaired reverse reads.')
-            cmdstring = " ".join( ('ws-tools fastX2reads --inputfile', 'reverse_unpaired_' + reverse_reads['file_name'], 
+            cmdstring = " ".join( ('ws-tools fastX2reads --inputfile', 'reverse_unpaired_' + rev_file_name, 
                                    '--wsurl', self.workspaceURL, '--shockurl', self.shockURL, '--outws', input_params['output_ws'],
                                    '--outobj', input_params['output_read_library'] + '_reverse_unpaired', '--readcount', read_count_reverse_only ) )
 
@@ -312,16 +326,26 @@ This sample module contains one small method - filter_contigs.
 
         else:
             self.log(console, "Downloading Single End reads file...")
+            fr_file_name = ''
             if 'handle' in readLibrary['data']:
-                reads_file = open(readLibrary['data']['handle']['file_name'], 'w', 0)
-                r = requests.get(readLibrary['data']['handle']['url']+'/node/'+readLibrary['data']['handle']['file_name']+'?download', stream=True, headers=headers)
-                for chunk in r.iter_content(1024):
-                    reads_file.write(chunk)
+                forward_reads = readLibrary['data']['handle']
+            elif 'lib' in readLibrary['data']:
+                forward_reads = readLibrary['data']['lib']['file']
+
+
+            fr_file_name = forward_reads['id']
+            if 'file_name' in forward_reads:
+                    fr_file_name = forward_reads['file_name']
+
+            reads_file = open(fr_file_name, 'w', 0)
+            r = requests.get(forward_reads['url']+'/node/'+forward_reads['id']+'?download', stream=True, headers=headers)
+            for chunk in r.iter_content(1024):
+                reads_file.write(chunk)
             self.log(console, "done.\n")
 
             cmdstring = " ".join( (self.TRIMMOMATIC, trimmomatic_options,
-                            readLibrary['data']['handle']['file_name'],
-                            'trimmed_' + readLibrary['data']['handle']['file_name'],
+                            fr_file_name,
+                            'trimmed_' + fr_file_name,
                             trimmomatic_params) )
 
             cmdProcess = subprocess.Popen(cmdstring, stdout=subprocess.PIPE, stderr=subprocess.STDOUT, shell=True)
@@ -343,7 +367,7 @@ This sample module contains one small method - filter_contigs.
             readcount = match.group(1)
 
             #upload reads
-            cmdstring = " ".join( ('ws-tools fastX2reads --inputfile', 'trimmed_' + readLibrary['data']['handle']['file_name'], 
+            cmdstring = " ".join( ('ws-tools fastX2reads --inputfile', 'trimmed_' + fr_file_name, 
                                    '--wsurl', self.workspaceURL, '--shockurl', self.shockURL, '--outws', input_params['output_ws'],
                                    '--outobj', input_params['output_read_library'], '--readcount', readcount ) )
 
