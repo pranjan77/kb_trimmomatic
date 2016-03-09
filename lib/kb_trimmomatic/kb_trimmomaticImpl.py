@@ -175,13 +175,13 @@ This sample module contains one small method - filter_contigs.
             if 'lib1' in readLibrary['data']:
                 forward_reads = readLibrary['data']['lib1']['file']
                 # type is required if lib1 is present
-                fr_type = '.' + data['lib1']['type']
+                fr_type = '.' + readLibrary['data']['lib1']['type']
             elif 'handle_1' in readLibrary['data']:
                 forward_reads = readLibrary['data']['handle_1']
             if 'lib2' in readLibrary['data']:
                 reverse_reads = readLibrary['data']['lib2']['file']
                 # type is required if lib2 is present
-                rv_type = '.' + data['lib2']['type']
+                rv_type = '.' + readLibrary['data']['lib2']['type']
             elif 'handle_2' in readLibrary['data']:
                 reverse_reads = readLibrary['data']['handle_2']
             else:
