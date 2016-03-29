@@ -3,7 +3,7 @@
 #
 name: Trimmomatic - Read Trimming
 tooltip: |
-	Trimmomatic: A flexible read trimming tool for Illumina NGS data
+	Trim paired- or single-end Illumina reads with Trimmomatic.
 screenshots: []
 
 icon: trimmomatic-orange.png
