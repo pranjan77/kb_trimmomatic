@@ -62,10 +62,10 @@ This sample module contains one small method - filter_contigs.
             'palindrome_clip_threshold' in input_params and input_params['quality_encoding'] is not None and
             'simple_clip_threshold' in input_params and input_params['simple_clip_threshold'] is not None):
             parameter_string = ("ILLUMINACLIP:" + self.ADAPTER_DIR +
-                                    ":".join( (input_params['adapterFa'],
-                                       input_params['seed_mismatches'], 
-                                       input_params['palindrome_clip_threshold'],
-                                       input_params['simple_clip_threshold']) ) + " " )
+                                    ":".join( (str(input_params['adapterFa']),
+                                       str(input_params['seed_mismatches']), 
+                                       str(input_params['palindrome_clip_threshold']),
+                                       str(input_params['simple_clip_threshold'])) ) + " " )
         elif ( ('adapterFa' in input_params and input_params['adapterFa'] is not None) or
                ('seed_mismatches' in input_params and input_params['seed_mismatches'] is not None) or
                ('palindrome_clip_threshold' in input_params and input_params['palindrome_clip_threshold'] is not None) or
@@ -74,27 +74,27 @@ This sample module contains one small method - filter_contigs.
 
         # set Crop
         if 'crop_length' in input_params and input_params['crop_length'] is not None:
-            parameter_string += 'CROP:' + input_params['crop_length'] + ' '
+            parameter_string += 'CROP:' + str(input_params['crop_length']) + ' '
 
         # set Headcrop
         if 'head_crop_length' in input_params and input_params['head_crop_length'] is not None:
-            parameter_string += 'HEADCROP:' + input_params['head_crop_length'] + ' '
+            parameter_string += 'HEADCROP:' + str(input_params['head_crop_length']) + ' '
 
 
         # set Leading
         if 'leading_min_quality' in input_params and input_params['leading_min_quality'] is not None:
-            parameter_string += 'LEADING:' + input_params['leading_min_quality'] + ' '
+            parameter_string += 'LEADING:' + str(input_params['leading_min_quality']) + ' '
 
 
         # set Trailing
         if 'trailing_min_quality' in input_params and input_params['trailing_min_quality'] is not None:
-            parameter_string += 'TRAILING:' + input_params['trailing_min_quality'] + ' '
+            parameter_string += 'TRAILING:' + str(input_params['trailing_min_quality']) + ' '
 
 
         # set sliding window
         if ('sliding_window_size' in input_params and input_params['sliding_window_size'] is not None and 
             'sliding_window_min_quality' in input_params and input_params['sliding_window_min_quality'] is not None):
-            parameter_string += 'SLIDINGWINDOW:' + input_params['sliding_window_size'] + ":" + input_params['sliding_window_min_quality'] + ' '
+            parameter_string += 'SLIDINGWINDOW:' + str(input_params['sliding_window_size']) + ":" + str(input_params['sliding_window_min_quality']) + ' '
         elif ( ('sliding_window_size' in input_params and input_params['sliding_window_size'] is not None) or 
                ('sliding_window_min_quality' in input_params and input_params['sliding_window_min_quality'] is not None) ):
             raise ValueError('Sliding Window filtering requires both Window Size and Window Minimum Quality to be set')
@@ -102,7 +102,7 @@ This sample module contains one small method - filter_contigs.
 
         # set min length
         if 'min_length' in input_params and input_params['min_length'] is not None:
-            parameter_string += 'MINLEN:' + input_params['min_length'] + ' '
+            parameter_string += 'MINLEN:' + str(input_params['min_length']) + ' '
 
         if parameter_string == '':
             raise ValueError('No filtering/trimming steps specified!')
@@ -143,13 +143,13 @@ This sample module contains one small method - filter_contigs.
         if 'provenance' in ctx:
             provenance = ctx['provenance']
         # add additional info to provenance here, in this case the input data object reference
-        provenance[0]['input_ws_objects']=[input_params['input_ws']+'/'+input_params['input_read_library']]
+        provenance[0]['input_ws_objects']=[str(input_params['input_ws'])+'/'+str(input_params['input_read_library'])]
 
         if ('output_ws' not in input_params or input_params['output_ws'] is None):
             input_params['output_ws'] = input_params['input_ws']
 
         trimmomatic_params  = self.parse_trimmomatic_steps(input_params)
-        trimmomatic_options = input_params['read_type'] + ' -' + input_params['quality_encoding']
+        trimmomatic_options = str(input_params['read_type']) + ' -' + str(input_params['quality_encoding'])
 
         self.log(console, pformat(trimmomatic_params))
         self.log(console, pformat(trimmomatic_options))
@@ -165,7 +165,7 @@ This sample module contains one small method - filter_contigs.
             info = readLibrary['info']
 
         except Exception as e:
-            raise ValueError('Unable to get read library object from workspace: (' + input_params['input_ws']+ '/' + input_params['input_read_library'] +')' + str(e))
+            raise ValueError('Unable to get read library object from workspace: (' + str(input_params['input_ws'])+ '/' + str(input_params['input_read_library']) +')' + str(e))
 
 
         if input_params['read_type'] == 'PE':
@@ -187,7 +187,7 @@ This sample module contains one small method - filter_contigs.
             else:
                 reverse_reads={}
 
-            fr_file_name = forward_reads['id'] + fr_type
+            fr_file_name = str(forward_reads['id']) + fr_type
             if 'file_name' in forward_reads:
                 fr_file_name = forward_reads['file_name']
 
@@ -195,7 +195,7 @@ This sample module contains one small method - filter_contigs.
             forward_reads_file = open(fr_file_name, 'w', 0)
             print("cwd: " + str(os.getcwd()) )
             
-            r = requests.get(forward_reads['url']+'/node/'+forward_reads['id']+'?download', stream=True, headers=headers)
+            r = requests.get(forward_reads['url']+'/node/'+str(forward_reads['id'])+'?download', stream=True, headers=headers)
             for chunk in r.iter_content(1024):
                 forward_reads_file.write(chunk)
             forward_reads_file.close()
@@ -221,12 +221,12 @@ This sample module contains one small method - filter_contigs.
                 rev_file_name='reverse.fastq'
             else:
                 self.log(console, 'Downloading reverse reads.')
-                rev_file_name = reverse_reads['id'] + rv_type
+                rev_file_name = str(reverse_reads['id']) + rv_type
                 if 'file_name' in reverse_reads:
                     rev_file_name = reverse_reads['file_name']
                 reverse_reads_file = open(rev_file_name, 'w', 0)
 
-                r = requests.get(reverse_reads['url']+'/node/'+reverse_reads['id']+'?download', stream=True, headers=headers)
+                r = requests.get(reverse_reads['url']+'/node/'+str(reverse_reads['id'])+'?download', stream=True, headers=headers)
                 for chunk in r.iter_content(1024):
                     reverse_reads_file.write(chunk)
                 reverse_reads_file.close()
@@ -288,40 +288,40 @@ This sample module contains one small method - filter_contigs.
             self.log(console, 'Uploading trimmed paired reads.')
             cmdstring = " ".join( ('ws-tools fastX2reads --inputfile', 'forward_paired_' + fr_file_name, 
                                    '--inputfile2', 'reverse_paired_' + rev_file_name,
-                                   '--wsurl', self.workspaceURL, '--shockurl', self.shockURL, '--outws', input_params['output_ws'],
+                                   '--wsurl', self.workspaceURL, '--shockurl', self.shockURL, '--outws', str(input_params['output_ws']),
                                    '--outobj', input_params['output_read_library'] + '_paired', '--readcount', read_count_paired ) )
 
             cmdProcess = subprocess.Popen(cmdstring, stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell=True, env=env)
             stdout, stderr = cmdProcess.communicate()
             print("cmdstring: " + cmdstring + " stdout: " + stdout + " stderr: " + stderr)
             #report += "cmdstring: " + cmdstring + " stdout: " + stdout + " stderr: " + stderr
-            reportObj['objects_created'].append({'ref':input_params['input_ws']+'/'+input_params['output_read_library']+'_paired', 
+            reportObj['objects_created'].append({'ref':str(input_params['input_ws'])+'/'+input_params['output_read_library']+'_paired', 
                         'description':'Trimmed Paired-End Reads'})
 
             #upload reads forward unpaired
             self.log(console, '\nUploading trimmed unpaired forward reads.')
             cmdstring = " ".join( ('ws-tools fastX2reads --inputfile', 'forward_unpaired_' + fr_file_name, 
-                                   '--wsurl', self.workspaceURL, '--shockurl', self.shockURL, '--outws', input_params['output_ws'],
+                                   '--wsurl', self.workspaceURL, '--shockurl', self.shockURL, '--outws', str(input_params['output_ws']),
                                    '--outobj', input_params['output_read_library'] + '_forward_unpaired', '--readcount', read_count_forward_only ) )
 
             cmdProcess = subprocess.Popen(cmdstring, stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell=True, env=env)
             stdout, stderr = cmdProcess.communicate()
             print("cmdstring: " + cmdstring + " stdout: " + stdout + " stderr: " + stderr)
             #report += "cmdstring: " + cmdstring + " stdout: " + stdout + " stderr: " + stderr
-            reportObj['objects_created'].append({'ref':input_params['input_ws']+'/'+input_params['output_read_library']+'_forward_unpaired', 
+            reportObj['objects_created'].append({'ref':str(input_params['input_ws'])+'/'+input_params['output_read_library']+'_forward_unpaired', 
                         'description':'Trimmed Unpaired Forward Reads'})
 
             #upload reads reverse unpaired
             self.log(console, '\nUploading trimmed unpaired reverse reads.')
             cmdstring = " ".join( ('ws-tools fastX2reads --inputfile', 'reverse_unpaired_' + rev_file_name, 
-                                   '--wsurl', self.workspaceURL, '--shockurl', self.shockURL, '--outws', input_params['output_ws'],
+                                   '--wsurl', self.workspaceURL, '--shockurl', self.shockURL, '--outws', str(input_params['output_ws']),
                                    '--outobj', input_params['output_read_library'] + '_reverse_unpaired', '--readcount', read_count_reverse_only ) )
 
             cmdProcess = subprocess.Popen(cmdstring, stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell=True, env=env)
             stdout, stderr = cmdProcess.communicate()
             print("cmdstring: " + cmdstring + " stdout: " + stdout + " stderr: " + stderr)
             #report += "cmdstring: " + cmdstring + " stdout: " + stdout + " stderr: " + stderr
-            reportObj['objects_created'].append({'ref':input_params['input_ws']+'/'+input_params['output_read_library']+'_reverse_unpaired', 
+            reportObj['objects_created'].append({'ref':str(input_params['input_ws'])+'/'+input_params['output_read_library']+'_reverse_unpaired', 
                         'description':'Trimmed Unpaired Reverse Reads'})
 
         else:
@@ -333,7 +333,7 @@ This sample module contains one small method - filter_contigs.
                 forward_reads = readLibrary['data']['lib']['file']
 
 
-            fr_file_name = forward_reads['id']
+            fr_file_name = str(forward_reads['id'])
             if 'file_name' in forward_reads:
                     fr_file_name = forward_reads['file_name']
 
@@ -368,13 +368,13 @@ This sample module contains one small method - filter_contigs.
 
             #upload reads
             cmdstring = " ".join( ('ws-tools fastX2reads --inputfile', 'trimmed_' + fr_file_name, 
-                                   '--wsurl', self.workspaceURL, '--shockurl', self.shockURL, '--outws', input_params['output_ws'],
+                                   '--wsurl', self.workspaceURL, '--shockurl', self.shockURL, '--outws', str(input_params['output_ws']),
                                    '--outobj', input_params['output_read_library'], '--readcount', readcount ) )
 
             cmdProcess = subprocess.Popen(cmdstring, stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell=True, env=env)
             stdout, stderr = cmdProcess.communicate()
             #report += "cmdstring: " + cmdstring + " stdout: " + stdout + " stderr: " + stderr
-            reportObj['objects_created'].append({'ref':input_params['input_ws']+'/'+input_params['output_read_library'], 
+            reportObj['objects_created'].append({'ref':str(input_params['input_ws'])+'/'+input_params['output_read_library'], 
                         'description':'Trimmed Reads'})
 
         # save report object
