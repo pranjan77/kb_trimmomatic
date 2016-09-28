@@ -2,7 +2,8 @@
 	"ver": "0.0.1",
 	
 	"authors": [
-		"psdehal"
+		"psdehal",
+		"dylan"
 	],
 	"contact": "help@kbase.us",
 	"visible": true,
@@ -37,18 +38,18 @@
 			}
 		},
 		{
-			"id": "input_read_library",
+			"id": "input_reads_name",
 			"optional": false,
 			"advanced": false,
 			"allow_multiple": false,
 			"default_values": [ "" ],
 			"field_type": "text",
 			"text_options": {
-				"valid_ws_types": ["KBaseFile.PairedEndLibrary", "KBaseAssembly.PairedEndLibrary", "KBaseAssembly.SingleEndLibrary"]
+				"valid_ws_types": ["KBaseCollections.ReadsSet", "KBaseFile.PairedEndLibrary", "KBaseAssembly.PairedEndLibrary", "KBaseAssembly.SingleEndLibrary", "KBaseFile.SingleEndLibrary"]
 			}
 		},
 		{
-			"id": "output_read_library",
+			"id": "output_reads_name",
 			"optional": false,
 			"advanced": false,
 			"allow_multiple": false,
@@ -60,7 +61,7 @@
 			"optional": false,
 			"advanced": false,
 			"allow_multiple": false,
-			"default_values": [ "phred33" ],
+			"default_values": [ "phred64" ],
 			"field_type": "dropdown",
 				"dropdown_options": {
 					"options": [
@@ -130,9 +131,9 @@
 		{
 			"id": "seed_mismatches",
 			"optional": true,
-			"advanced": false,
+			"advanced": true,
 			"allow_multiple": false,
-			"default_values": [ "" ],
+			"default_values": [ "2" ],
 			"field_type": "text",
 			"text_options": {
 				"validate_as": "int"
@@ -141,9 +142,9 @@
 		{
 			"id": "palindrome_clip_threshold",
 			"optional": true,
-			"advanced": false,
+			"advanced": true,
 			"allow_multiple": false,
-			"default_values": [""],
+			"default_values": ["3"],
 			"field_type": "text",
 			"text_options": {
 				"validate_as": "int"
@@ -152,9 +153,9 @@
 		{
 			"id": "simple_clip_threshold",
 			"optional": true,
-			"advanced": false,
+			"advanced": true,
 			"allow_multiple": false,
-			"default_values": [ "" ],
+			"default_values": [ "10" ],
 			"field_type": "text",
 			"text_options": {
 				"validate_as": "int"
@@ -163,9 +164,9 @@
 		{
 			"id": "crop_length",
 			"optional": true,
-			"advanced": false,
+			"advanced": true,
 			"allow_multiple": false,
-			"default_values": [ "" ],
+			"default_values": [ "0" ],
 			"field_type": "text",
 			"text_options": {
 				"validate_as": "int"
@@ -174,9 +175,9 @@
 		{
 			"id": "head_crop_length",
 			"optional": true,
-			"advanced": false,
+			"advanced": true,
 			"allow_multiple": false,
-			"default_values": [ "" ],
+			"default_values": [ "0" ],
 			"field_type": "text",
 			"text_options": {
 				"validate_as": "int"
@@ -185,9 +186,9 @@
 		{
 			"id": "leading_min_quality",
 			"optional": true,
-			"advanced": false,
+			"advanced": true,
 			"allow_multiple": false,
-			"default_values": [ "" ],
+			"default_values": [ "3" ],
 			"field_type": "text",
 			"text_options": {
 				"validate_as": "int"
@@ -196,9 +197,9 @@
 		{
 			"id": "trailing_min_quality",
 			"optional": true,
-			"advanced": false,
+			"advanced": true,
 			"allow_multiple": false,
-			"default_values": [ "" ],
+			"default_values": [ "3" ],
 			"field_type": "text",
 			"text_options": {
 				"validate_as": "int"
@@ -207,9 +208,9 @@
 		{
 			"id": "sliding_window_size",
 			"optional": true,
-			"advanced": false,
+			"advanced": true,
 			"allow_multiple": false,
-			"default_values": [ "" ],
+			"default_values": [ "4" ],
 			"field_type": "text",
 			"text_options": {
 				"validate_as": "int"
@@ -218,9 +219,9 @@
 		{
 			"id": "sliding_window_min_quality",
 			"optional": true,
-			"advanced": false,
+			"advanced": true,
 			"allow_multiple": false,
-			"default_values": [ "" ],
+			"default_values": [ "15" ],
 			"field_type": "text",
 			"text_options": {
 				"validate_as": "int"
@@ -229,9 +230,9 @@
 		{
 			"id": "min_length",
 			"optional": true,
-			"advanced": false,
+			"advanced": true,
 			"allow_multiple": false,
-			"default_values": [ "" ],
+			"default_values": [ "36" ],
 			"field_type": "text",
 			"text_options": {
 				"validate_as": "int"
@@ -253,8 +254,8 @@
 					"target_property": "read_type"
 				},
 				{
-					"input_parameter": "input_read_library",
-					"target_property": "input_read_library"
+					"input_parameter": "input_reads_name",
+					"target_property": "input_reads_name"
 				},
 				{
 					"input_parameter": "quality_encoding",
@@ -305,8 +306,8 @@
 					"target_property": "min_length"
 				},
 				{
-					"input_parameter": "output_read_library",
-					"target_property": "output_read_library"
+					"input_parameter": "output_reads_name",
+					"target_property": "output_reads_name"
 				}
 
 			],

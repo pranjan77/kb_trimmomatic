@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 #BEGIN_HEADER
 import sys
 import traceback
@@ -19,7 +20,10 @@ class kb_trimmomatic:
 
     Module Description:
     A KBase module: kb_trimmomatic
-This sample module contains one small method - filter_contigs.
+This module contains two methods
+
+runTrimmomatic() to backend a KBase App, potentially operating on ReadSets
+execTrimmomatic() the local method that runs Trimmomatic on each read library
     '''
 
     ######## WARNING FOR GEVENT USERS #######
@@ -28,6 +32,10 @@ This sample module contains one small method - filter_contigs.
     # state. A method could easily clobber the state set by another while
     # the latter method is running.
     #########################################
+    VERSION = "0.0.2"
+    GIT_URL = "https://github.com/kbaseapps/kb_trimmomatic"
+    GIT_COMMIT_HASH = "502224ce18088b0a99c2d3dca2fb1c9fd099f53d"
+    
     #BEGIN_CLASS_HEADER
     workspaceURL = None
     TRIMMOMATIC = 'java -jar /kb/module/Trimmomatic-0.33/trimmomatic-0.33.jar'
@@ -123,8 +131,28 @@ This sample module contains one small method - filter_contigs.
         os.chdir(self.scratch)
         #END_CONSTRUCTOR
         pass
+    
 
     def runTrimmomatic(self, ctx, input_params):
+        """
+        :param input_params: instance of type "runTrimmomaticInput"
+           (runTrimmomatic() ** ** to backend a KBase App, potentially
+           operating on ReadSets) -> structure: parameter "input_ws" of type
+           "workspace_name" (** Common types), parameter "output_ws" of type
+           "workspace_name" (** Common types), parameter "read_type" of
+           String, parameter "input_reads_name" of type "data_obj_name",
+           parameter "adapterFa" of String, parameter "seed_mismatches" of
+           Long, parameter "palindrome_clip_threshold" of Long, parameter
+           "simple_clip_threshold" of Long, parameter "quality_encoding" of
+           String, parameter "sliding_window_size" of Long, parameter
+           "sliding_window_min_quality" of Long, parameter
+           "leading_min_quality" of Long, parameter "trailing_min_quality" of
+           Long, parameter "crop_length" of Long, parameter
+           "head_crop_length" of Long, parameter "min_length" of Long,
+           parameter "output_reads_name" of type "data_obj_name"
+        :returns: instance of type "runTrimmomaticOutput" -> structure:
+           parameter "report_name" of String, parameter "report_ref" of String
+        """
         # ctx is the context object
         # return variables are: output
         #BEGIN runTrimmomatic
@@ -404,3 +432,41 @@ This sample module contains one small method - filter_contigs.
                              'output is not type dict as required.')
         # return the results
         return [output]
+
+    def execTrimmomatic(self, ctx, input_params):
+        """
+        :param input_params: instance of type "execTrimmomaticInput"
+           (execTrimmomatic() ** ** the local method that runs Trimmomatic on
+           each read library) -> structure: parameter "input_reads_ref" of
+           type "data_obj_ref", parameter "output_ws" of type
+           "workspace_name" (** Common types), parameter "read_type" of
+           String, parameter "adapterFa" of String, parameter
+           "seed_mismatches" of Long, parameter "palindrome_clip_threshold"
+           of Long, parameter "simple_clip_threshold" of Long, parameter
+           "quality_encoding" of String, parameter "sliding_window_size" of
+           Long, parameter "sliding_window_min_quality" of Long, parameter
+           "leading_min_quality" of Long, parameter "trailing_min_quality" of
+           Long, parameter "crop_length" of Long, parameter
+           "head_crop_length" of Long, parameter "min_length" of Long,
+           parameter "output_reads_name" of type "data_obj_name"
+        :returns: instance of type "execTrimmomaticOutput" -> structure:
+           parameter "report_name" of String, parameter "report_ref" of String
+        """
+        # ctx is the context object
+        # return variables are: output
+        #BEGIN execTrimmomatic
+        #END execTrimmomatic
+
+        # At some point might do deeper type checking...
+        if not isinstance(output, dict):
+            raise ValueError('Method execTrimmomatic return value ' +
+                             'output is not type dict as required.')
+        # return the results
+        return [output]
+
+    def status(self, ctx):
+        #BEGIN_STATUS
+        returnVal = {'state': "OK", 'message': "", 'version': self.VERSION, 
+                     'git_url': self.GIT_URL, 'git_commit_hash': self.GIT_COMMIT_HASH}
+        #END_STATUS
+        return [returnVal]

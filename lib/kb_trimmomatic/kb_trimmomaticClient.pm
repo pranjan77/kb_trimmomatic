@@ -27,7 +27,10 @@ kb_trimmomatic::kb_trimmomaticClient
 
 
 A KBase module: kb_trimmomatic
-This sample module contains one small method - filter_contigs.
+This module contains two methods
+
+runTrimmomatic() to backend a KBase App, potentially operating on ReadSets
+execTrimmomatic() the local method that runs Trimmomatic on each read library
 
 
 =cut
@@ -121,28 +124,29 @@ sub new
 =begin html
 
 <pre>
-$input_params is a kb_trimmomatic.TrimmomaticInput
-$output is a kb_trimmomatic.TrimmomaticOutput
-TrimmomaticInput is a reference to a hash where the following keys are defined:
+$input_params is a kb_trimmomatic.runTrimmomaticInput
+$output is a kb_trimmomatic.runTrimmomaticOutput
+runTrimmomaticInput is a reference to a hash where the following keys are defined:
 	input_ws has a value which is a kb_trimmomatic.workspace_name
 	output_ws has a value which is a kb_trimmomatic.workspace_name
 	read_type has a value which is a string
-	input_read_library has a value which is a string
+	input_reads_name has a value which is a kb_trimmomatic.data_obj_name
 	adapterFa has a value which is a string
 	seed_mismatches has a value which is an int
-	palindrom_clip_threshold has a value which is an int
+	palindrome_clip_threshold has a value which is an int
 	simple_clip_threshold has a value which is an int
 	quality_encoding has a value which is a string
-	slinding_window_size has a value which is an int
+	sliding_window_size has a value which is an int
 	sliding_window_min_quality has a value which is an int
 	leading_min_quality has a value which is an int
 	trailing_min_quality has a value which is an int
 	crop_length has a value which is an int
 	head_crop_length has a value which is an int
 	min_length has a value which is an int
-	output_read_library has a value which is a string
+	output_reads_name has a value which is a kb_trimmomatic.data_obj_name
 workspace_name is a string
-TrimmomaticOutput is a reference to a hash where the following keys are defined:
+data_obj_name is a string
+runTrimmomaticOutput is a reference to a hash where the following keys are defined:
 	report_name has a value which is a string
 	report_ref has a value which is a string
 
@@ -152,28 +156,29 @@ TrimmomaticOutput is a reference to a hash where the following keys are defined:
 
 =begin text
 
-$input_params is a kb_trimmomatic.TrimmomaticInput
-$output is a kb_trimmomatic.TrimmomaticOutput
-TrimmomaticInput is a reference to a hash where the following keys are defined:
+$input_params is a kb_trimmomatic.runTrimmomaticInput
+$output is a kb_trimmomatic.runTrimmomaticOutput
+runTrimmomaticInput is a reference to a hash where the following keys are defined:
 	input_ws has a value which is a kb_trimmomatic.workspace_name
 	output_ws has a value which is a kb_trimmomatic.workspace_name
 	read_type has a value which is a string
-	input_read_library has a value which is a string
+	input_reads_name has a value which is a kb_trimmomatic.data_obj_name
 	adapterFa has a value which is a string
 	seed_mismatches has a value which is an int
-	palindrom_clip_threshold has a value which is an int
+	palindrome_clip_threshold has a value which is an int
 	simple_clip_threshold has a value which is an int
 	quality_encoding has a value which is a string
-	slinding_window_size has a value which is an int
+	sliding_window_size has a value which is an int
 	sliding_window_min_quality has a value which is an int
 	leading_min_quality has a value which is an int
 	trailing_min_quality has a value which is an int
 	crop_length has a value which is an int
 	head_crop_length has a value which is an int
 	min_length has a value which is an int
-	output_read_library has a value which is a string
+	output_reads_name has a value which is a kb_trimmomatic.data_obj_name
 workspace_name is a string
-TrimmomaticOutput is a reference to a hash where the following keys are defined:
+data_obj_name is a string
+runTrimmomaticOutput is a reference to a hash where the following keys are defined:
 	report_name has a value which is a string
 	report_ref has a value which is a string
 
@@ -211,9 +216,10 @@ TrimmomaticOutput is a reference to a hash where the following keys are defined:
 	}
     }
 
-    my $result = $self->{client}->call($self->{url}, $self->{headers}, {
-	method => "kb_trimmomatic.runTrimmomatic",
-	params => \@args,
+    my $url = $self->{url};
+    my $result = $self->{client}->call($url, $self->{headers}, {
+	    method => "kb_trimmomatic.runTrimmomatic",
+	    params => \@args,
     });
     if ($result) {
 	if ($result->is_error) {
@@ -233,7 +239,165 @@ TrimmomaticOutput is a reference to a hash where the following keys are defined:
     }
 }
  
+
+
+=head2 execTrimmomatic
+
+  $output = $obj->execTrimmomatic($input_params)
+
+=over 4
+
+=item Parameter and return types
+
+=begin html
+
+<pre>
+$input_params is a kb_trimmomatic.execTrimmomaticInput
+$output is a kb_trimmomatic.execTrimmomaticOutput
+execTrimmomaticInput is a reference to a hash where the following keys are defined:
+	input_reads_ref has a value which is a kb_trimmomatic.data_obj_ref
+	output_ws has a value which is a kb_trimmomatic.workspace_name
+	read_type has a value which is a string
+	adapterFa has a value which is a string
+	seed_mismatches has a value which is an int
+	palindrome_clip_threshold has a value which is an int
+	simple_clip_threshold has a value which is an int
+	quality_encoding has a value which is a string
+	sliding_window_size has a value which is an int
+	sliding_window_min_quality has a value which is an int
+	leading_min_quality has a value which is an int
+	trailing_min_quality has a value which is an int
+	crop_length has a value which is an int
+	head_crop_length has a value which is an int
+	min_length has a value which is an int
+	output_reads_name has a value which is a kb_trimmomatic.data_obj_name
+data_obj_ref is a string
+workspace_name is a string
+data_obj_name is a string
+execTrimmomaticOutput is a reference to a hash where the following keys are defined:
+	report_name has a value which is a string
+	report_ref has a value which is a string
+
+</pre>
+
+=end html
+
+=begin text
+
+$input_params is a kb_trimmomatic.execTrimmomaticInput
+$output is a kb_trimmomatic.execTrimmomaticOutput
+execTrimmomaticInput is a reference to a hash where the following keys are defined:
+	input_reads_ref has a value which is a kb_trimmomatic.data_obj_ref
+	output_ws has a value which is a kb_trimmomatic.workspace_name
+	read_type has a value which is a string
+	adapterFa has a value which is a string
+	seed_mismatches has a value which is an int
+	palindrome_clip_threshold has a value which is an int
+	simple_clip_threshold has a value which is an int
+	quality_encoding has a value which is a string
+	sliding_window_size has a value which is an int
+	sliding_window_min_quality has a value which is an int
+	leading_min_quality has a value which is an int
+	trailing_min_quality has a value which is an int
+	crop_length has a value which is an int
+	head_crop_length has a value which is an int
+	min_length has a value which is an int
+	output_reads_name has a value which is a kb_trimmomatic.data_obj_name
+data_obj_ref is a string
+workspace_name is a string
+data_obj_name is a string
+execTrimmomaticOutput is a reference to a hash where the following keys are defined:
+	report_name has a value which is a string
+	report_ref has a value which is a string
+
+
+=end text
+
+=item Description
+
+
+
+=back
+
+=cut
+
+ sub execTrimmomatic
+{
+    my($self, @args) = @_;
+
+# Authentication: required
+
+    if ((my $n = @args) != 1)
+    {
+	Bio::KBase::Exceptions::ArgumentValidationError->throw(error =>
+							       "Invalid argument count for function execTrimmomatic (received $n, expecting 1)");
+    }
+    {
+	my($input_params) = @args;
+
+	my @_bad_arguments;
+        (ref($input_params) eq 'HASH') or push(@_bad_arguments, "Invalid type for argument 1 \"input_params\" (value was \"$input_params\")");
+        if (@_bad_arguments) {
+	    my $msg = "Invalid arguments passed to execTrimmomatic:\n" . join("", map { "\t$_\n" } @_bad_arguments);
+	    Bio::KBase::Exceptions::ArgumentValidationError->throw(error => $msg,
+								   method_name => 'execTrimmomatic');
+	}
+    }
+
+    my $url = $self->{url};
+    my $result = $self->{client}->call($url, $self->{headers}, {
+	    method => "kb_trimmomatic.execTrimmomatic",
+	    params => \@args,
+    });
+    if ($result) {
+	if ($result->is_error) {
+	    Bio::KBase::Exceptions::JSONRPC->throw(error => $result->error_message,
+					       code => $result->content->{error}->{code},
+					       method_name => 'execTrimmomatic',
+					       data => $result->content->{error}->{error} # JSON::RPC::ReturnObject only supports JSONRPC 1.1 or 1.O
+					      );
+	} else {
+	    return wantarray ? @{$result->result} : $result->result->[0];
+	}
+    } else {
+        Bio::KBase::Exceptions::HTTP->throw(error => "Error invoking method execTrimmomatic",
+					    status_line => $self->{client}->status_line,
+					    method_name => 'execTrimmomatic',
+				       );
+    }
+}
+ 
   
+sub status
+{
+    my($self, @args) = @_;
+    if ((my $n = @args) != 0) {
+        Bio::KBase::Exceptions::ArgumentValidationError->throw(error =>
+                                   "Invalid argument count for function status (received $n, expecting 0)");
+    }
+    my $url = $self->{url};
+    my $result = $self->{client}->call($url, $self->{headers}, {
+        method => "kb_trimmomatic.status",
+        params => \@args,
+    });
+    if ($result) {
+        if ($result->is_error) {
+            Bio::KBase::Exceptions::JSONRPC->throw(error => $result->error_message,
+                           code => $result->content->{error}->{code},
+                           method_name => 'status',
+                           data => $result->content->{error}->{error} # JSON::RPC::ReturnObject only supports JSONRPC 1.1 or 1.O
+                          );
+        } else {
+            return wantarray ? @{$result->result} : $result->result->[0];
+        }
+    } else {
+        Bio::KBase::Exceptions::HTTP->throw(error => "Error invoking method status",
+                        status_line => $self->{client}->status_line,
+                        method_name => 'status',
+                       );
+    }
+}
+   
 
 sub version {
     my ($self) = @_;
@@ -246,16 +410,16 @@ sub version {
             Bio::KBase::Exceptions::JSONRPC->throw(
                 error => $result->error_message,
                 code => $result->content->{code},
-                method_name => 'runTrimmomatic',
+                method_name => 'execTrimmomatic',
             );
         } else {
             return wantarray ? @{$result->result} : $result->result->[0];
         }
     } else {
         Bio::KBase::Exceptions::HTTP->throw(
-            error => "Error invoking method runTrimmomatic",
+            error => "Error invoking method execTrimmomatic",
             status_line => $self->{client}->status_line,
-            method_name => 'runTrimmomatic',
+            method_name => 'execTrimmomatic',
         );
     }
 }
@@ -300,7 +464,7 @@ sub _validate_version {
 
 =item Description
 
-A string representing a workspace name.
+** Common types
 
 
 =item Definition
@@ -323,7 +487,59 @@ a string
 
 
 
-=head2 TrimmomaticInput
+=head2 data_obj_ref
+
+=over 4
+
+
+
+=item Definition
+
+=begin html
+
+<pre>
+a string
+</pre>
+
+=end html
+
+=begin text
+
+a string
+
+=end text
+
+=back
+
+
+
+=head2 data_obj_name
+
+=over 4
+
+
+
+=item Definition
+
+=begin html
+
+<pre>
+a string
+</pre>
+
+=end html
+
+=begin text
+
+a string
+
+=end text
+
+=back
+
+
+
+=head2 runTrimmomaticInput
 
 =over 4
 
@@ -331,7 +547,9 @@ a string
 
 =item Description
 
-using KBaseFile.PairedEndLibrary
+runTrimmomatic()
+**
+** to backend a KBase App, potentially operating on ReadSets
 
 
 =item Definition
@@ -343,20 +561,20 @@ a reference to a hash where the following keys are defined:
 input_ws has a value which is a kb_trimmomatic.workspace_name
 output_ws has a value which is a kb_trimmomatic.workspace_name
 read_type has a value which is a string
-input_read_library has a value which is a string
+input_reads_name has a value which is a kb_trimmomatic.data_obj_name
 adapterFa has a value which is a string
 seed_mismatches has a value which is an int
-palindrom_clip_threshold has a value which is an int
+palindrome_clip_threshold has a value which is an int
 simple_clip_threshold has a value which is an int
 quality_encoding has a value which is a string
-slinding_window_size has a value which is an int
+sliding_window_size has a value which is an int
 sliding_window_min_quality has a value which is an int
 leading_min_quality has a value which is an int
 trailing_min_quality has a value which is an int
 crop_length has a value which is an int
 head_crop_length has a value which is an int
 min_length has a value which is an int
-output_read_library has a value which is a string
+output_reads_name has a value which is a kb_trimmomatic.data_obj_name
 
 </pre>
 
@@ -368,20 +586,20 @@ a reference to a hash where the following keys are defined:
 input_ws has a value which is a kb_trimmomatic.workspace_name
 output_ws has a value which is a kb_trimmomatic.workspace_name
 read_type has a value which is a string
-input_read_library has a value which is a string
+input_reads_name has a value which is a kb_trimmomatic.data_obj_name
 adapterFa has a value which is a string
 seed_mismatches has a value which is an int
-palindrom_clip_threshold has a value which is an int
+palindrome_clip_threshold has a value which is an int
 simple_clip_threshold has a value which is an int
 quality_encoding has a value which is a string
-slinding_window_size has a value which is an int
+sliding_window_size has a value which is an int
 sliding_window_min_quality has a value which is an int
 leading_min_quality has a value which is an int
 trailing_min_quality has a value which is an int
 crop_length has a value which is an int
 head_crop_length has a value which is an int
 min_length has a value which is an int
-output_read_library has a value which is a string
+output_reads_name has a value which is a kb_trimmomatic.data_obj_name
 
 
 =end text
@@ -390,7 +608,106 @@ output_read_library has a value which is a string
 
 
 
-=head2 TrimmomaticOutput
+=head2 runTrimmomaticOutput
+
+=over 4
+
+
+
+=item Definition
+
+=begin html
+
+<pre>
+a reference to a hash where the following keys are defined:
+report_name has a value which is a string
+report_ref has a value which is a string
+
+</pre>
+
+=end html
+
+=begin text
+
+a reference to a hash where the following keys are defined:
+report_name has a value which is a string
+report_ref has a value which is a string
+
+
+=end text
+
+=back
+
+
+
+=head2 execTrimmomaticInput
+
+=over 4
+
+
+
+=item Description
+
+execTrimmomatic()
+**
+** the local method that runs Trimmomatic on each read library
+
+
+=item Definition
+
+=begin html
+
+<pre>
+a reference to a hash where the following keys are defined:
+input_reads_ref has a value which is a kb_trimmomatic.data_obj_ref
+output_ws has a value which is a kb_trimmomatic.workspace_name
+read_type has a value which is a string
+adapterFa has a value which is a string
+seed_mismatches has a value which is an int
+palindrome_clip_threshold has a value which is an int
+simple_clip_threshold has a value which is an int
+quality_encoding has a value which is a string
+sliding_window_size has a value which is an int
+sliding_window_min_quality has a value which is an int
+leading_min_quality has a value which is an int
+trailing_min_quality has a value which is an int
+crop_length has a value which is an int
+head_crop_length has a value which is an int
+min_length has a value which is an int
+output_reads_name has a value which is a kb_trimmomatic.data_obj_name
+
+</pre>
+
+=end html
+
+=begin text
+
+a reference to a hash where the following keys are defined:
+input_reads_ref has a value which is a kb_trimmomatic.data_obj_ref
+output_ws has a value which is a kb_trimmomatic.workspace_name
+read_type has a value which is a string
+adapterFa has a value which is a string
+seed_mismatches has a value which is an int
+palindrome_clip_threshold has a value which is an int
+simple_clip_threshold has a value which is an int
+quality_encoding has a value which is a string
+sliding_window_size has a value which is an int
+sliding_window_min_quality has a value which is an int
+leading_min_quality has a value which is an int
+trailing_min_quality has a value which is an int
+crop_length has a value which is an int
+head_crop_length has a value which is an int
+min_length has a value which is an int
+output_reads_name has a value which is a kb_trimmomatic.data_obj_name
+
+
+=end text
+
+=back
+
+
+
+=head2 execTrimmomaticOutput
 
 =over 4
 

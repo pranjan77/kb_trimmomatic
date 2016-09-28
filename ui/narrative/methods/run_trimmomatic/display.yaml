@@ -34,13 +34,13 @@ parameters :
 			Library type, paired end or single end sequencing
 		long-hint : |
 			Library type, paired end or single end sequencing
-	input_read_library :
+	input_reads_name :
 		ui-name : |
 			Read Library Object
 		short-hint : |
-			The read set to examine
+			The read library or read library set to examine
 		long-hint  : |
-			The read set for which you want to trim.
+			The read library or read library set for which you want to trim.
 	quality_encoding :
 		ui-name : |
 			Quality encoding
@@ -48,13 +48,13 @@ parameters :
 			Read quality encoding format.
 		long-hint : |
 			Read quality encoding format.
-	output_read_library :
+	output_reads_name :
 		ui-name : |
 			Output Library name
 		short-hint : |
-			Base name for output read library object(s)
+			Base name for output read library or read library set object
 		long-hint : |
-			Base name for output read library object(s)
+			Base name for output read library or read library set object
 	adapterFa :
 		ui-name : |
 			Adapters
