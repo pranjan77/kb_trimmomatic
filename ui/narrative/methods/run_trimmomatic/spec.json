@@ -58,6 +58,7 @@
 			"field_type": "text",
 			"text_options": {
 				"valid_ws_types": ["KBaseSets.ReadsSet", "KBaseFile.PairedEndLibrary", "KBaseAssembly.PairedEndLibrary", "KBaseAssembly.SingleEndLibrary", "KBaseFile.SingleEndLibrary"]
+			}
 		},
 		{
 			"id": "quality_encoding",
