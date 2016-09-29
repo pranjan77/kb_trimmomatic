@@ -29,14 +29,14 @@ suggestions:
 parameters :
 	read_type :
 		ui-name : |
-			Read Library Type
+			Read library type
 		short-hint : |
 			Library type, paired end or single end sequencing
 		long-hint : |
 			Library type, paired end or single end sequencing
 	input_reads_name :
 		ui-name : |
-			Read Library Object
+			Read library (or Set) object
 		short-hint : |
 			The read library or read library set to examine
 		long-hint  : |
@@ -50,7 +50,7 @@ parameters :
 			Read quality encoding format.
 	output_reads_name :
 		ui-name : |
-			Output Library name
+			Output library (or Set) name
 		short-hint : |
 			Base name for output read library or read library set object
 		long-hint : |
@@ -92,7 +92,7 @@ parameters :
 			Removes bases regardless of quality from the end of the read, so that the read has maximally the specified length after this step has been performed. Steps performed after CROP might of course further shorten the read.
 	head_crop_length :
 		ui-name : |
-			Head Crop length
+			Head crop length
 		short-hint : |
 			The number of bases to remove from the start of the read.
 		long-hint : |
@@ -113,21 +113,21 @@ parameters :
 			Remove low quality bases from the end. As long as a base has a value below this threshold the base is removed and the next base (which as trimmomatic is starting from the 3‟ prime end would be base preceding the just removed base) will be investigated. This approach can be used removing the special illumina „low quality segment‟ regions (which are marked with quality score of 2), but we recommend Sliding Window or MaxInfo instead.
 	sliding_window_size :
 		ui-name : |
-			Sliding Window Size
+			Sliding window size
 		short-hint : |
 			Specifies the number of bases to average across.
 		long-hint : |
 			Perform a sliding window trimming, cutting once the average quality within the window falls below a threshold. By considering multiple bases, a single poor quality base will not cause the removal of high quality data later in the read.
 	sliding_window_min_quality :
 		ui-name : |
-			Sliding Window Minimum Quality
+			Sliding window minimum quality
 		short-hint : |
 			Specifies the average quality required.
 		long-hint : |
 			Perform a sliding window trimming, cutting once the average quality within the window falls below a threshold. By considering multiple bases, a single poor quality base will not cause the removal of high quality data later in the read.
 	min_length :
 		ui-name : |
-			Minimum Read Length
+			Minimum read length
 		short-hint : |
 			Specifies the minimum length of reads to be kept.
 		long-hint : |
