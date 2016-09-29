@@ -323,7 +323,7 @@ execTrimmomaticSingleLibrary() runs Trimmomatic on a single library
             # object_info tuple
             [OBJID_I, NAME_I, TYPE_I, SAVE_DATE_I, VERSION_I, SAVED_BY_I, WSID_I, WORKSPACE_I, CHSUM_I, SIZE_I, META_I] = range(11)
 
-            input_reads_obj_type = wsClient.get_object_info_new ({[{'ref':input_params['input_reads_ref']}]})[0][TYPE_I]
+            input_reads_obj_type = wsClient.get_object_info_new ({'objects':[{'ref':input_params['input_reads_ref']}]})[0][TYPE_I]
 
         except Exception as e:
             raise ValueError('Unable to get read library object from workspace: (' + str(input_params['input_reads_ref']) +')' + str(e))
@@ -336,41 +336,44 @@ execTrimmomaticSingleLibrary() runs Trimmomatic on a single library
 
         # get set
         #
-        readsSet_list = []
+        readsSet_ref_list = []
         if input_reads_obj_type != "KBaseSets.ReadsSet":
-            readsSet_list = [input_params['input_reads_ref']]
+            readsSet_ref_list = [input_params['input_reads_ref']]
         else:
             try:
-                a = 1
+                readSet_obj = SetAPIClient.get_reads_set_v1 ({'ref':input_reads_ref})
+                for readLibrary_obj in readSet_obj['items']:
+                    readSEt_ref_list.append(readLibrary_obj['ref'])
             except:
-                here = 2
-# HERE                                                
 
 
-        for input_reads_library_ref in readsSet_list:
+        for input_reads_library_ref in readsSet_ref_list:
             execTrimmomaticParams = { 'input_reads_ref': input_reads_library_ref,
-                                  'output_ws': input_params['output_ws'],
-                                  'output_reads_name': input_params['output_reads_name'],
-                                  'read_type': input_params['read_type'],
-                                  'adapterFa': input_params['adapterFa'],
-                                  'seed_mismatches': input_params['seed_mismatces'],
-                                  'palindrome_clip_threshold': input_params['palindrome_clip_threshold'],
-                                  'simple_clip_threshold': input_params['simple_clip_threshold'],
-                                  'quality_encoding': input_params['quality_encoding'],
-                                  'sliding_window_size': input_params['sliding_window_size'],
-                                  'sliding_window_min_quality': input_params['sliding_window_quality'],
-                                  'leading_min_quality': input_params['leading_min_quality'],
-                                  'trailing_min_quality': input_params['trailing_min_quality'],
-                                  'crop_length': input_params['crop_length'],
-                                  'head_crop_length': input_params['head_crop_olength'],
-                                  'min_length': input_params['min_length']
-                                  }
+                                      'output_ws': input_params['output_ws'],
+                                      'output_reads_name': input_params['output_reads_name'],
+                                      'read_type': input_params['read_type'],
+                                      'adapterFa': input_params['adapterFa'],
+                                      'seed_mismatches': input_params['seed_mismatces'],
+                                      'palindrome_clip_threshold': input_params['palindrome_clip_threshold'],
+                                      'simple_clip_threshold': input_params['simple_clip_threshold'],
+                                      'quality_encoding': input_params['quality_encoding'],
+                                      'sliding_window_size': input_params['sliding_window_size'],
+                                      'sliding_window_min_quality': input_params['sliding_window_quality'],
+                                      'leading_min_quality': input_params['leading_min_quality'],
+                                      'trailing_min_quality': input_params['trailing_min_quality'],
+                                      'crop_length': input_params['crop_length'],
+                                      'head_crop_length': input_params['head_crop_olength'],
+                                      'min_length': input_params['min_length']
+                                    }
 
             trimmomatic_retVal = self.execTrimmomaticSingleLibrary (execTrimmomaticParams)
+            
+            #
+            # MORE HERE
+            #
 
-        #
-        # MORE HERE
-        #
+
+
 
         output = {}
         #END execTrimmomatic
@@ -472,7 +475,7 @@ execTrimmomaticSingleLibrary() runs Trimmomatic on a single library
             # object_info tuple
             [OBJID_I, NAME_I, TYPE_I, SAVE_DATE_I, VERSION_I, SAVED_BY_I, WSID_I, WORKSPACE_I, CHSUM_I, SIZE_I, META_I] = range(11)
 
-            input_reads_obj_type = wsClient.get_object_info_new ({[{'ref':input_params['input_reads_ref']}]})[0][TYPE_I]
+            input_reads_obj_type = wsClient.get_object_info_new ({'objects':[{'ref':input_params['input_reads_ref']}]})[0][TYPE_I]
 
         except Exception as e:
             raise ValueError('Unable to get read library object from workspace: (' + str(input_params['input_reads_ref']) +')' + str(e))
