@@ -38,6 +38,12 @@ execTrimmomaticSingleLibrary() runs Trimmomatic on a single library
     # the latter method is running.
     #########################################
     VERSION = "0.0.3"
+    workspaceURL = None
+    shockURL     = None
+    handleURL    = None
+    callbackURL  = None
+    scratch      = None
+
     GIT_URL = "https://github.com/kbaseapps/kb_trimmomatic"
     GIT_COMMIT_HASH = "3194e03ae1604f39ad65fd3f61af4ea3bbf25a3a"
     
@@ -131,6 +137,13 @@ execTrimmomaticSingleLibrary() runs Trimmomatic on a single library
         self.workspaceURL = config['workspace-url']
         self.shockURL = config['shock-url']
         self.scratch = os.path.abspath(config['scratch'])
+        self.handleURL = config['handle-service-url']
+
+        #self.callbackURL = os.environ['SDK_CALLBACK_URL'] if os.environ['SDK_CALLBACK_URL'] != None else 'https://kbase.us/services/njs_wrapper'  # DEBUG
+        self.callbackURL = os.environ.get('SDK_CALLBACK_URL')
+        if self.callbackURL == None:
+            raise ValueError ("SDK_CALLBACK_URL not set in environment")
+
         if not os.path.exists(self.scratch):
             os.makedirs(self.scratch)
         os.chdir(self.scratch)
@@ -344,7 +357,7 @@ execTrimmomaticSingleLibrary() runs Trimmomatic on a single library
             readsSet_ref_list = [input_params['input_reads_ref']]
         else:
             try:
-                setAPI_Client = SetAPI(services{service-wizard})  # FIX
+                setAPI_Client = SetAPI(url=self.callbackURL, token=ctx['token'])
                 readSet_obj = setAPI_Client.get_reads_set_v1 ({'ref':input_reads_ref})
                 for readLibrary_obj in readSet_obj['items']:
                     readSet_ref_list.append(readLibrary_obj['ref'])
