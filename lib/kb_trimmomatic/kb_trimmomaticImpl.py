@@ -13,7 +13,7 @@ import uuid
 
 # SDK Utils
 #from ReadsUtils.ReadsUtilsClient import ReadsUtilsClient  # FIX
-from SetAPI.SetAPIClient import SetAPI
+from SetAPI import SetAPI.SetAPIClient
 #END_HEADER
 
 
@@ -357,7 +357,7 @@ execTrimmomaticSingleLibrary() runs Trimmomatic on a single library
             readsSet_ref_list = [input_params['input_reads_ref']]
         else:
             try:
-                setAPI_Client = SetAPI(url=self.callbackURL, token=ctx['token'])
+                setAPI_Client = SetAPIClient (url=self.callbackURL, token=ctx['token'])
                 readSet_obj = setAPI_Client.get_reads_set_v1 ({'ref':input_reads_ref})
                 for readLibrary_obj in readSet_obj['items']:
                     readSet_ref_list.append(readLibrary_obj['ref'])
