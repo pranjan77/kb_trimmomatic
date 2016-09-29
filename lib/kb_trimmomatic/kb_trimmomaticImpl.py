@@ -346,253 +346,33 @@ execTrimmomaticSingleLibrary() runs Trimmomatic on a single library
                 here = 2
 # HERE                                                
 
-        # Let's rock!
+
+        for input_reads_library_ref in readsSet_list:
+            execTrimmomaticParams = { 'input_reads_ref': input_reads_library_ref,
+                                  'output_ws': input_params['output_ws'],
+                                  'output_reads_name': input_params['output_reads_name'],
+                                  'read_type': input_params['read_type'],
+                                  'adapterFa': input_params['adapterFa'],
+                                  'seed_mismatches': input_params['seed_mismatces'],
+                                  'palindrome_clip_threshold': input_params['palindrome_clip_threshold'],
+                                  'simple_clip_threshold': input_params['simple_clip_threshold'],
+                                  'quality_encoding': input_params['quality_encoding'],
+                                  'sliding_window_size': input_params['sliding_window_size'],
+                                  'sliding_window_min_quality': input_params['sliding_window_quality'],
+                                  'leading_min_quality': input_params['leading_min_quality'],
+                                  'trailing_min_quality': input_params['trailing_min_quality'],
+                                  'crop_length': input_params['crop_length'],
+                                  'head_crop_length': input_params['head_crop_olength'],
+                                  'min_length': input_params['min_length']
+                                  }
+
+            trimmomatic_retVal = self.execTrimmomaticSingleLibrary (execTrimmomaticParams)
+
         #
-        trimmomatic_params  = self.parse_trimmomatic_steps(input_params)
-        trimmomatic_options = str(input_params['read_type']) + ' -' + str(input_params['quality_encoding'])
+        # MORE HERE
+        #
 
-        self.log(console, pformat(trimmomatic_params))
-        self.log(console, pformat(trimmomatic_options))
-
-
-
-        try:
-            readLibrary = wsClient.get_objects([{'name': input_params['input_read_library'], 
-                                                            'workspace' : input_params['input_ws']}])[0]
-            info = readLibrary['info']
-
-        except Exception as e:
-            raise ValueError('Unable to get read library object from workspace: (' + str(input_params['input_ws'])+ '/' + str(input_params['input_read_library']) +')' + str(e))
-
-
-        if input_params['read_type'] == 'PE':
-
-            fr_type = ''
-            rv_type = ''
-            if 'lib1' in readLibrary['data']:
-                forward_reads = readLibrary['data']['lib1']['file']
-                # type is required if lib1 is present
-                fr_type = '.' + readLibrary['data']['lib1']['type']
-            elif 'handle_1' in readLibrary['data']:
-                forward_reads = readLibrary['data']['handle_1']
-            if 'lib2' in readLibrary['data']:
-                reverse_reads = readLibrary['data']['lib2']['file']
-                # type is required if lib2 is present
-                rv_type = '.' + readLibrary['data']['lib2']['type']
-            elif 'handle_2' in readLibrary['data']:
-                reverse_reads = readLibrary['data']['handle_2']
-            else:
-                reverse_reads={}
-
-            fr_file_name = str(forward_reads['id']) + fr_type
-            if 'file_name' in forward_reads:
-                fr_file_name = forward_reads['file_name']
-
-            self.log(console, "\nDownloading Paired End reads file...")
-            forward_reads_file = open(fr_file_name, 'w', 0)
-            print("cwd: " + str(os.getcwd()) )
-            
-            r = requests.get(forward_reads['url']+'/node/'+str(forward_reads['id'])+'?download', stream=True, headers=headers)
-            for chunk in r.iter_content(1024):
-                forward_reads_file.write(chunk)
-            forward_reads_file.close()
-            self.log(console, 'done\n')
-
-            if 'interleaved' in readLibrary['data'] and readLibrary['data']['interleaved']:
-                if re.search('gz', fr_file_name, re.I):
-                    bcmdstring = 'gunzip -c ' + fr_file_name
-                    self.log(console, "Reads are gzip'd and interleaved, uncompressing and deinterleaving.")
-                else:    
-                    bcmdstring = 'cat ' + fr_file_name 
-                    self.log(console, "Reads are interleaved, deinterleaving.")
-
-                
-                cmdstring = bcmdstring + '| (paste - - - - - - - -  | tee >(cut -f 1-4 | tr "\t" "\n" > forward.fastq) | cut -f 5-8 | tr "\t" "\n" > reverse.fastq )'
-                cmdProcess = subprocess.Popen(cmdstring, stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell=True, executable='/bin/bash')
-                stdout, stderr = cmdProcess.communicate()
-
-                # Check return status
-                report = "cmdstring: " + cmdstring + " stdout: " + stdout + " stderr: " + stderr
-                self.log(console, 'done\n')
-                fr_file_name='forward.fastq'
-                rev_file_name='reverse.fastq'
-            else:
-                self.log(console, 'Downloading reverse reads.')
-                rev_file_name = str(reverse_reads['id']) + rv_type
-                if 'file_name' in reverse_reads:
-                    rev_file_name = reverse_reads['file_name']
-                reverse_reads_file = open(rev_file_name, 'w', 0)
-
-                r = requests.get(reverse_reads['url']+'/node/'+str(reverse_reads['id'])+'?download', stream=True, headers=headers)
-                for chunk in r.iter_content(1024):
-                    reverse_reads_file.write(chunk)
-                reverse_reads_file.close()
-                self.log(console, 'done\n')
-
-                if re.search('gz', rev_file_name, re.I):
-                    bcmdstring = 'gunzip ' + rev_file_name + ' ' + fr_file_name
-                    self.log(console, "Reads are compressed, uncompressing.")
-                    cmdProcess = subprocess.Popen(bcmdstring, stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell=True, executable='/bin/bash')
-                    stdout, stderr = cmdProcess.communicate()
-                    self.log(console, "\n".join(stdout, stderr, "done"))
-                    rev_file_name = re.sub(r'\.gz\Z', '', rev_file_name)
-                    fr_file_name = re.sub(r'\.gz\Z', '', fr_file_name)
-
-            cmdstring = " ".join( (self.TRIMMOMATIC, trimmomatic_options, 
-                            fr_file_name, 
-                            rev_file_name,
-                            'forward_paired_'   +fr_file_name,
-                            'forward_unpaired_' +fr_file_name,
-                            'reverse_paired_'   +rev_file_name,
-                            'reverse_unpaired_' +rev_file_name,
-                            trimmomatic_params) )
-
-            self.log(console, 'Starting Trimmomatic')
-            cmdProcess = subprocess.Popen(cmdstring, stdout=subprocess.PIPE, stderr=subprocess.STDOUT, shell=True)
-
-
-            outputlines = []
-
-            while True:
-                line = cmdProcess.stdout.readline()
-                outputlines.append(line)
-                if not line: break
-                self.log(console, line.replace('\n', ''))
-
-            cmdProcess.stdout.close()
-            cmdProcess.wait()
-            self.log(console, 'return code: ' + str(cmdProcess.returncode) + '\n')
-
-            report += "\n".join(outputlines)
-            #report += "cmdstring: " + cmdstring + " stdout: " + stdout + " stderr " + stderr
-
-
-            #get read counts
-            match = re.search(r'Input Read Pairs: (\d+).*?Both Surviving: (\d+).*?Forward Only Surviving: (\d+).*?Reverse Only Surviving: (\d+).*?Dropped: (\d+)', report)
-            input_read_count = match.group(1)
-            read_count_paired = match.group(2)
-            read_count_forward_only = match.group(3)
-            read_count_reverse_only = match.group(4)
-            read_count_dropped = match.group(5)
-
-            report = "\n".join( ('Input Read Pairs: '+ input_read_count, 
-                'Both Surviving: '+ read_count_paired, 
-                'Forward Only Surviving: '+ read_count_forward_only,
-                'Reverse Only Surviving: '+ read_count_reverse_only,
-                'Dropped: '+ read_count_dropped) )
-
-            #upload paired reads
-            self.log(console, 'Uploading trimmed paired reads.')
-            cmdstring = " ".join( ('ws-tools fastX2reads --inputfile', 'forward_paired_' + fr_file_name, 
-                                   '--inputfile2', 'reverse_paired_' + rev_file_name,
-                                   '--wsurl', self.workspaceURL, '--shockurl', self.shockURL, '--outws', str(input_params['output_ws']),
-                                   '--outobj', input_params['output_read_library'] + '_paired', '--readcount', read_count_paired ) )
-
-            cmdProcess = subprocess.Popen(cmdstring, stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell=True, env=env)
-            stdout, stderr = cmdProcess.communicate()
-            print("cmdstring: " + cmdstring + " stdout: " + stdout + " stderr: " + stderr)
-            #report += "cmdstring: " + cmdstring + " stdout: " + stdout + " stderr: " + stderr
-            reportObj['objects_created'].append({'ref':str(input_params['input_ws'])+'/'+input_params['output_read_library']+'_paired', 
-                        'description':'Trimmed Paired-End Reads'})
-
-            #upload reads forward unpaired
-            self.log(console, '\nUploading trimmed unpaired forward reads.')
-            cmdstring = " ".join( ('ws-tools fastX2reads --inputfile', 'forward_unpaired_' + fr_file_name, 
-                                   '--wsurl', self.workspaceURL, '--shockurl', self.shockURL, '--outws', str(input_params['output_ws']),
-                                   '--outobj', input_params['output_read_library'] + '_forward_unpaired', '--readcount', read_count_forward_only ) )
-
-            cmdProcess = subprocess.Popen(cmdstring, stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell=True, env=env)
-            stdout, stderr = cmdProcess.communicate()
-            print("cmdstring: " + cmdstring + " stdout: " + stdout + " stderr: " + stderr)
-            #report += "cmdstring: " + cmdstring + " stdout: " + stdout + " stderr: " + stderr
-            reportObj['objects_created'].append({'ref':str(input_params['input_ws'])+'/'+input_params['output_read_library']+'_forward_unpaired', 
-                        'description':'Trimmed Unpaired Forward Reads'})
-
-            #upload reads reverse unpaired
-            self.log(console, '\nUploading trimmed unpaired reverse reads.')
-            cmdstring = " ".join( ('ws-tools fastX2reads --inputfile', 'reverse_unpaired_' + rev_file_name, 
-                                   '--wsurl', self.workspaceURL, '--shockurl', self.shockURL, '--outws', str(input_params['output_ws']),
-                                   '--outobj', input_params['output_read_library'] + '_reverse_unpaired', '--readcount', read_count_reverse_only ) )
-
-            cmdProcess = subprocess.Popen(cmdstring, stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell=True, env=env)
-            stdout, stderr = cmdProcess.communicate()
-            print("cmdstring: " + cmdstring + " stdout: " + stdout + " stderr: " + stderr)
-            #report += "cmdstring: " + cmdstring + " stdout: " + stdout + " stderr: " + stderr
-            reportObj['objects_created'].append({'ref':str(input_params['input_ws'])+'/'+input_params['output_read_library']+'_reverse_unpaired', 
-                        'description':'Trimmed Unpaired Reverse Reads'})
-
-        else:
-            self.log(console, "Downloading Single End reads file...")
-            fr_file_name = ''
-            if 'handle' in readLibrary['data']:
-                forward_reads = readLibrary['data']['handle']
-            elif 'lib' in readLibrary['data']:
-                forward_reads = readLibrary['data']['lib']['file']
-
-
-            fr_file_name = str(forward_reads['id'])
-            if 'file_name' in forward_reads:
-                    fr_file_name = forward_reads['file_name']
-
-            reads_file = open(fr_file_name, 'w', 0)
-            r = requests.get(forward_reads['url']+'/node/'+forward_reads['id']+'?download', stream=True, headers=headers)
-            for chunk in r.iter_content(1024):
-                reads_file.write(chunk)
-            self.log(console, "done.\n")
-
-            cmdstring = " ".join( (self.TRIMMOMATIC, trimmomatic_options,
-                            fr_file_name,
-                            'trimmed_' + fr_file_name,
-                            trimmomatic_params) )
-
-            cmdProcess = subprocess.Popen(cmdstring, stdout=subprocess.PIPE, stderr=subprocess.STDOUT, shell=True)
-
-            #report += "cmdstring: " + cmdstring
-
-            outputlines = []
-
-            while True:
-                line = cmdProcess.stdout.readline()
-                outputlines.append(line)
-                if not line: break
-                self.log(console, line.replace('\n', ''))
-
-            report += "\n".join(outputlines)
-
-            #get read count
-            match = re.search(r'Surviving: (\d+)', report)
-            readcount = match.group(1)
-
-            #upload reads
-            cmdstring = " ".join( ('ws-tools fastX2reads --inputfile', 'trimmed_' + fr_file_name, 
-                                   '--wsurl', self.workspaceURL, '--shockurl', self.shockURL, '--outws', str(input_params['output_ws']),
-                                   '--outobj', input_params['output_read_library'], '--readcount', readcount ) )
-
-            cmdProcess = subprocess.Popen(cmdstring, stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell=True, env=env)
-            stdout, stderr = cmdProcess.communicate()
-            #report += "cmdstring: " + cmdstring + " stdout: " + stdout + " stderr: " + stderr
-            reportObj['objects_created'].append({'ref':str(input_params['input_ws'])+'/'+input_params['output_read_library'], 
-                        'description':'Trimmed Reads'})
-
-        # save report object
-        reportObj['text_message'] = report
-        reportName = 'trimmomatic_report_' + str(hex(uuid.getnode()))
-        report_obj_info = wsClient.save_objects({
-                'id':info[6],
-                'objects':[
-                    {
-                        'type':'KBaseReport.Report',
-                        'data':reportObj,
-                        'name':reportName,
-                        'meta':{},
-                        'hidden':1,
-                        'provenance':provenance
-                    }
-                ]
-            })[0]
-
-        output = { 'report_name': reportName, 'report_ref': str(report_obj_info[6]) + '/' + str(report_obj_info[0]) + '/' + str(report_obj_info[4]) }
-
+        output = {}
         #END execTrimmomatic
 
         # At some point might do deeper type checking...
@@ -686,16 +466,18 @@ execTrimmomaticSingleLibrary() runs Trimmomatic on a single library
         provenance[0]['input_ws_objects']=[str(input_params['input_ws'])+'/'+str(input_params['input_reads_name'])]
 
 
-        # Determine whether read library or read set is input object
+        # Determine whether read library is of correct type
         #
         try:
             # object_info tuple
             [OBJID_I, NAME_I, TYPE_I, SAVE_DATE_I, VERSION_I, SAVED_BY_I, WSID_I, WORKSPACE_I, CHSUM_I, SIZE_I, META_I] = range(11)
+
             input_reads_obj_type = wsClient.get_object_info_new ({[{'ref':input_params['input_reads_ref'}]})[0][TYPE_I]
+
         except Exception as e:
             raise ValueError('Unable to get read library object from workspace: (' + str(input_params['input_reads_ref']) +')' + str(e))
 
-        acceptable_types = ["KBaseCollections.ReadsSet", "KBaseFile.PairedEndLibrary", "KBaseAssembly.PairedEndLibrary", "KBaseAssembly.SingleEndLibrary", "KBaseFile.SingleEndLibrary"]
+        acceptable_types = ["KBaseFile.PairedEndLibrary", "KBaseAssembly.PairedEndLibrary", "KBaseAssembly.SingleEndLibrary", "KBaseFile.SingleEndLibrary"]
         if input_reads_obj_type not in acceptable_types:
             raise ValueError ("Input reads of type: '"+input_reads_obj_type+"'.  Must be one of "+", ".join(acceptable_types))
                                                                      
@@ -709,7 +491,9 @@ execTrimmomaticSingleLibrary() runs Trimmomatic on a single library
         self.log(console, pformat(trimmomatic_options))
 
 
-
+        #
+        # FIX: USE ReadUtils HERE INSTEAD
+        #
         try:
             readLibrary = wsClient.get_objects([{'name': input_params['input_read_library'], 
                                                             'workspace' : input_params['input_ws']}])[0]
