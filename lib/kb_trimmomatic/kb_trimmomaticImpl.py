@@ -10,6 +10,10 @@ import os
 import re
 from pprint import pprint, pformat
 import uuid
+
+# SDK Utils
+from ReadsUtils.ReadsUtilsClient import ReadsUtilsClient
+from SetAPI.SetAPIClient import SetAPIClient
 #END_HEADER
 
 
@@ -23,7 +27,8 @@ class kb_trimmomatic:
 This module contains two methods
 
 runTrimmomatic() to backend a KBase App, potentially operating on ReadSets
-execTrimmomatic() the local method that runs Trimmomatic on each read library
+execTrimmomatic() the local method that handles overloading Trimmomatic to run on a set or a single library
+execTrimmomaticSingleLibrary() runs Trimmomatic on a single library
     '''
 
     ######## WARNING FOR GEVENT USERS #######
@@ -34,7 +39,7 @@ execTrimmomatic() the local method that runs Trimmomatic on each read library
     #########################################
     VERSION = "0.0.2"
     GIT_URL = "https://github.com/kbaseapps/kb_trimmomatic"
-    GIT_COMMIT_HASH = "502224ce18088b0a99c2d3dca2fb1c9fd099f53d"
+    GIT_COMMIT_HASH = "2606c003d0dc1bbe572fda40f1ba7ca960018697"
     
     #BEGIN_CLASS_HEADER
     workspaceURL = None
@@ -138,9 +143,10 @@ execTrimmomatic() the local method that runs Trimmomatic on each read library
         :param input_params: instance of type "runTrimmomaticInput"
            (runTrimmomatic() ** ** to backend a KBase App, potentially
            operating on ReadSets) -> structure: parameter "input_ws" of type
-           "workspace_name" (** Common types), parameter "output_ws" of type
-           "workspace_name" (** Common types), parameter "read_type" of
-           String, parameter "input_reads_name" of type "data_obj_name",
+           "workspace_name" (** Common types), parameter "input_reads_name"
+           of type "data_obj_name", parameter "output_ws" of type
+           "workspace_name" (** Common types), parameter "output_reads_name"
+           of type "data_obj_name", parameter "read_type" of String,
            parameter "adapterFa" of String, parameter "seed_mismatches" of
            Long, parameter "palindrome_clip_threshold" of Long, parameter
            "simple_clip_threshold" of Long, parameter "quality_encoding" of
@@ -148,17 +154,16 @@ execTrimmomatic() the local method that runs Trimmomatic on each read library
            "sliding_window_min_quality" of Long, parameter
            "leading_min_quality" of Long, parameter "trailing_min_quality" of
            Long, parameter "crop_length" of Long, parameter
-           "head_crop_length" of Long, parameter "min_length" of Long,
-           parameter "output_reads_name" of type "data_obj_name"
+           "head_crop_length" of Long, parameter "min_length" of Long
         :returns: instance of type "runTrimmomaticOutput" -> structure:
            parameter "report_name" of String, parameter "report_ref" of String
         """
         # ctx is the context object
         # return variables are: output
         #BEGIN runTrimmomatic
-
         console = []
-        self.log(console, 'Running Trimmomatic with paramseters: ')
+        self.log(console, 'Running Trimmomatic with parameters: ')
+        self.log(console, "\n"+pformat(input_params))
 
         token = ctx['token']
         wsClient = workspaceService(self.workspaceURL, token=token)
@@ -166,25 +171,189 @@ execTrimmomatic() the local method that runs Trimmomatic on each read library
         env = os.environ.copy()
         env['KB_AUTH_TOKEN'] = token
 
-        #load provenance
+        # load provenance
+        provenance = [{}]
+        if 'provenance' in ctx:
+            provenance = ctx['provenance']
+        provenance[0]['input_ws_objects']=[str(input_params['input_ws'])+'/'+str(input_params['input_reads_name'])]
+
+        # set up and run execTrimmomatic()
+        #
+        if ('output_ws' not in input_params or input_params['output_ws'] is None):
+            input_params['output_ws'] = input_params['input_ws']
+
+
+        execTrimmomaticParams = { 'input_reads_ref': str(input_params['input_ws']) + '/' + str(input_params['input_reads_name']),
+                                  'output_ws': input_params['output_ws'],
+                                  'output_reads_name': input_params['output_reads_name'],
+                                  'read_type': input_params['read_type'],
+                                  'adapterFa': input_params['adapterFa'],
+                                  'seed_mismatches': input_params['seed_mismatces'],
+                                  'palindrome_clip_threshold': input_params['palindrome_clip_threshold'],
+                                  'simple_clip_threshold': input_params['simple_clip_threshold'],
+                                  'quality_encoding': input_params['quality_encoding'],
+                                  'sliding_window_size': input_params['sliding_window_size'],
+                                  'sliding_window_min_quality': input_params['sliding_window_quality'],
+                                  'leading_min_quality': input_params['leading_min_quality'],
+                                  'trailing_min_quality': input_params['trailing_min_quality'],
+                                  'crop_length': input_params['crop_length'],
+                                  'head_crop_length': input_params['head_crop_olength'],
+                                  'min_length': input_params['min_length']
+                                  }
+
+        trimmomatic_retVal = self.execTrimmomatic (execTrimmomaticParams)
+
+
+        # build report
+        #
+        reportObj = {'objects_created':[], 
+                     'text_message':''}
+
+        # text report
+        try:
+            reportObj['text_message'] = trimmomatic_retVal['report']
+        except:
+            raise ValueError ("no report generated by execTrimmomatic()")
+
+        # trimmed object
+        try:
+            reportObj['objects_created'].append({'ref':trimmomatic_retVal['output_filtered_ref'],
+                                                 'description':'Trimmed Reads'})
+        except:
+            raise ValueError ("no trimmed output generated by execTrimmomatic()")
+
+        # unpaired fwd
+        try:
+            reportObj['objects_created'].append({'ref':trimmomatic_retVal['output_unpaired_fwd_ref'],
+                                                 'description':'Trimmed Unpaired Forward Reads'})
+        except:
+            pass
+
+        # unpaired rev
+        try:
+            reportObj['objects_created'].append({'ref':trimmomatic_retVal['output_unpaired_rev_ref'],
+                                                 'description':'Trimmed Unpaired Reverse Reads'})
+        except:
+            pass
+
+
+        # save report object
+        #
+        reportName = 'trimmomatic_report_' + str(hex(uuid.getnode()))
+        report_obj_info = wsClient.save_objects({
+                'workspace': input_params['input_ws'],
+                'objects':[
+                    {
+                        'type':'KBaseReport.Report',
+                        'data':reportObj,
+                        'name':reportName,
+                        'meta':{},
+                        'hidden':1,
+                        'provenance':provenance
+                    }
+                ]
+            })[0]
+
+        output = { 'report_name': reportName, 'report_ref': str(report_obj_info[6]) + '/' + str(report_obj_info[0]) + '/' + str(report_obj_info[4]) }
+        #END runTrimmomatic
+
+        # At some point might do deeper type checking...
+        if not isinstance(output, dict):
+            raise ValueError('Method runTrimmomatic return value ' +
+                             'output is not type dict as required.')
+        # return the results
+        return [output]
+
+    def execTrimmomatic(self, ctx, input_params):
+        """
+        :param input_params: instance of type "execTrimmomaticInput"
+           (execTrimmomatic() ** ** the local method that runs Trimmomatic on
+           each read library) -> structure: parameter "input_reads_ref" of
+           type "data_obj_ref", parameter "output_ws" of type
+           "workspace_name" (** Common types), parameter "output_reads_name"
+           of type "data_obj_name", parameter "read_type" of String,
+           parameter "adapterFa" of String, parameter "seed_mismatches" of
+           Long, parameter "palindrome_clip_threshold" of Long, parameter
+           "simple_clip_threshold" of Long, parameter "quality_encoding" of
+           String, parameter "sliding_window_size" of Long, parameter
+           "sliding_window_min_quality" of Long, parameter
+           "leading_min_quality" of Long, parameter "trailing_min_quality" of
+           Long, parameter "crop_length" of Long, parameter
+           "head_crop_length" of Long, parameter "min_length" of Long
+        :returns: instance of type "execTrimmomaticOutput" -> structure:
+           parameter "output_filtered_ref" of type "data_obj_ref", parameter
+           "output_unpaired_fwd_ref" of type "data_obj_ref", parameter
+           "output_unpaired_rev_ref" of type "data_obj_ref", parameter
+           "report" of String
+        """
+        # ctx is the context object
+        # return variables are: output
+        #BEGIN execTrimmomatic
+        console = []
+        self.log(console, 'Running Trimmomatic with parameters: ')
+        self.log(console, "\n"+pformat(input_params))
+        report = ''
+
+        token = ctx['token']
+        wsClient = workspaceService(self.workspaceURL, token=token)
+        headers = {'Authorization': 'OAuth '+token}
+        env = os.environ.copy()
+        env['KB_AUTH_TOKEN'] = token
+
+        # param checks
+        required_params = ['input_reads_ref', 
+                           'output_ws', 
+                           'output_reads_name', 
+                           'read_type'
+                          ]
+        for required_param in required_params:
+            if required_param not in input_params or input_params[required_param] == None:
+                raise ValueError ("Must define required param: '"+required_param+"'")
+
+        # load provenance
         provenance = [{}]
         if 'provenance' in ctx:
             provenance = ctx['provenance']
         # add additional info to provenance here, in this case the input data object reference
-        provenance[0]['input_ws_objects']=[str(input_params['input_ws'])+'/'+str(input_params['input_read_library'])]
+        provenance[0]['input_ws_objects']=[str(input_params['input_reads_ref'])]
 
-        if ('output_ws' not in input_params or input_params['output_ws'] is None):
-            input_params['output_ws'] = input_params['input_ws']
+        # Determine whether read library or read set is input object
+        #
+        try:
+            # object_info tuple
+            [OBJID_I, NAME_I, TYPE_I, SAVE_DATE_I, VERSION_I, SAVED_BY_I, WSID_I, WORKSPACE_I, CHSUM_I, SIZE_I, META_I] = range(11)
 
+            input_reads_obj_type = wsClient.get_object_info_new ({[{'ref':input_params['input_reads_ref'}]})[0][TYPE_I]
+
+        except Exception as e:
+            raise ValueError('Unable to get read library object from workspace: (' + str(input_params['input_reads_ref']) +')' + str(e))
+
+        acceptable_types = ["KBaseCollections.ReadsSet", "KBaseFile.PairedEndLibrary", "KBaseAssembly.PairedEndLibrary", "KBaseAssembly.SingleEndLibrary", "KBaseFile.SingleEndLibrary"]
+        if input_reads_obj_type not in acceptable_types:
+            raise ValueError ("Input reads of type: '"+input_reads_obj_type+"'.  Must be one of "+", ".join(acceptable_types))
+                                                                     
+
+
+        # get set
+        #
+        readsSet_list = []
+        if input_reads_obj_type != "KBaseSets.ReadsSet":
+            readsSet_list = [input_params['input_reads_ref']]
+        else:
+            try:
+                a = 1
+            except:
+                here = 2
+# HERE                                                
+
+        # Let's rock!
+        #
         trimmomatic_params  = self.parse_trimmomatic_steps(input_params)
         trimmomatic_options = str(input_params['read_type']) + ' -' + str(input_params['quality_encoding'])
 
         self.log(console, pformat(trimmomatic_params))
         self.log(console, pformat(trimmomatic_options))
 
-        report = ''
-        reportObj = {'objects_created':[], 
-                     'text_message':''}
 
 
         try:
@@ -424,42 +593,364 @@ execTrimmomatic() the local method that runs Trimmomatic on each read library
 
         output = { 'report_name': reportName, 'report_ref': str(report_obj_info[6]) + '/' + str(report_obj_info[0]) + '/' + str(report_obj_info[4]) }
 
-        #END runTrimmomatic
-
-        # At some point might do deeper type checking...
-        if not isinstance(output, dict):
-            raise ValueError('Method runTrimmomatic return value ' +
-                             'output is not type dict as required.')
-        # return the results
-        return [output]
-
-    def execTrimmomatic(self, ctx, input_params):
-        """
-        :param input_params: instance of type "execTrimmomaticInput"
-           (execTrimmomatic() ** ** the local method that runs Trimmomatic on
-           each read library) -> structure: parameter "input_reads_ref" of
-           type "data_obj_ref", parameter "output_ws" of type
-           "workspace_name" (** Common types), parameter "read_type" of
-           String, parameter "adapterFa" of String, parameter
-           "seed_mismatches" of Long, parameter "palindrome_clip_threshold"
-           of Long, parameter "simple_clip_threshold" of Long, parameter
-           "quality_encoding" of String, parameter "sliding_window_size" of
-           Long, parameter "sliding_window_min_quality" of Long, parameter
-           "leading_min_quality" of Long, parameter "trailing_min_quality" of
-           Long, parameter "crop_length" of Long, parameter
-           "head_crop_length" of Long, parameter "min_length" of Long,
-           parameter "output_reads_name" of type "data_obj_name"
-        :returns: instance of type "execTrimmomaticOutput" -> structure:
-           parameter "report_name" of String, parameter "report_ref" of String
-        """
-        # ctx is the context object
-        # return variables are: output
-        #BEGIN execTrimmomatic
         #END execTrimmomatic
 
         # At some point might do deeper type checking...
         if not isinstance(output, dict):
             raise ValueError('Method execTrimmomatic return value ' +
+                             'output is not type dict as required.')
+        # return the results
+        return [output]
+
+    def execTrimmomaticSingleLibrary(self, ctx, input_params):
+        """
+        :param input_params: instance of type "execTrimmomaticInput"
+           (execTrimmomatic() ** ** the local method that runs Trimmomatic on
+           each read library) -> structure: parameter "input_reads_ref" of
+           type "data_obj_ref", parameter "output_ws" of type
+           "workspace_name" (** Common types), parameter "output_reads_name"
+           of type "data_obj_name", parameter "read_type" of String,
+           parameter "adapterFa" of String, parameter "seed_mismatches" of
+           Long, parameter "palindrome_clip_threshold" of Long, parameter
+           "simple_clip_threshold" of Long, parameter "quality_encoding" of
+           String, parameter "sliding_window_size" of Long, parameter
+           "sliding_window_min_quality" of Long, parameter
+           "leading_min_quality" of Long, parameter "trailing_min_quality" of
+           Long, parameter "crop_length" of Long, parameter
+           "head_crop_length" of Long, parameter "min_length" of Long
+        :returns: instance of type "execTrimmomaticOutput" -> structure:
+           parameter "output_filtered_ref" of type "data_obj_ref", parameter
+           "output_unpaired_fwd_ref" of type "data_obj_ref", parameter
+           "output_unpaired_rev_ref" of type "data_obj_ref", parameter
+           "report" of String
+        """
+        # ctx is the context object
+        # return variables are: output
+        #BEGIN execTrimmomaticSingleLibrary
+        console = []
+        self.log(console, 'Running Trimmomatic with parameters: ')
+        self.log(console, "\n"+pformat(input_params))
+        report = ''
+
+        token = ctx['token']
+        wsClient = workspaceService(self.workspaceURL, token=token)
+        headers = {'Authorization': 'OAuth '+token}
+        env = os.environ.copy()
+        env['KB_AUTH_TOKEN'] = token
+
+        # param checks
+        required_params = ['input_reads_ref', 
+                           'output_ws', 
+                           'output_reads_name', 
+                           'read_type'
+                          ]
+        for required_param in required_params:
+            if required_param not in input_params or input_params[required_param] == None:
+                raise ValueError ("Must define required param: '"+required_param+"'")
+
+        # and param defaults
+        defaults = { 'quality_encoding':           'phred64',
+                     'seed_mismatches':            '2',
+                     'palindrom_clip_threshold':   '3',
+                     'simple_clip_threshold':      '10',
+                     'crop_length':                '0',
+                     'head_crop_length':           '0',
+                     'leading_min_quality':        '3',
+                     'trailing_min_quality':       '3',
+                     'sliding_window_size':        '4',
+                     'sliding_window_min_quality': '15',
+                     'min_length':                 '36'
+                   }
+        def default_params (params, arg, val):
+            if arg not in params or params[arg] == None or params[arg] == '':
+                return val
+            else:
+                return params[arg]
+
+        for arg in defaults.keys():
+            input_params[arg] = default_params (input_params, arg, defaults[arg])
+            
+        # conditional arg behavior
+        arg = 'adapterFa'
+        if arg not in params or params[arg] == None or params[arg] == '':
+            input_params['seed_mismatches'] = None
+            input_params['palindrom_clip_threshold'] = None
+            input_params['simple_clip_threshold'] = None
+            
+
+        #load provenance
+        provenance = [{}]
+        if 'provenance' in ctx:
+            provenance = ctx['provenance']
+        # add additional info to provenance here, in this case the input data object reference
+        provenance[0]['input_ws_objects']=[str(input_params['input_ws'])+'/'+str(input_params['input_reads_name'])]
+
+
+        # Determine whether read library or read set is input object
+        #
+        try:
+            # object_info tuple
+            [OBJID_I, NAME_I, TYPE_I, SAVE_DATE_I, VERSION_I, SAVED_BY_I, WSID_I, WORKSPACE_I, CHSUM_I, SIZE_I, META_I] = range(11)
+            input_reads_obj_type = wsClient.get_object_info_new ({[{'ref':input_params['input_reads_ref'}]})[0][TYPE_I]
+        except Exception as e:
+            raise ValueError('Unable to get read library object from workspace: (' + str(input_params['input_reads_ref']) +')' + str(e))
+
+        acceptable_types = ["KBaseCollections.ReadsSet", "KBaseFile.PairedEndLibrary", "KBaseAssembly.PairedEndLibrary", "KBaseAssembly.SingleEndLibrary", "KBaseFile.SingleEndLibrary"]
+        if input_reads_obj_type not in acceptable_types:
+            raise ValueError ("Input reads of type: '"+input_reads_obj_type+"'.  Must be one of "+", ".join(acceptable_types))
+                                                                     
+
+        # Let's rock!
+        #
+        trimmomatic_params  = self.parse_trimmomatic_steps(input_params)
+        trimmomatic_options = str(input_params['read_type']) + ' -' + str(input_params['quality_encoding'])
+
+        self.log(console, pformat(trimmomatic_params))
+        self.log(console, pformat(trimmomatic_options))
+
+
+
+        try:
+            readLibrary = wsClient.get_objects([{'name': input_params['input_read_library'], 
+                                                            'workspace' : input_params['input_ws']}])[0]
+            info = readLibrary['info']
+
+        except Exception as e:
+            raise ValueError('Unable to get read library object from workspace: (' + str(input_params['input_ws'])+ '/' + str(input_params['input_read_library']) +')' + str(e))
+
+
+        if input_params['read_type'] == 'PE':
+
+            fr_type = ''
+            rv_type = ''
+            if 'lib1' in readLibrary['data']:
+                forward_reads = readLibrary['data']['lib1']['file']
+                # type is required if lib1 is present
+                fr_type = '.' + readLibrary['data']['lib1']['type']
+            elif 'handle_1' in readLibrary['data']:
+                forward_reads = readLibrary['data']['handle_1']
+            if 'lib2' in readLibrary['data']:
+                reverse_reads = readLibrary['data']['lib2']['file']
+                # type is required if lib2 is present
+                rv_type = '.' + readLibrary['data']['lib2']['type']
+            elif 'handle_2' in readLibrary['data']:
+                reverse_reads = readLibrary['data']['handle_2']
+            else:
+                reverse_reads={}
+
+            fr_file_name = str(forward_reads['id']) + fr_type
+            if 'file_name' in forward_reads:
+                fr_file_name = forward_reads['file_name']
+
+            self.log(console, "\nDownloading Paired End reads file...")
+            forward_reads_file = open(fr_file_name, 'w', 0)
+            print("cwd: " + str(os.getcwd()) )
+            
+            r = requests.get(forward_reads['url']+'/node/'+str(forward_reads['id'])+'?download', stream=True, headers=headers)
+            for chunk in r.iter_content(1024):
+                forward_reads_file.write(chunk)
+            forward_reads_file.close()
+            self.log(console, 'done\n')
+
+            if 'interleaved' in readLibrary['data'] and readLibrary['data']['interleaved']:
+                if re.search('gz', fr_file_name, re.I):
+                    bcmdstring = 'gunzip -c ' + fr_file_name
+                    self.log(console, "Reads are gzip'd and interleaved, uncompressing and deinterleaving.")
+                else:    
+                    bcmdstring = 'cat ' + fr_file_name 
+                    self.log(console, "Reads are interleaved, deinterleaving.")
+
+                
+                cmdstring = bcmdstring + '| (paste - - - - - - - -  | tee >(cut -f 1-4 | tr "\t" "\n" > forward.fastq) | cut -f 5-8 | tr "\t" "\n" > reverse.fastq )'
+                cmdProcess = subprocess.Popen(cmdstring, stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell=True, executable='/bin/bash')
+                stdout, stderr = cmdProcess.communicate()
+
+                # Check return status
+                report = "cmdstring: " + cmdstring + " stdout: " + stdout + " stderr: " + stderr
+                self.log(console, 'done\n')
+                fr_file_name='forward.fastq'
+                rev_file_name='reverse.fastq'
+            else:
+                self.log(console, 'Downloading reverse reads.')
+                rev_file_name = str(reverse_reads['id']) + rv_type
+                if 'file_name' in reverse_reads:
+                    rev_file_name = reverse_reads['file_name']
+                reverse_reads_file = open(rev_file_name, 'w', 0)
+
+                r = requests.get(reverse_reads['url']+'/node/'+str(reverse_reads['id'])+'?download', stream=True, headers=headers)
+                for chunk in r.iter_content(1024):
+                    reverse_reads_file.write(chunk)
+                reverse_reads_file.close()
+                self.log(console, 'done\n')
+
+                if re.search('gz', rev_file_name, re.I):
+                    bcmdstring = 'gunzip ' + rev_file_name + ' ' + fr_file_name
+                    self.log(console, "Reads are compressed, uncompressing.")
+                    cmdProcess = subprocess.Popen(bcmdstring, stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell=True, executable='/bin/bash')
+                    stdout, stderr = cmdProcess.communicate()
+                    self.log(console, "\n".join(stdout, stderr, "done"))
+                    rev_file_name = re.sub(r'\.gz\Z', '', rev_file_name)
+                    fr_file_name = re.sub(r'\.gz\Z', '', fr_file_name)
+
+            cmdstring = " ".join( (self.TRIMMOMATIC, trimmomatic_options, 
+                            fr_file_name, 
+                            rev_file_name,
+                            'forward_paired_'   +fr_file_name,
+                            'forward_unpaired_' +fr_file_name,
+                            'reverse_paired_'   +rev_file_name,
+                            'reverse_unpaired_' +rev_file_name,
+                            trimmomatic_params) )
+
+            self.log(console, 'Starting Trimmomatic')
+            cmdProcess = subprocess.Popen(cmdstring, stdout=subprocess.PIPE, stderr=subprocess.STDOUT, shell=True)
+
+
+            outputlines = []
+
+            while True:
+                line = cmdProcess.stdout.readline()
+                outputlines.append(line)
+                if not line: break
+                self.log(console, line.replace('\n', ''))
+
+            cmdProcess.stdout.close()
+            cmdProcess.wait()
+            self.log(console, 'return code: ' + str(cmdProcess.returncode) + '\n')
+
+            report += "\n".join(outputlines)
+            #report += "cmdstring: " + cmdstring + " stdout: " + stdout + " stderr " + stderr
+
+
+            #get read counts
+            match = re.search(r'Input Read Pairs: (\d+).*?Both Surviving: (\d+).*?Forward Only Surviving: (\d+).*?Reverse Only Surviving: (\d+).*?Dropped: (\d+)', report)
+            input_read_count = match.group(1)
+            read_count_paired = match.group(2)
+            read_count_forward_only = match.group(3)
+            read_count_reverse_only = match.group(4)
+            read_count_dropped = match.group(5)
+
+            report = "\n".join( ('Input Read Pairs: '+ input_read_count, 
+                'Both Surviving: '+ read_count_paired, 
+                'Forward Only Surviving: '+ read_count_forward_only,
+                'Reverse Only Surviving: '+ read_count_reverse_only,
+                'Dropped: '+ read_count_dropped) )
+
+            #upload paired reads
+            self.log(console, 'Uploading trimmed paired reads.')
+            cmdstring = " ".join( ('ws-tools fastX2reads --inputfile', 'forward_paired_' + fr_file_name, 
+                                   '--inputfile2', 'reverse_paired_' + rev_file_name,
+                                   '--wsurl', self.workspaceURL, '--shockurl', self.shockURL, '--outws', str(input_params['output_ws']),
+                                   '--outobj', input_params['output_read_library'] + '_paired', '--readcount', read_count_paired ) )
+
+            cmdProcess = subprocess.Popen(cmdstring, stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell=True, env=env)
+            stdout, stderr = cmdProcess.communicate()
+            print("cmdstring: " + cmdstring + " stdout: " + stdout + " stderr: " + stderr)
+            #report += "cmdstring: " + cmdstring + " stdout: " + stdout + " stderr: " + stderr
+            reportObj['objects_created'].append({'ref':str(input_params['input_ws'])+'/'+input_params['output_read_library']+'_paired', 
+                        'description':'Trimmed Paired-End Reads'})
+
+            #upload reads forward unpaired
+            self.log(console, '\nUploading trimmed unpaired forward reads.')
+            cmdstring = " ".join( ('ws-tools fastX2reads --inputfile', 'forward_unpaired_' + fr_file_name, 
+                                   '--wsurl', self.workspaceURL, '--shockurl', self.shockURL, '--outws', str(input_params['output_ws']),
+                                   '--outobj', input_params['output_read_library'] + '_forward_unpaired', '--readcount', read_count_forward_only ) )
+
+            cmdProcess = subprocess.Popen(cmdstring, stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell=True, env=env)
+            stdout, stderr = cmdProcess.communicate()
+            print("cmdstring: " + cmdstring + " stdout: " + stdout + " stderr: " + stderr)
+            #report += "cmdstring: " + cmdstring + " stdout: " + stdout + " stderr: " + stderr
+            reportObj['objects_created'].append({'ref':str(input_params['input_ws'])+'/'+input_params['output_read_library']+'_forward_unpaired', 
+                        'description':'Trimmed Unpaired Forward Reads'})
+
+            #upload reads reverse unpaired
+            self.log(console, '\nUploading trimmed unpaired reverse reads.')
+            cmdstring = " ".join( ('ws-tools fastX2reads --inputfile', 'reverse_unpaired_' + rev_file_name, 
+                                   '--wsurl', self.workspaceURL, '--shockurl', self.shockURL, '--outws', str(input_params['output_ws']),
+                                   '--outobj', input_params['output_read_library'] + '_reverse_unpaired', '--readcount', read_count_reverse_only ) )
+
+            cmdProcess = subprocess.Popen(cmdstring, stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell=True, env=env)
+            stdout, stderr = cmdProcess.communicate()
+            print("cmdstring: " + cmdstring + " stdout: " + stdout + " stderr: " + stderr)
+            #report += "cmdstring: " + cmdstring + " stdout: " + stdout + " stderr: " + stderr
+            reportObj['objects_created'].append({'ref':str(input_params['input_ws'])+'/'+input_params['output_read_library']+'_reverse_unpaired', 
+                        'description':'Trimmed Unpaired Reverse Reads'})
+
+        else:
+            self.log(console, "Downloading Single End reads file...")
+            fr_file_name = ''
+            if 'handle' in readLibrary['data']:
+                forward_reads = readLibrary['data']['handle']
+            elif 'lib' in readLibrary['data']:
+                forward_reads = readLibrary['data']['lib']['file']
+
+
+            fr_file_name = str(forward_reads['id'])
+            if 'file_name' in forward_reads:
+                    fr_file_name = forward_reads['file_name']
+
+            reads_file = open(fr_file_name, 'w', 0)
+            r = requests.get(forward_reads['url']+'/node/'+forward_reads['id']+'?download', stream=True, headers=headers)
+            for chunk in r.iter_content(1024):
+                reads_file.write(chunk)
+            self.log(console, "done.\n")
+
+            cmdstring = " ".join( (self.TRIMMOMATIC, trimmomatic_options,
+                            fr_file_name,
+                            'trimmed_' + fr_file_name,
+                            trimmomatic_params) )
+
+            cmdProcess = subprocess.Popen(cmdstring, stdout=subprocess.PIPE, stderr=subprocess.STDOUT, shell=True)
+
+            #report += "cmdstring: " + cmdstring
+
+            outputlines = []
+
+            while True:
+                line = cmdProcess.stdout.readline()
+                outputlines.append(line)
+                if not line: break
+                self.log(console, line.replace('\n', ''))
+
+            report += "\n".join(outputlines)
+
+            #get read count
+            match = re.search(r'Surviving: (\d+)', report)
+            readcount = match.group(1)
+
+            #upload reads
+            cmdstring = " ".join( ('ws-tools fastX2reads --inputfile', 'trimmed_' + fr_file_name, 
+                                   '--wsurl', self.workspaceURL, '--shockurl', self.shockURL, '--outws', str(input_params['output_ws']),
+                                   '--outobj', input_params['output_read_library'], '--readcount', readcount ) )
+
+            cmdProcess = subprocess.Popen(cmdstring, stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell=True, env=env)
+            stdout, stderr = cmdProcess.communicate()
+            #report += "cmdstring: " + cmdstring + " stdout: " + stdout + " stderr: " + stderr
+            reportObj['objects_created'].append({'ref':str(input_params['input_ws'])+'/'+input_params['output_read_library'], 
+                        'description':'Trimmed Reads'})
+
+        # save report object
+        reportObj['text_message'] = report
+        reportName = 'trimmomatic_report_' + str(hex(uuid.getnode()))
+        report_obj_info = wsClient.save_objects({
+                'id':info[6],
+                'objects':[
+                    {
+                        'type':'KBaseReport.Report',
+                        'data':reportObj,
+                        'name':reportName,
+                        'meta':{},
+                        'hidden':1,
+                        'provenance':provenance
+                    }
+                ]
+            })[0]
+
+        output = { 'report_name': reportName, 'report_ref': str(report_obj_info[6]) + '/' + str(report_obj_info[0]) + '/' + str(report_obj_info[4]) }
+        #END execTrimmomaticSingleLibrary
+
+        # At some point might do deeper type checking...
+        if not isinstance(output, dict):
+            raise ValueError('Method execTrimmomaticSingleLibrary return value ' +
                              'output is not type dict as required.')
         # return the results
         return [output]

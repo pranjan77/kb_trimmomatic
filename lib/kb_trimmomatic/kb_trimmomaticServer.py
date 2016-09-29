@@ -336,6 +336,10 @@ class Application(object):
                              name='kb_trimmomatic.execTrimmomatic',
                              types=[dict])
         self.method_authentication['kb_trimmomatic.execTrimmomatic'] = 'required'
+        self.rpc_service.add(impl_kb_trimmomatic.execTrimmomaticSingleLibrary,
+                             name='kb_trimmomatic.execTrimmomaticSingleLibrary',
+                             types=[dict])
+        self.method_authentication['kb_trimmomatic.execTrimmomaticSingleLibrary'] = 'required'
         self.rpc_service.add(impl_kb_trimmomatic.status,
                              name='kb_trimmomatic.status',
                              types=[dict])

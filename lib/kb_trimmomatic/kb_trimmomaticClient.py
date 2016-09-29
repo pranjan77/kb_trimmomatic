@@ -38,9 +38,10 @@ class kb_trimmomatic(object):
         :param input_params: instance of type "runTrimmomaticInput"
            (runTrimmomatic() ** ** to backend a KBase App, potentially
            operating on ReadSets) -> structure: parameter "input_ws" of type
-           "workspace_name" (** Common types), parameter "output_ws" of type
-           "workspace_name" (** Common types), parameter "read_type" of
-           String, parameter "input_reads_name" of type "data_obj_name",
+           "workspace_name" (** Common types), parameter "input_reads_name"
+           of type "data_obj_name", parameter "output_ws" of type
+           "workspace_name" (** Common types), parameter "output_reads_name"
+           of type "data_obj_name", parameter "read_type" of String,
            parameter "adapterFa" of String, parameter "seed_mismatches" of
            Long, parameter "palindrome_clip_threshold" of Long, parameter
            "simple_clip_threshold" of Long, parameter "quality_encoding" of
@@ -48,8 +49,7 @@ class kb_trimmomatic(object):
            "sliding_window_min_quality" of Long, parameter
            "leading_min_quality" of Long, parameter "trailing_min_quality" of
            Long, parameter "crop_length" of Long, parameter
-           "head_crop_length" of Long, parameter "min_length" of Long,
-           parameter "output_reads_name" of type "data_obj_name"
+           "head_crop_length" of Long, parameter "min_length" of Long
         :returns: instance of type "runTrimmomaticOutput" -> structure:
            parameter "report_name" of String, parameter "report_ref" of String
         """
@@ -63,21 +63,50 @@ class kb_trimmomatic(object):
            (execTrimmomatic() ** ** the local method that runs Trimmomatic on
            each read library) -> structure: parameter "input_reads_ref" of
            type "data_obj_ref", parameter "output_ws" of type
-           "workspace_name" (** Common types), parameter "read_type" of
-           String, parameter "adapterFa" of String, parameter
-           "seed_mismatches" of Long, parameter "palindrome_clip_threshold"
-           of Long, parameter "simple_clip_threshold" of Long, parameter
-           "quality_encoding" of String, parameter "sliding_window_size" of
-           Long, parameter "sliding_window_min_quality" of Long, parameter
+           "workspace_name" (** Common types), parameter "output_reads_name"
+           of type "data_obj_name", parameter "read_type" of String,
+           parameter "adapterFa" of String, parameter "seed_mismatches" of
+           Long, parameter "palindrome_clip_threshold" of Long, parameter
+           "simple_clip_threshold" of Long, parameter "quality_encoding" of
+           String, parameter "sliding_window_size" of Long, parameter
+           "sliding_window_min_quality" of Long, parameter
            "leading_min_quality" of Long, parameter "trailing_min_quality" of
            Long, parameter "crop_length" of Long, parameter
-           "head_crop_length" of Long, parameter "min_length" of Long,
-           parameter "output_reads_name" of type "data_obj_name"
+           "head_crop_length" of Long, parameter "min_length" of Long
         :returns: instance of type "execTrimmomaticOutput" -> structure:
-           parameter "report_name" of String, parameter "report_ref" of String
+           parameter "output_filtered_ref" of type "data_obj_ref", parameter
+           "output_unpaired_fwd_ref" of type "data_obj_ref", parameter
+           "output_unpaired_rev_ref" of type "data_obj_ref", parameter
+           "report" of String
         """
         return self._client.call_method(
             'kb_trimmomatic.execTrimmomatic',
+            [input_params], self._service_ver, context)
+
+    def execTrimmomaticSingleLibrary(self, input_params, context=None):
+        """
+        :param input_params: instance of type "execTrimmomaticInput"
+           (execTrimmomatic() ** ** the local method that runs Trimmomatic on
+           each read library) -> structure: parameter "input_reads_ref" of
+           type "data_obj_ref", parameter "output_ws" of type
+           "workspace_name" (** Common types), parameter "output_reads_name"
+           of type "data_obj_name", parameter "read_type" of String,
+           parameter "adapterFa" of String, parameter "seed_mismatches" of
+           Long, parameter "palindrome_clip_threshold" of Long, parameter
+           "simple_clip_threshold" of Long, parameter "quality_encoding" of
+           String, parameter "sliding_window_size" of Long, parameter
+           "sliding_window_min_quality" of Long, parameter
+           "leading_min_quality" of Long, parameter "trailing_min_quality" of
+           Long, parameter "crop_length" of Long, parameter
+           "head_crop_length" of Long, parameter "min_length" of Long
+        :returns: instance of type "execTrimmomaticOutput" -> structure:
+           parameter "output_filtered_ref" of type "data_obj_ref", parameter
+           "output_unpaired_fwd_ref" of type "data_obj_ref", parameter
+           "output_unpaired_rev_ref" of type "data_obj_ref", parameter
+           "report" of String
+        """
+        return self._client.call_method(
+            'kb_trimmomatic.execTrimmomaticSingleLibrary',
             [input_params], self._service_ver, context)
 
     def status(self, context=None):

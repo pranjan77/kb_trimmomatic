@@ -19,7 +19,8 @@ import us.kbase.common.service.UnauthorizedException;
  * A KBase module: kb_trimmomatic
  * This module contains two methods
  * runTrimmomatic() to backend a KBase App, potentially operating on ReadSets
- * execTrimmomatic() the local method that runs Trimmomatic on each read library
+ * execTrimmomatic() the local method that handles overloading Trimmomatic to run on a set or a single library
+ * execTrimmomaticSingleLibrary() runs Trimmomatic on a single library
  * </pre>
  */
 public class KbTrimmomaticClient {
@@ -209,6 +210,23 @@ public class KbTrimmomaticClient {
         args.add(inputParams);
         TypeReference<List<ExecTrimmomaticOutput>> retType = new TypeReference<List<ExecTrimmomaticOutput>>() {};
         List<ExecTrimmomaticOutput> res = caller.jsonrpcCall("kb_trimmomatic.execTrimmomatic", args, retType, true, true, jsonRpcContext, this.serviceVersion);
+        return res.get(0);
+    }
+
+    /**
+     * <p>Original spec-file function name: execTrimmomaticSingleLibrary</p>
+     * <pre>
+     * </pre>
+     * @param   inputParams   instance of type {@link us.kbase.kbtrimmomatic.ExecTrimmomaticInput ExecTrimmomaticInput} (original type "execTrimmomaticInput")
+     * @return   parameter "output" of type {@link us.kbase.kbtrimmomatic.ExecTrimmomaticOutput ExecTrimmomaticOutput} (original type "execTrimmomaticOutput")
+     * @throws IOException if an IO exception occurs
+     * @throws JsonClientException if a JSON RPC exception occurs
+     */
+    public ExecTrimmomaticOutput execTrimmomaticSingleLibrary(ExecTrimmomaticInput inputParams, RpcContext... jsonRpcContext) throws IOException, JsonClientException {
+        List<Object> args = new ArrayList<Object>();
+        args.add(inputParams);
+        TypeReference<List<ExecTrimmomaticOutput>> retType = new TypeReference<List<ExecTrimmomaticOutput>>() {};
+        List<ExecTrimmomaticOutput> res = caller.jsonrpcCall("kb_trimmomatic.execTrimmomaticSingleLibrary", args, retType, true, true, jsonRpcContext, this.serviceVersion);
         return res.get(0);
     }
 
