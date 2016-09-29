@@ -37,9 +37,9 @@ execTrimmomaticSingleLibrary() runs Trimmomatic on a single library
     # state. A method could easily clobber the state set by another while
     # the latter method is running.
     #########################################
-    VERSION = "0.0.2"
+    VERSION = "0.0.3"
     GIT_URL = "https://github.com/kbaseapps/kb_trimmomatic"
-    GIT_COMMIT_HASH = "2606c003d0dc1bbe572fda40f1ba7ca960018697"
+    GIT_COMMIT_HASH = "bc8973b8db012855622674646ce575dccdfd3a99"
     
     #BEGIN_CLASS_HEADER
     workspaceURL = None
