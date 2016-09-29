@@ -2,7 +2,7 @@ module-name:
     kb_trimmomatic
 
 module-description:
-    A KBase module
+    Quality Filtering and Adapter Removal for Read Librarys and Sets of Read Librarys
 
 service-language:
     python
