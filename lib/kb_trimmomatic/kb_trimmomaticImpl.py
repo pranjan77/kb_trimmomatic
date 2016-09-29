@@ -12,7 +12,7 @@ from pprint import pprint, pformat
 import uuid
 
 # SDK Utils
-from ReadsUtils.ReadsUtilsClient import ReadsUtilsClient
+#from ReadsUtils.ReadsUtilsClient import ReadsUtilsClient  # FIX
 from SetAPI.SetAPIClient import SetAPIClient
 #END_HEADER
 
