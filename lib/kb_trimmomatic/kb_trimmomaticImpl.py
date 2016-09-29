@@ -13,7 +13,7 @@ import uuid
 
 # SDK Utils
 #from ReadsUtils.ReadsUtilsClient import ReadsUtilsClient  # FIX
-from SetAPI.SetAPIClient import SetAPIClient
+from SetAPI.SetAPIClient import SetAPI
 #END_HEADER
 
 
@@ -293,6 +293,10 @@ execTrimmomaticSingleLibrary() runs Trimmomatic on a single library
         self.log(console, 'Running Trimmomatic with parameters: ')
         self.log(console, "\n"+pformat(input_params))
         report = ''
+        trimmomatic_retVal = dict()
+        trimmomatic_retVal['output_trimmed_ref'] = None
+        trimmomatic_retVal['output_unpaired_fwd_ref'] = None
+        trimmomatic_retVal['output_unpaired_rev_ref'] = None
 
         token = ctx['token']
         wsClient = workspaceService(self.workspaceURL, token=token)
@@ -328,10 +332,9 @@ execTrimmomaticSingleLibrary() runs Trimmomatic on a single library
         except Exception as e:
             raise ValueError('Unable to get read library object from workspace: (' + str(input_params['input_reads_ref']) +')' + str(e))
 
-        acceptable_types = ["KBaseCollections.ReadsSet", "KBaseFile.PairedEndLibrary", "KBaseAssembly.PairedEndLibrary", "KBaseAssembly.SingleEndLibrary", "KBaseFile.SingleEndLibrary"]
+        acceptable_types = ["KBaseSets.ReadsSet", "KBaseFile.PairedEndLibrary", "KBaseAssembly.PairedEndLibrary", "KBaseAssembly.SingleEndLibrary", "KBaseFile.SingleEndLibrary"]
         if input_reads_obj_type not in acceptable_types:
             raise ValueError ("Input reads of type: '"+input_reads_obj_type+"'.  Must be one of "+", ".join(acceptable_types))
-                                                                     
 
 
         # get set
@@ -341,11 +344,19 @@ execTrimmomaticSingleLibrary() runs Trimmomatic on a single library
             readsSet_ref_list = [input_params['input_reads_ref']]
         else:
             try:
-                readSet_obj = SetAPIClient.get_reads_set_v1 ({'ref':input_reads_ref})
+                setAPI_Client = SetAPI(services{service-wizard})  # FIX
+                readSet_obj = setAPI_Client.get_reads_set_v1 ({'ref':input_reads_ref})
                 for readLibrary_obj in readSet_obj['items']:
-                    readSEt_ref_list.append(readLibrary_obj['ref'])
-            except:
+                    readSet_ref_list.append(readLibrary_obj['ref'])
+            except Exception as e:
+                raise ValueError('SetAPI FAILURE: Unable to get read library set object from workspace: (' + str(input_params['input_reads_ref'])+')' + str(e))
 
+        # Iterate through readLibrary memebers of set
+        #
+        report = ''
+        trimmed_readSet = []
+        unpaired_fwd_readSet = []
+        unpaired_rev_readSet = []
 
         for input_reads_library_ref in readsSet_ref_list:
             execTrimmomaticParams = { 'input_reads_ref': input_reads_library_ref,
@@ -366,16 +377,82 @@ execTrimmomaticSingleLibrary() runs Trimmomatic on a single library
                                       'min_length': input_params['min_length']
                                     }
 
+            report += "RUNNING TRIMMOMATIC ON LIBRARY: "+str(input_reads_library_ref)+"\n"
+            report += "--------------------------------\n\n"
             trimmomatic_retVal = self.execTrimmomaticSingleLibrary (execTrimmomaticParams)
-            
-            #
-            # MORE HERE
-            #
+            report += trimmomatic_retVal['report']+"\n\n"
+            trimmed_readSet.append (trimmomatic_retVal['output_trimmed_ref'])
+            unpaired_fwd_readSet.append (trimmomatic_retVal['output_unpaired_fwd_ref'])
+            unpaired_rev_readSet.append (trimmomatic_retVal['output_unpaired_rev_ref'])
+
+        
+        # Single Library
+        if input_reads_obj_type != "KBaseSets.ReadsSet":
+            output = { 'report': report,
+                       'output_filtered_ref': trimmomatic_retVal['output_filtered_ref'],
+                       'output_unpaired_fwd_ref': trimmomatic_retVal['output_unpaired_fwd_ref'],
+                       'output_unpaired_rev_ref': trimmomatic_retVal['output_unpaired_rev_ref']
+                     }
+        # ReadSet
+        else:
+            # save trimmed readSet
+            items = []
+            for lib_ref in trimmed_readSet:
+                items.append({'ref': lib_ref,
+                              'label': 'foo'   # FIX
+                              #'data_attachment': ,
+                              #'info':
+                             })
+                readSet_obj = { 'description': 'foo',  # FIX
+                                'items': items
+                              }
+                trimmed_readSet_ref = setAPI_Client.save_reads_set_v1 ({'workspace_name': input_params['output_ws'],
+                                                                        'output_object_name': str(input_params['output_reads_name'])+'_paired',
+                                                                        'data': readSet_obj
+                                                                       })['set_ref']
+                              
+            # save unpaired forward readSet
+            if len(unpaired_fwd_readSet) > 0:
+                items = []
+                for lib_ref in trimmed_readSet:
+                    items.append({'ref': lib_ref,
+                                  'label': 'foo'   # FIX
+                                  #'data_attachment': ,
+                                  #'info':
+                                 })
+                    readSet_obj = { 'description': 'foo',  # FIX 
+                                    'items': items
+                                  }
+                    unpaired_fwd_readSet_ref = setAPI_Client.save_reads_set_v1 ({'workspace_name': input_params['output_ws'],
+                                                                                 'output_object_name': str(input_params['output_reads_name'])+'_unpaired_fwd',
+                                                                                 'data': readSet_obj
+                                                                               })['set_ref']
+                              
+            # save unpaired reverse readSet
+            if len(unpaired_rev_readSet) > 0:
+                items = []
+                for lib_ref in trimmed_readSet:
+                    items.append({'ref': lib_ref,
+                                  'label': 'foo'   # FIX
+                                  #'data_attachment': ,
+                                  #'info':
+                                 })
+                    readSet_obj = { 'description': 'foo',  # FIX 
+                                    'items': items
+                                  }
+                    unpaired_rev_readSet_ref = setAPI_Client.save_reads_set_v1 ({'workspace_name': input_params['output_ws'],
+                                                                                 'output_object_name': str(input_params['output_reads_name'])+'_unpaired_rev',
+                                                                                 'data': readSet_obj
+                                                                               })['set_ref']
+                              
 
 
+            output = { 'report': report,
+                       'output_filtered_ref': trimmed_readSet_ref,
+                       'output_unpaired_fwd_ref': unpaired_fwd_readSet_ref,
+                       'output_unpaired_rev_ref': unpaired_fwd_readSet_ref
+                     }
 
-
-        output = {}
         #END execTrimmomatic
 
         # At some point might do deeper type checking...
@@ -414,6 +491,10 @@ execTrimmomaticSingleLibrary() runs Trimmomatic on a single library
         self.log(console, 'Running Trimmomatic with parameters: ')
         self.log(console, "\n"+pformat(input_params))
         report = ''
+        retVal = dict()
+        retVal['output_trimmed_ref'] = None
+        retVal['output_unpaired_fwd_ref'] = None
+        retVal['output_unpaired_rev_ref'] = None
 
         token = ctx['token']
         wsClient = workspaceService(self.workspaceURL, token=token)
@@ -483,7 +564,19 @@ execTrimmomaticSingleLibrary() runs Trimmomatic on a single library
         acceptable_types = ["KBaseFile.PairedEndLibrary", "KBaseAssembly.PairedEndLibrary", "KBaseAssembly.SingleEndLibrary", "KBaseFile.SingleEndLibrary"]
         if input_reads_obj_type not in acceptable_types:
             raise ValueError ("Input reads of type: '"+input_reads_obj_type+"'.  Must be one of "+", ".join(acceptable_types))
-                                                                     
+
+
+        # Confirm user is paying attention (matters because Trimmomatic params are very different for PairedEndLibary and SingleEndLibrary
+        #
+        if input_params['read_type'] == 'PE' \
+                and (input_reads_obj_type == 'KBaseAssembly.SingleEndLibrary' \
+                     or input_reads_obj_type == 'KBaseFile.SingleEndLibrary'):
+            raise ValueError ("read_type set to 'Paired End' but object is SingleEndLibrary")
+        if input_params['read_type'] == 'SE' \
+                and (input_reads_obj_type == 'KBaseAssembly.PairedEndLibrary' \
+                     or input_reads_obj_type == 'KBaseFile.PairedEndLibrary'):
+            raise ValueError ("read_type set to 'Single End' but object is PairedEndLibrary")
+            
 
         # Let's rock!
         #
@@ -499,13 +592,15 @@ execTrimmomaticSingleLibrary() runs Trimmomatic on a single library
         #
         try:
             readLibrary = wsClient.get_objects([{'name': input_params['input_read_library'], 
-                                                            'workspace' : input_params['input_ws']}])[0]
+                                                 'workspace' : input_params['input_ws']}])[0]
             info = readLibrary['info']
 
         except Exception as e:
             raise ValueError('Unable to get read library object from workspace: (' + str(input_params['input_ws'])+ '/' + str(input_params['input_read_library']) +')' + str(e))
 
 
+        # PairedEndLibrary
+        #
         if input_params['read_type'] == 'PE':
 
             fr_type = ''
@@ -583,9 +678,9 @@ execTrimmomaticSingleLibrary() runs Trimmomatic on a single library
                             fr_file_name, 
                             rev_file_name,
                             'forward_paired_'   +fr_file_name,
-                            'forward_unpaired_' +fr_file_name,
+                            'unpaired_fwd_' +fr_file_name,
                             'reverse_paired_'   +rev_file_name,
-                            'reverse_unpaired_' +rev_file_name,
+                            'unpaired_rev_' +rev_file_name,
                             trimmomatic_params) )
 
             self.log(console, 'Starting Trimmomatic')
@@ -633,35 +728,43 @@ execTrimmomaticSingleLibrary() runs Trimmomatic on a single library
             stdout, stderr = cmdProcess.communicate()
             print("cmdstring: " + cmdstring + " stdout: " + stdout + " stderr: " + stderr)
             #report += "cmdstring: " + cmdstring + " stdout: " + stdout + " stderr: " + stderr
-            reportObj['objects_created'].append({'ref':str(input_params['input_ws'])+'/'+input_params['output_read_library']+'_paired', 
-                        'description':'Trimmed Paired-End Reads'})
+            #reportObj['objects_created'].append({'ref':str(input_params['input_ws'])+'/'+input_params['output_read_library']+'_paired', 
+            #            'description':'Trimmed Paired-End Reads'})
+            retVal['output_filtered_ref'] = str(input_params['output_ws'])+'/'+str(input_params['output_reads_name']+'_paired')
+
 
             #upload reads forward unpaired
             self.log(console, '\nUploading trimmed unpaired forward reads.')
-            cmdstring = " ".join( ('ws-tools fastX2reads --inputfile', 'forward_unpaired_' + fr_file_name, 
+            cmdstring = " ".join( ('ws-tools fastX2reads --inputfile', 'unpaired_fwd_' + fr_file_name, 
                                    '--wsurl', self.workspaceURL, '--shockurl', self.shockURL, '--outws', str(input_params['output_ws']),
-                                   '--outobj', input_params['output_read_library'] + '_forward_unpaired', '--readcount', read_count_forward_only ) )
+                                   '--outobj', input_params['output_read_library'] + '_unpaired_fwd', '--readcount', read_count_forward_only ) )
 
             cmdProcess = subprocess.Popen(cmdstring, stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell=True, env=env)
             stdout, stderr = cmdProcess.communicate()
             print("cmdstring: " + cmdstring + " stdout: " + stdout + " stderr: " + stderr)
             #report += "cmdstring: " + cmdstring + " stdout: " + stdout + " stderr: " + stderr
-            reportObj['objects_created'].append({'ref':str(input_params['input_ws'])+'/'+input_params['output_read_library']+'_forward_unpaired', 
-                        'description':'Trimmed Unpaired Forward Reads'})
+            #reportObj['objects_created'].append({'ref':str(input_params['input_ws'])+'/'+input_params['output_read_library']+'_unpaired_fwd', 
+            #            'description':'Trimmed Unpaired Forward Reads'})
+            retVal['output_unpaired_fwd_ref'] = str(input_params['output_ws'])+'/'+str(input_params['output_reads_name']+'_unpaired_fwd')
+
 
             #upload reads reverse unpaired
             self.log(console, '\nUploading trimmed unpaired reverse reads.')
-            cmdstring = " ".join( ('ws-tools fastX2reads --inputfile', 'reverse_unpaired_' + rev_file_name, 
+            cmdstring = " ".join( ('ws-tools fastX2reads --inputfile', 'unpaired_rev_' + rev_file_name, 
                                    '--wsurl', self.workspaceURL, '--shockurl', self.shockURL, '--outws', str(input_params['output_ws']),
-                                   '--outobj', input_params['output_read_library'] + '_reverse_unpaired', '--readcount', read_count_reverse_only ) )
+                                   '--outobj', input_params['output_read_library'] + '_unpaired_rev', '--readcount', read_count_reverse_only ) )
 
             cmdProcess = subprocess.Popen(cmdstring, stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell=True, env=env)
             stdout, stderr = cmdProcess.communicate()
             print("cmdstring: " + cmdstring + " stdout: " + stdout + " stderr: " + stderr)
             #report += "cmdstring: " + cmdstring + " stdout: " + stdout + " stderr: " + stderr
-            reportObj['objects_created'].append({'ref':str(input_params['input_ws'])+'/'+input_params['output_read_library']+'_reverse_unpaired', 
-                        'description':'Trimmed Unpaired Reverse Reads'})
+            #reportObj['objects_created'].append({'ref':str(input_params['input_ws'])+'/'+input_params['output_read_library']+'_unpaired_rev', 
+            #            'description':'Trimmed Unpaired Reverse Reads'})
+            retVal['output_unpaired_rev_ref'] = str(input_params['output_ws'])+'/'+str(input_params['output_reads_name']+'_unpaired_rev')
 
+
+        # SingleEndLibrary
+        #
         else:
             self.log(console, "Downloading Single End reads file...")
             fr_file_name = ''
@@ -712,27 +815,18 @@ execTrimmomaticSingleLibrary() runs Trimmomatic on a single library
             cmdProcess = subprocess.Popen(cmdstring, stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell=True, env=env)
             stdout, stderr = cmdProcess.communicate()
             #report += "cmdstring: " + cmdstring + " stdout: " + stdout + " stderr: " + stderr
-            reportObj['objects_created'].append({'ref':str(input_params['input_ws'])+'/'+input_params['output_read_library'], 
-                        'description':'Trimmed Reads'})
+            #reportObj['objects_created'].append({'ref':str(input_params['input_ws'])+'/'+input_params['output_read_library'], 
+            #            'description':'Trimmed Reads'})
+            retVal['output_filtered_ref'] = str(input_params['output_ws'])+'/'+str(input_params['output_reads_name'])
 
-        # save report object
-        reportObj['text_message'] = report
-        reportName = 'trimmomatic_report_' + str(hex(uuid.getnode()))
-        report_obj_info = wsClient.save_objects({
-                'id':info[6],
-                'objects':[
-                    {
-                        'type':'KBaseReport.Report',
-                        'data':reportObj,
-                        'name':reportName,
-                        'meta':{},
-                        'hidden':1,
-                        'provenance':provenance
-                    }
-                ]
-            })[0]
 
-        output = { 'report_name': reportName, 'report_ref': str(report_obj_info[6]) + '/' + str(report_obj_info[0]) + '/' + str(report_obj_info[4]) }
+        # return created objects
+        #
+        output = { 'report': report,
+                   'output_filtered_ref': retVal['output_filtered_ref'],
+                   'output_unpaired_fwd_ref': retVal['output_unpaired_fwd_ref'],
+                   'output_unpaired_rev_ref': retVal['output_unpaired_rev_ref']
+                 }
         #END execTrimmomaticSingleLibrary
 
         # At some point might do deeper type checking...
