@@ -13,7 +13,8 @@ import uuid
 
 # SDK Utils
 #from ReadsUtils.ReadsUtilsClient import ReadsUtilsClient  # FIX
-from SetAPI import SetAPI.SetAPIClient
+#from SetAPI.SetAPIClient import SetAPI
+from SetAPI import SetAPIClient
 #END_HEADER
 
 
