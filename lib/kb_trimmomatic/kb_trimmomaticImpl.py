@@ -211,7 +211,7 @@ execTrimmomaticSingleLibrary() runs Trimmomatic on a single library
                                   'leading_min_quality': input_params['leading_min_quality'],
                                   'trailing_min_quality': input_params['trailing_min_quality'],
                                   'crop_length': input_params['crop_length'],
-                                  'head_crop_length': input_params['head_crop_olength'],
+                                  'head_crop_length': input_params['head_crop_length'],
                                   'min_length': input_params['min_length']
                                   }
 
@@ -387,7 +387,7 @@ execTrimmomaticSingleLibrary() runs Trimmomatic on a single library
                                       'leading_min_quality': input_params['leading_min_quality'],
                                       'trailing_min_quality': input_params['trailing_min_quality'],
                                       'crop_length': input_params['crop_length'],
-                                      'head_crop_length': input_params['head_crop_olength'],
+                                      'head_crop_length': input_params['head_crop_length'],
                                       'min_length': input_params['min_length']
                                     }
 
