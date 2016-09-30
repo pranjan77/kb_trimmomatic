@@ -547,14 +547,9 @@ execTrimmomaticSingleLibrary() runs Trimmomatic on a single library
                      'sliding_window_min_quality': '15',
                      'min_length':                 '36'
                    }
-        def default_params (params, arg, val):
-            if arg not in params or params[arg] == None or params[arg] == '':
-                return val
-            else:
-                return params[arg]
-
         for arg in defaults.keys():
-            input_params[arg] = default_params (input_params, arg, defaults[arg])
+            if arg not in input_params or input_params[arg] == None or input_params[arg] == '':
+                input_params[arg] = val
             
         # conditional arg behavior
         arg = 'adapterFa'
