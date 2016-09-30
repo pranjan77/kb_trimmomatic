@@ -543,7 +543,7 @@ execTrimmomaticSingleLibrary() runs Trimmomatic on a single library
                    }
         for arg in defaults.keys():
             if arg not in input_params or input_params[arg] == None or input_params[arg] == '':
-                input_params[arg] = val
+                input_params[arg] = defaults[arg]
             
         # conditional arg behavior
         arg = 'adapterFa'
