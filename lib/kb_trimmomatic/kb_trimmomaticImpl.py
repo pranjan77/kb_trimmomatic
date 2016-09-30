@@ -202,7 +202,7 @@ execTrimmomaticSingleLibrary() runs Trimmomatic on a single library
                                   'output_reads_name': input_params['output_reads_name'],
                                   'read_type': input_params['read_type'],
                                   'adapterFa': input_params['adapterFa'],
-                                  'seed_mismatches': input_params['seed_mismatces'],
+                                  'seed_mismatches': input_params['seed_mismatches'],
                                   'palindrome_clip_threshold': input_params['palindrome_clip_threshold'],
                                   'simple_clip_threshold': input_params['simple_clip_threshold'],
                                   'quality_encoding': input_params['quality_encoding'],
