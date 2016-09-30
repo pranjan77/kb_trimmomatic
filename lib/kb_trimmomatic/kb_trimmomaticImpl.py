@@ -547,7 +547,7 @@ execTrimmomaticSingleLibrary() runs Trimmomatic on a single library
             
         # conditional arg behavior
         arg = 'adapterFa'
-        if arg not in params or params[arg] == None or params[arg] == '':
+        if arg not in input_params or input_params[arg] == None or input_params[arg] == '':
             input_params['seed_mismatches'] = None
             input_params['palindrom_clip_threshold'] = None
             input_params['simple_clip_threshold'] = None
