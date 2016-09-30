@@ -348,9 +348,9 @@ execTrimmomaticSingleLibrary() runs Trimmomatic on a single library
         except Exception as e:
             raise ValueError('Unable to get read library object from workspace: (' + str(input_params['input_reads_ref']) +')' + str(e))
 
-        self.log (console, "B4 TYPE: '"+input_reads_obj_type+"' VERSION: '"+input_reads_obj_version+"'")
-        input_reads_obj_type = re.sub ('-'+str(input_reads_obj_version)+'+', "", input_reads_obj_type)  # remove trailing version
-        self.log (console, "AF TYPE: '"+input_reads_obj_type+"' VERSION: '"+input_reads_obj_version+"'")
+        self.log (console, "B4 TYPE: '"+str(input_reads_obj_type)+"' VERSION: '"+str(input_reads_obj_version)+"'")
+        input_reads_obj_type = re.sub ('-'+str(input_reads_obj_version)+'$', "", input_reads_obj_type)  # remove trailing version
+        self.log (console, "AF TYPE: '"+str(input_reads_obj_type)+"' VERSION: '"+str(input_reads_obj_version)+"'")
 
         acceptable_types = ["KBaseSets.ReadsSet", "KBaseFile.PairedEndLibrary", "KBaseAssembly.PairedEndLibrary", "KBaseAssembly.SingleEndLibrary", "KBaseFile.SingleEndLibrary"]
         if input_reads_obj_type not in acceptable_types:
@@ -585,9 +585,9 @@ execTrimmomaticSingleLibrary() runs Trimmomatic on a single library
         except Exception as e:
             raise ValueError('Unable to get read library object from workspace: (' + str(input_params['input_reads_ref']) +')' + str(e))
 
-        self.log (console, "B4 TYPE: '"+input_reads_obj_type+"' VERSION: '"+input_reads_obj_version+"'")
-        input_reads_obj_type = re.sub ('-'+str(input_reads_obj_version)+'+', "", input_reads_obj_type)  # remove trailing version
-        self.log (console, "AF TYPE: '"+input_reads_obj_type+"' VERSION: '"+input_reads_obj_version+"'")
+        self.log (console, "B4 TYPE: '"+str(input_reads_obj_type)+"' VERSION: '"+str(input_reads_obj_version)+"'")
+        input_reads_obj_type = re.sub ('-'+str(input_reads_obj_version)+'$', "", input_reads_obj_type)  # remove trailing version
+        self.log (console, "AF TYPE: '"+str(input_reads_obj_type)+"' VERSION: '"+str(input_reads_obj_version)+"'")
 
         acceptable_types = ["KBaseFile.PairedEndLibrary", "KBaseAssembly.PairedEndLibrary", "KBaseAssembly.SingleEndLibrary", "KBaseFile.SingleEndLibrary"]
         if input_reads_obj_type not in acceptable_types:
