@@ -342,6 +342,7 @@ execTrimmomaticSingleLibrary() runs Trimmomatic on a single library
             [OBJID_I, NAME_I, TYPE_I, SAVE_DATE_I, VERSION_I, SAVED_BY_I, WSID_I, WORKSPACE_I, CHSUM_I, SIZE_I, META_I] = range(11)
 
             input_reads_obj_type = wsClient.get_object_info_new ({'objects':[{'ref':input_params['input_reads_ref']}]})[0][TYPE_I]
+            input_reads_obj_type = re.sub ("\-[0-9\.]+$", input_reads_obj_type)
 
         except Exception as e:
             raise ValueError('Unable to get read library object from workspace: (' + str(input_params['input_reads_ref']) +')' + str(e))
@@ -571,6 +572,7 @@ execTrimmomaticSingleLibrary() runs Trimmomatic on a single library
             [OBJID_I, NAME_I, TYPE_I, SAVE_DATE_I, VERSION_I, SAVED_BY_I, WSID_I, WORKSPACE_I, CHSUM_I, SIZE_I, META_I] = range(11)
 
             input_reads_obj_type = wsClient.get_object_info_new ({'objects':[{'ref':input_params['input_reads_ref']}]})[0][TYPE_I]
+            input_reads_obj_type = re.sub ("\-[0-9\.]+$", input_reads_obj_type)
 
         except Exception as e:
             raise ValueError('Unable to get read library object from workspace: (' + str(input_params['input_reads_ref']) +')' + str(e))
