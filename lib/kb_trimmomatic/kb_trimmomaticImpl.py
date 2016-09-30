@@ -344,7 +344,10 @@ execTrimmomaticSingleLibrary() runs Trimmomatic on a single library
             input_reads_obj_info = wsClient.get_object_info_new ({'objects':[{'ref':input_params['input_reads_ref']}]})[0][TYPE_I]
             input_reads_obj_type = input_reads_obj_info[TYPE_I]
             input_reads_obj_version = input_reads_obj_info[VERSION_I]
+            self.log (console, "B4 TYPE: '"+input_reads_obj_type+"' VERSION: '"+input_reads_obj_version+"'")
             input_reads_obj_type = re.sub ('-'+str(input_reads_obj_version)+'+', "", input_reads_obj_type)  # remove trailing version
+            self.log (console, "AF TYPE: '"+input_reads_obj_type+"' VERSION: '"+input_reads_obj_version+"'")
+
 
         except Exception as e:
             raise ValueError('Unable to get read library object from workspace: (' + str(input_params['input_reads_ref']) +')' + str(e))
@@ -578,7 +581,9 @@ execTrimmomaticSingleLibrary() runs Trimmomatic on a single library
             input_reads_obj_info = wsClient.get_object_info_new ({'objects':[{'ref':input_params['input_reads_ref']}]})[0][TYPE_I]
             input_reads_obj_type = input_reads_obj_info[TYPE_I]
             input_reads_obj_version = input_reads_obj_info[VERSION_I]
+            self.log (console, "B4 TYPE: '"+input_reads_obj_type+"' VERSION: '"+input_reads_obj_version+"'")
             input_reads_obj_type = re.sub ('-'+str(input_reads_obj_version)+'+', "", input_reads_obj_type)  # remove trailing version
+            self.log (console, "AF TYPE: '"+input_reads_obj_type+"' VERSION: '"+input_reads_obj_version+"'")
 
         except Exception as e:
             raise ValueError('Unable to get read library object from workspace: (' + str(input_params['input_reads_ref']) +')' + str(e))
