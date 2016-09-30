@@ -342,10 +342,11 @@ execTrimmomaticSingleLibrary() runs Trimmomatic on a single library
             [OBJID_I, NAME_I, TYPE_I, SAVE_DATE_I, VERSION_I, SAVED_BY_I, WSID_I, WORKSPACE_I, CHSUM_I, SIZE_I, META_I] = range(11)
 
             input_reads_obj_type = wsClient.get_object_info_new ({'objects':[{'ref':input_params['input_reads_ref']}]})[0][TYPE_I]
-            input_reads_obj_type = re.sub ("\-[0-9\.]+$", input_reads_obj_type)
 
         except Exception as e:
             raise ValueError('Unable to get read library object from workspace: (' + str(input_params['input_reads_ref']) +')' + str(e))
+
+        input_reads_obj_type = re.sub ("\-[0-9\.]+$", input_reads_obj_type)  # remove trailing version
 
         acceptable_types = ["KBaseSets.ReadsSet", "KBaseFile.PairedEndLibrary", "KBaseAssembly.PairedEndLibrary", "KBaseAssembly.SingleEndLibrary", "KBaseFile.SingleEndLibrary"]
         if input_reads_obj_type not in acceptable_types:
@@ -403,6 +404,8 @@ execTrimmomaticSingleLibrary() runs Trimmomatic on a single library
         
         # Single Library
         if input_reads_obj_type != "KBaseSets.ReadsSet":
+
+            # create return output object
             output = { 'report': report,
                        'output_filtered_ref': trimmomatic_retVal['output_filtered_ref'],
                        'output_unpaired_fwd_ref': trimmomatic_retVal['output_unpaired_fwd_ref'],
@@ -459,9 +462,9 @@ execTrimmomaticSingleLibrary() runs Trimmomatic on a single library
                                                                                  'output_object_name': str(input_params['output_reads_name'])+'_unpaired_rev',
                                                                                  'data': readSet_obj
                                                                                })['set_ref']
-                              
 
 
+            # create return output object
             output = { 'report': report,
                        'output_filtered_ref': trimmed_readSet_ref,
                        'output_unpaired_fwd_ref': unpaired_fwd_readSet_ref,
@@ -572,10 +575,11 @@ execTrimmomaticSingleLibrary() runs Trimmomatic on a single library
             [OBJID_I, NAME_I, TYPE_I, SAVE_DATE_I, VERSION_I, SAVED_BY_I, WSID_I, WORKSPACE_I, CHSUM_I, SIZE_I, META_I] = range(11)
 
             input_reads_obj_type = wsClient.get_object_info_new ({'objects':[{'ref':input_params['input_reads_ref']}]})[0][TYPE_I]
-            input_reads_obj_type = re.sub ("\-[0-9\.]+$", input_reads_obj_type)
 
         except Exception as e:
             raise ValueError('Unable to get read library object from workspace: (' + str(input_params['input_reads_ref']) +')' + str(e))
+
+        input_reads_obj_type = re.sub ("\-[0-9\.]+$", input_reads_obj_type)  # remove trailing version
 
         acceptable_types = ["KBaseFile.PairedEndLibrary", "KBaseAssembly.PairedEndLibrary", "KBaseAssembly.SingleEndLibrary", "KBaseFile.SingleEndLibrary"]
         if input_reads_obj_type not in acceptable_types:
