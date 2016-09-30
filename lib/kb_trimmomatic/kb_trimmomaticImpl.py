@@ -170,7 +170,7 @@ execTrimmomaticSingleLibrary() runs Trimmomatic on a single library
         # return variables are: output
         #BEGIN runTrimmomatic
         console = []
-        self.log(console, 'Running Trimmomatic with parameters: ')
+        self.log(console, 'Running runTrimmomatic with parameters: ')
         self.log(console, "\n"+pformat(input_params))
 
         token = ctx['token']
@@ -298,7 +298,7 @@ execTrimmomaticSingleLibrary() runs Trimmomatic on a single library
         # return variables are: output
         #BEGIN execTrimmomatic
         console = []
-        self.log(console, 'Running Trimmomatic with parameters: ')
+        self.log(console, 'Running execTrimmomatic with parameters: ')
         self.log(console, "\n"+pformat(input_params))
         report = ''
         trimmomatic_retVal = dict()
@@ -558,7 +558,7 @@ execTrimmomaticSingleLibrary() runs Trimmomatic on a single library
         if 'provenance' in ctx:
             provenance = ctx['provenance']
         # add additional info to provenance here, in this case the input data object reference
-        provenance[0]['input_ws_objects']=[str(input_params['input_ws'])+'/'+str(input_params['input_reads_name'])]
+        provenance[0]['input_ws_objects']=[str(input_params['input_reads_ref'])]
 
 
         # Determine whether read library is of correct type
