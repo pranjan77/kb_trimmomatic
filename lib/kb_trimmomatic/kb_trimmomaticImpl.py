@@ -39,14 +39,8 @@ execTrimmomaticSingleLibrary() runs Trimmomatic on a single library
     # the latter method is running.
     #########################################
     VERSION = "0.0.3"
-    workspaceURL = None
-    shockURL     = None
-    handleURL    = None
-    callbackURL  = None
-    scratch      = None
-
     GIT_URL = "https://github.com/kbaseapps/kb_trimmomatic"
-    GIT_COMMIT_HASH = "3194e03ae1604f39ad65fd3f61af4ea3bbf25a3a"
+    GIT_COMMIT_HASH = "a0822ba2b3b598a4f610cea20204a242dd72ff60"
     
     #BEGIN_CLASS_HEADER
     workspaceURL = None
