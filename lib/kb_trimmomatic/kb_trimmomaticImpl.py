@@ -302,7 +302,7 @@ execTrimmomaticSingleLibrary() runs Trimmomatic on a single library
         self.log(console, "\n"+pformat(input_params))
         report = ''
         trimmomatic_retVal = dict()
-        trimmomatic_retVal['output_trimmed_ref'] = None
+        trimmomatic_retVal['output_filtered_ref'] = None
         trimmomatic_retVal['output_unpaired_fwd_ref'] = None
         trimmomatic_retVal['output_unpaired_rev_ref'] = None
 
@@ -395,7 +395,7 @@ execTrimmomaticSingleLibrary() runs Trimmomatic on a single library
             report += "--------------------------------\n\n"
             trimmomatic_retVal = self.execTrimmomaticSingleLibrary (ctx, execTrimmomaticParams)[0]
             report += trimmomatic_retVal['report']+"\n\n"
-            trimmed_readSet.append (trimmomatic_retVal['output_trimmed_ref'])
+            trimmed_readSet.append (trimmomatic_retVal['output_filtered_ref'])
             unpaired_fwd_readSet.append (trimmomatic_retVal['output_unpaired_fwd_ref'])
             unpaired_rev_readSet.append (trimmomatic_retVal['output_unpaired_rev_ref'])
 
@@ -508,7 +508,7 @@ execTrimmomaticSingleLibrary() runs Trimmomatic on a single library
         self.log(console, "\n"+pformat(input_params))
         report = ''
         retVal = dict()
-        retVal['output_trimmed_ref'] = None
+        retVal['output_filtered_ref'] = None
         retVal['output_unpaired_fwd_ref'] = None
         retVal['output_unpaired_rev_ref'] = None
 
