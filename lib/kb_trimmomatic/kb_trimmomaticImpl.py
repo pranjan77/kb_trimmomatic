@@ -738,13 +738,13 @@ execTrimmomaticSingleLibrary() runs Trimmomatic on a single library
             cmdstring = " ".join( ('ws-tools fastX2reads --inputfile', 'forward_paired_' + fr_file_name, 
                                    '--inputfile2', 'reverse_paired_' + rev_file_name,
                                    '--wsurl', self.workspaceURL, '--shockurl', self.shockURL, '--outws', str(input_params['output_ws']),
-                                   '--outobj', input_params['output_read_library'] + '_paired', '--readcount', read_count_paired ) )
+                                   '--outobj', input_params['output_reads_name'] + '_paired', '--readcount', read_count_paired ) )
 
             cmdProcess = subprocess.Popen(cmdstring, stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell=True, env=env)
             stdout, stderr = cmdProcess.communicate()
             print("cmdstring: " + cmdstring + " stdout: " + stdout + " stderr: " + stderr)
             #report += "cmdstring: " + cmdstring + " stdout: " + stdout + " stderr: " + stderr
-            #reportObj['objects_created'].append({'ref':str(input_params['input_ws'])+'/'+input_params['output_read_library']+'_paired', 
+            #reportObj['objects_created'].append({'ref':str(input_params['input_ws'])+'/'+input_params['output_reads_name']+'_paired', 
             #            'description':'Trimmed Paired-End Reads'})
             retVal['output_filtered_ref'] = str(input_params['output_ws'])+'/'+str(input_params['output_reads_name']+'_paired')
 
@@ -753,13 +753,13 @@ execTrimmomaticSingleLibrary() runs Trimmomatic on a single library
             self.log(console, '\nUploading trimmed unpaired forward reads.')
             cmdstring = " ".join( ('ws-tools fastX2reads --inputfile', 'unpaired_fwd_' + fr_file_name, 
                                    '--wsurl', self.workspaceURL, '--shockurl', self.shockURL, '--outws', str(input_params['output_ws']),
-                                   '--outobj', input_params['output_read_library'] + '_unpaired_fwd', '--readcount', read_count_forward_only ) )
+                                   '--outobj', input_params['output_reads_name'] + '_unpaired_fwd', '--readcount', read_count_forward_only ) )
 
             cmdProcess = subprocess.Popen(cmdstring, stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell=True, env=env)
             stdout, stderr = cmdProcess.communicate()
             print("cmdstring: " + cmdstring + " stdout: " + stdout + " stderr: " + stderr)
             #report += "cmdstring: " + cmdstring + " stdout: " + stdout + " stderr: " + stderr
-            #reportObj['objects_created'].append({'ref':str(input_params['input_ws'])+'/'+input_params['output_read_library']+'_unpaired_fwd', 
+            #reportObj['objects_created'].append({'ref':str(input_params['input_ws'])+'/'+input_params['output_reads_name']+'_unpaired_fwd', 
             #            'description':'Trimmed Unpaired Forward Reads'})
             retVal['output_unpaired_fwd_ref'] = str(input_params['output_ws'])+'/'+str(input_params['output_reads_name']+'_unpaired_fwd')
 
@@ -768,13 +768,13 @@ execTrimmomaticSingleLibrary() runs Trimmomatic on a single library
             self.log(console, '\nUploading trimmed unpaired reverse reads.')
             cmdstring = " ".join( ('ws-tools fastX2reads --inputfile', 'unpaired_rev_' + rev_file_name, 
                                    '--wsurl', self.workspaceURL, '--shockurl', self.shockURL, '--outws', str(input_params['output_ws']),
-                                   '--outobj', input_params['output_read_library'] + '_unpaired_rev', '--readcount', read_count_reverse_only ) )
+                                   '--outobj', input_params['output_reads_name'] + '_unpaired_rev', '--readcount', read_count_reverse_only ) )
 
             cmdProcess = subprocess.Popen(cmdstring, stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell=True, env=env)
             stdout, stderr = cmdProcess.communicate()
             print("cmdstring: " + cmdstring + " stdout: " + stdout + " stderr: " + stderr)
             #report += "cmdstring: " + cmdstring + " stdout: " + stdout + " stderr: " + stderr
-            #reportObj['objects_created'].append({'ref':str(input_params['input_ws'])+'/'+input_params['output_read_library']+'_unpaired_rev', 
+            #reportObj['objects_created'].append({'ref':str(input_params['input_ws'])+'/'+input_params['output_reads_name']+'_unpaired_rev', 
             #            'description':'Trimmed Unpaired Reverse Reads'})
             retVal['output_unpaired_rev_ref'] = str(input_params['output_ws'])+'/'+str(input_params['output_reads_name']+'_unpaired_rev')
 
@@ -826,12 +826,12 @@ execTrimmomaticSingleLibrary() runs Trimmomatic on a single library
             #upload reads
             cmdstring = " ".join( ('ws-tools fastX2reads --inputfile', 'trimmed_' + fr_file_name, 
                                    '--wsurl', self.workspaceURL, '--shockurl', self.shockURL, '--outws', str(input_params['output_ws']),
-                                   '--outobj', input_params['output_read_library'], '--readcount', readcount ) )
+                                   '--outobj', input_params['output_reads_name'], '--readcount', readcount ) )
 
             cmdProcess = subprocess.Popen(cmdstring, stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell=True, env=env)
             stdout, stderr = cmdProcess.communicate()
             #report += "cmdstring: " + cmdstring + " stdout: " + stdout + " stderr: " + stderr
-            #reportObj['objects_created'].append({'ref':str(input_params['input_ws'])+'/'+input_params['output_read_library'], 
+            #reportObj['objects_created'].append({'ref':str(input_params['input_ws'])+'/'+input_params['output_reads_name'], 
             #            'description':'Trimmed Reads'})
             retVal['output_filtered_ref'] = str(input_params['output_ws'])+'/'+str(input_params['output_reads_name'])
 
