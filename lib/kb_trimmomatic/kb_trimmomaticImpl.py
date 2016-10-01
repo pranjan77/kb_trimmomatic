@@ -608,12 +608,11 @@ execTrimmomaticSingleLibrary() runs Trimmomatic on a single library
         # FIX: USE ReadsUtils HERE INSTEAD
         #
         try:
-            readLibrary = wsClient.get_objects([{'name': input_params['input_read_library'], 
-                                                 'workspace' : input_params['input_ws']}])[0]
+            readLibrary = wsClient.get_objects([{'ref': input_params['input_reads_name']}])[0]
             info = readLibrary['info']
 
         except Exception as e:
-            raise ValueError('Unable to get read library object from workspace: (' + str(input_params['input_ws'])+ '/' + str(input_params['input_read_library']) +')' + str(e))
+            raise ValueError('Unable to get read library object from workspace: (' + str(input_params['input_reads_ref']) +')' + str(e))
 
 
         # PairedEndLibrary
