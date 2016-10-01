@@ -548,6 +548,7 @@ execTrimmomaticSingleLibrary() runs Trimmomatic on a single library
         # conditional arg behavior
         arg = 'adapterFa'
         if arg not in input_params or input_params[arg] == None or input_params[arg] == '':
+            input_params['adapterFa'] = None
             input_params['seed_mismatches'] = None
             input_params['palindrom_clip_threshold'] = None
             input_params['simple_clip_threshold'] = None
@@ -559,7 +560,6 @@ execTrimmomaticSingleLibrary() runs Trimmomatic on a single library
             provenance = ctx['provenance']
         # add additional info to provenance here, in this case the input data object reference
         provenance[0]['input_ws_objects']=[str(input_params['input_reads_ref'])]
-
 
         # Determine whether read library is of correct type
         #
