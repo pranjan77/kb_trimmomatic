@@ -394,7 +394,7 @@ execTrimmomaticSingleLibrary() runs Trimmomatic on a single library
             report += "RUNNING TRIMMOMATIC ON LIBRARY: "+str(input_reads_library_ref)+"\n"
             report += "--------------------------------\n\n"
             trimmomatic_retVal = self.execTrimmomaticSingleLibrary (ctx, execTrimmomaticParams)
-            report += trimmomatic_retVal['report']+"\n\n"
+            #report += trimmomatic_retVal['report']+"\n\n"   # DEBUG
             trimmed_readSet.append (trimmomatic_retVal['output_trimmed_ref'])
             unpaired_fwd_readSet.append (trimmomatic_retVal['output_unpaired_fwd_ref'])
             unpaired_rev_readSet.append (trimmomatic_retVal['output_unpaired_rev_ref'])
@@ -702,7 +702,6 @@ execTrimmomaticSingleLibrary() runs Trimmomatic on a single library
             self.log(console, 'Starting Trimmomatic')
             cmdProcess = subprocess.Popen(cmdstring, stdout=subprocess.PIPE, stderr=subprocess.STDOUT, shell=True)
 
-
             outputlines = []
 
             while True:
@@ -717,7 +716,6 @@ execTrimmomaticSingleLibrary() runs Trimmomatic on a single library
 
             report += "\n".join(outputlines)
             #report += "cmdstring: " + cmdstring + " stdout: " + stdout + " stderr " + stderr
-
 
             #get read counts
             match = re.search(r'Input Read Pairs: (\d+).*?Both Surviving: (\d+).*?Forward Only Surviving: (\d+).*?Reverse Only Surviving: (\d+).*?Dropped: (\d+)', report)
