@@ -359,7 +359,7 @@ execTrimmomaticSingleLibrary() runs Trimmomatic on a single library
         else:
             try:
                 setAPI_Client = SetAPIClient (url=self.callbackURL, token=ctx['token'])
-                readSet_obj = setAPI_Client.get_reads_set_v1 ({'ref':input_paras['input_reads_ref']})
+                readSet_obj = setAPI_Client.get_reads_set_v1 ({'ref':input_params['input_reads_ref']})
                 for readLibrary_obj in readSet_obj['items']:
                     readSet_ref_list.append(readLibrary_obj['ref'])
             except Exception as e:
@@ -610,6 +610,7 @@ execTrimmomaticSingleLibrary() runs Trimmomatic on a single library
         try:
             readLibrary = wsClient.get_objects ([{'ref':input_params['input_reads_ref']}])[0]
             info = readLibrary['info']
+            input_obj_name = info[1]
 
         except Exception as e:
             raise ValueError('Unable to get read library object from workspace: (' + str(input_params['input_reads_ref']) +')' + str(e))
@@ -744,7 +745,8 @@ execTrimmomaticSingleLibrary() runs Trimmomatic on a single library
             #report += "cmdstring: " + cmdstring + " stdout: " + stdout + " stderr: " + stderr
             #reportObj['objects_created'].append({'ref':str(input_params['input_ws'])+'/'+input_params['output_reads_name']+'_paired', 
             #            'description':'Trimmed Paired-End Reads'})
-            retVal['output_filtered_ref'] = str(input_params['output_ws'])+'/'+str(input_params['output_reads_name']+'_paired')
+            #retVal['output_filtered_ref'] = str(input_params['output_ws'])+'/'+str(input_params['output_reads_name']+'_paired')
+            retVal['output_filtered_ref'] = str(input_params['output_ws']+'/'+input_obj_name+'_trimm_paired')
 
 
             #upload reads forward unpaired
@@ -759,7 +761,8 @@ execTrimmomaticSingleLibrary() runs Trimmomatic on a single library
             #report += "cmdstring: " + cmdstring + " stdout: " + stdout + " stderr: " + stderr
             #reportObj['objects_created'].append({'ref':str(input_params['input_ws'])+'/'+input_params['output_reads_name']+'_unpaired_fwd', 
             #            'description':'Trimmed Unpaired Forward Reads'})
-            retVal['output_unpaired_fwd_ref'] = str(input_params['output_ws'])+'/'+str(input_params['output_reads_name']+'_unpaired_fwd')
+            #retVal['output_unpaired_fwd_ref'] = str(input_params['output_ws'])+'/'+str(input_params['output_reads_name']+'_unpaired_fwd')
+            retVal['output_unpaired_fwd_ref'] = str(input_params['output_ws']+'/'+input_obj_name+'_trimm_unpaired_fwd')
 
 
             #upload reads reverse unpaired
@@ -774,7 +777,8 @@ execTrimmomaticSingleLibrary() runs Trimmomatic on a single library
             #report += "cmdstring: " + cmdstring + " stdout: " + stdout + " stderr: " + stderr
             #reportObj['objects_created'].append({'ref':str(input_params['input_ws'])+'/'+input_params['output_reads_name']+'_unpaired_rev', 
             #            'description':'Trimmed Unpaired Reverse Reads'})
-            retVal['output_unpaired_rev_ref'] = str(input_params['output_ws'])+'/'+str(input_params['output_reads_name']+'_unpaired_rev')
+            #retVal['output_unpaired_rev_ref'] = str(input_params['output_ws'])+'/'+str(input_params['output_reads_name']+'_unpaired_rev')
+            retVal['output_unpaired_rev_ref'] = str(input_params['output_ws']+'/'+input_obj_name+'_trimm_unpaired_rev')
 
 
         # SingleEndLibrary
@@ -831,7 +835,8 @@ execTrimmomaticSingleLibrary() runs Trimmomatic on a single library
             #report += "cmdstring: " + cmdstring + " stdout: " + stdout + " stderr: " + stderr
             #reportObj['objects_created'].append({'ref':str(input_params['input_ws'])+'/'+input_params['output_reads_name'], 
             #            'description':'Trimmed Reads'})
-            retVal['output_filtered_ref'] = str(input_params['output_ws'])+'/'+str(input_params['output_reads_name'])
+            #retVal['output_filtered_ref'] = str(input_params['output_ws'])+'/'+str(input_params['output_reads_name'])
+            retVal['output_filtered_ref'] = str(input_params['output_ws']+'/'+input_params['output_reads_name'])
 
 
         # return created objects
