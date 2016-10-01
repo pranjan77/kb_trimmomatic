@@ -359,7 +359,7 @@ execTrimmomaticSingleLibrary() runs Trimmomatic on a single library
         else:
             try:
                 setAPI_Client = SetAPIClient (url=self.callbackURL, token=ctx['token'])
-                readSet_obj = setAPI_Client.get_reads_set_v1 ({'ref':input_reads_ref})
+                readSet_obj = setAPI_Client.get_reads_set_v1 ({'ref':input_paras['input_reads_ref']})
                 for readLibrary_obj in readSet_obj['items']:
                     readSet_ref_list.append(readLibrary_obj['ref'])
             except Exception as e:
@@ -375,7 +375,7 @@ execTrimmomaticSingleLibrary() runs Trimmomatic on a single library
         for input_reads_library_ref in readsSet_ref_list:
             execTrimmomaticParams = { 'input_reads_ref': input_reads_library_ref,
                                       'output_ws': input_params['output_ws'],
-                                      'output_reads_name': input_params['output_reads_name'],
+                                      'output_reads_name': input_params['output_reads_name']+"."+input_reads_library_ref,
                                       'read_type': input_params['read_type'],
                                       'adapterFa': input_params['adapterFa'],
                                       'seed_mismatches': input_params['seed_mismatches'],
@@ -400,7 +400,7 @@ execTrimmomaticSingleLibrary() runs Trimmomatic on a single library
             unpaired_rev_readSet.append (trimmomatic_retVal['output_unpaired_rev_ref'])
 
         
-        # Single Library
+        # Just one Library
         if input_reads_obj_type != "KBaseSets.ReadsSet":
 
             # create return output object
@@ -608,7 +608,7 @@ execTrimmomaticSingleLibrary() runs Trimmomatic on a single library
         # FIX: USE ReadsUtils HERE INSTEAD
         #
         try:
-            readLibrary = wsClient.get_objects([{'ref': input_params['input_reads_name']}])[0]
+            readLibrary = wsClient.get_objects ([{'ref':input_params['input_reads_ref']}])[0]
             info = readLibrary['info']
 
         except Exception as e:
