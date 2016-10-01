@@ -209,7 +209,7 @@ execTrimmomaticSingleLibrary() runs Trimmomatic on a single library
                                   'min_length': input_params['min_length']
                                   }
 
-        trimmomatic_retVal = self.execTrimmomatic (ctx, execTrimmomaticParams)
+        trimmomatic_retVal = self.execTrimmomatic (ctx, execTrimmomaticParams)[0]
 
 
         # build report
@@ -393,8 +393,8 @@ execTrimmomaticSingleLibrary() runs Trimmomatic on a single library
 
             report += "RUNNING TRIMMOMATIC ON LIBRARY: "+str(input_reads_library_ref)+"\n"
             report += "--------------------------------\n\n"
-            trimmomatic_retVal = self.execTrimmomaticSingleLibrary (ctx, execTrimmomaticParams)
-            #report += trimmomatic_retVal['report']+"\n\n"   # DEBUG
+            trimmomatic_retVal = self.execTrimmomaticSingleLibrary (ctx, execTrimmomaticParams)[0]
+            report += trimmomatic_retVal['report']+"\n\n"
             trimmed_readSet.append (trimmomatic_retVal['output_trimmed_ref'])
             unpaired_fwd_readSet.append (trimmomatic_retVal['output_unpaired_fwd_ref'])
             unpaired_rev_readSet.append (trimmomatic_retVal['output_unpaired_rev_ref'])
