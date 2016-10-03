@@ -687,7 +687,7 @@ execTrimmomaticSingleLibrary() runs Trimmomatic on a single library
                     self.log(console, "Reads are compressed, uncompressing.")
                     cmdProcess = subprocess.Popen(bcmdstring, stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell=True, executable='/bin/bash')
                     stdout, stderr = cmdProcess.communicate()
-                    self.log(console, "\n".join(stdout, stderr, "done"))
+                    self.log(console, "\n".join((stdout, stderr, "done")))
                     rev_file_name = re.sub(r'\.gz\Z', '', rev_file_name)
                     fr_file_name = re.sub(r'\.gz\Z', '', fr_file_name)
 
