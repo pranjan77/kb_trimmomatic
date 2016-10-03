@@ -354,14 +354,17 @@ execTrimmomaticSingleLibrary() runs Trimmomatic on a single library
         # get set
         #
         readsSet_ref_list = []
+        readsSet_names_list = []
         if input_reads_obj_type != "KBaseSets.ReadsSet":
             readsSet_ref_list = [input_params['input_reads_ref']]
         else:
             try:
                 setAPI_Client = SetAPI.SetAPIClient (url=self.callbackURL, token=ctx['token'])
-                readSet_obj = setAPI_Client.get_reads_set_v1 ({'ref':input_params['input_reads_ref']})
-                for readLibrary_obj in readSet_obj['items']:
-                    readSet_ref_list.append(readLibrary_obj['ref'])
+                readsSet_obj = setAPI_Client.get_reads_set_v1 ({'ref':input_params['input_reads_ref']})
+                for readsLibrary_obj in readsSet_obj['items']:
+                    readsSet_ref_list.append(readsLibrary_obj['ref'])
+                    NAME_I = 1
+                    readsSet_names_list.append(readsLibrary_obj['info'][NAME_I])
             except Exception as e:
                 raise ValueError('SetAPI FAILURE: Unable to get read library set object from workspace: (' + str(input_params['input_reads_ref'])+')' + str(e))
 
@@ -372,10 +375,9 @@ execTrimmomaticSingleLibrary() runs Trimmomatic on a single library
         unpaired_fwd_readSet = []
         unpaired_rev_readSet = []
 
-        for input_reads_library_ref in readsSet_ref_list:
+        for reads_item_i,input_reads_library_ref in enumerate(readsSet_ref_list):
             execTrimmomaticParams = { 'input_reads_ref': input_reads_library_ref,
                                       'output_ws': input_params['output_ws'],
-                                      'output_reads_name': input_params['output_reads_name']+"."+input_reads_library_ref,
                                       'read_type': input_params['read_type'],
                                       'adapterFa': input_params['adapterFa'],
                                       'seed_mismatches': input_params['seed_mismatches'],
@@ -390,6 +392,11 @@ execTrimmomaticSingleLibrary() runs Trimmomatic on a single library
                                       'head_crop_length': input_params['head_crop_length'],
                                       'min_length': input_params['min_length']
                                     }
+            
+            if input_reads_obj_type != "KBaseSets.ReadsSet":
+                execTrimmomaticParams['output_reads_name'] = input_params['output_reads_name']
+            else:
+                execTrimmomaticParams['output_reads_name'] = readsSet_names_list[reads_item_i]
 
             report += "RUNNING TRIMMOMATIC ON LIBRARY: "+str(input_reads_library_ref)+"\n"
             report += "--------------------------------\n\n"
