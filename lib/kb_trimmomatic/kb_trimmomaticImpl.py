@@ -361,6 +361,7 @@ execTrimmomaticSingleLibrary() runs Trimmomatic on a single library
         else:
             try:
                 setAPI_Client = SetAPI.SetAPIClient (url=self.callbackURL, token=ctx['token'])
+                #setAPI_Client = SetAPIClient (url=self.callbackURL, token=ctx['token'])
                 readsSet_obj = setAPI_Client.get_reads_set_v1 ({'ref':input_params['input_reads_ref']})
                 for readsLibrary_obj in readsSet_obj['data']['items']:
                     readsSet_ref_list.append(readsLibrary_obj['ref'])
