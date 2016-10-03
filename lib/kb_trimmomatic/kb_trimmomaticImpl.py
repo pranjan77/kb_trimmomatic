@@ -429,7 +429,7 @@ execTrimmomaticSingleLibrary() runs Trimmomatic on a single library
                               #'data_attachment': ,
                               #'info':
                              })
-            output_readsSet_obj = { 'description': readsSet_obj['data']['description']+" Trimmomatic paired reads"
+            output_readsSet_obj = { 'description': readsSet_obj['data']['description']+" Trimmomatic paired reads",
                                     'items': items
                                     }
             trimmed_readsSet_ref = setAPI_Client.save_reads_set_v1 ({'workspace_name': input_params['output_ws'],
@@ -449,7 +449,7 @@ execTrimmomaticSingleLibrary() runs Trimmomatic on a single library
                                   #'data_attachment': ,
                                   #'info':
                                       })
-                output_readsSet_obj = { 'description': readsSet_obj['data']['description']+" Trimmomatic unpaired fwd reads"
+                output_readsSet_obj = { 'description': readsSet_obj['data']['description']+" Trimmomatic unpaired fwd reads",
                                         'items': items
                                         }
                 unpaired_fwd_readsSet_ref = setAPI_Client.save_reads_set_v1 ({'workspace_name': input_params['output_ws'],
@@ -469,7 +469,7 @@ execTrimmomaticSingleLibrary() runs Trimmomatic on a single library
                                   #'data_attachment': ,
                                   #'info':
                                       })
-                output_readsSet_obj = { 'description': readsSet_obj['data']['description']+" Trimmomatic unpaired fwd reads"
+                output_readsSet_obj = { 'description': readsSet_obj['data']['description']+" Trimmomatic unpaired fwd reads",
                                         'items': items
                                         }
                 unpaired_rev_readsSet_ref = setAPI_Client.save_reads_set_v1 ({'workspace_name': input_params['output_ws'],
