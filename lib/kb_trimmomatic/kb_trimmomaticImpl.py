@@ -247,7 +247,7 @@ execTrimmomaticSingleLibrary() runs Trimmomatic on a single library
 
         # save report object
         #
-        reportName = 'trimmomatic_report_' + str(hex(uuid.getnode()))
+        reportName = 'trimmomatic_report_' + str(uuid.uuid4())
         report_obj_info = wsClient.save_objects({
                 'workspace': input_params['input_ws'],
                 'objects':[
