@@ -426,18 +426,21 @@ execTrimmomaticSingleLibrary() runs Trimmomatic on a single library
             # save trimmed readsSet
             items = []
             for i,lib_ref in enumerate(trimmed_readsSet_refs):
-                try:
-                    label = input_readsSet_obj['data']['items'][i]['label']
-                except:
-                    NAME_I = 1
-                    label = wsClient.get_object_info_new ({'objects':[{'ref':lib_ref}]})[0][NAME_I]
-                label = lib_name+"_Trimm_paired"
+                if lib_ref == None:
+                    items.append(None)
+                else:
+                    try:
+                        label = input_readsSet_obj['data']['items'][i]['label']
+                    except:
+                        NAME_I = 1
+                        label = wsClient.get_object_info_new ({'objects':[{'ref':lib_ref}]})[0][NAME_I]
+                    label = lib_name+"_Trimm_paired"
 
-                items.append({'ref': lib_ref,
-                              'label': label
-                              #'data_attachment': ,
-                              #'info':
-                             })
+                    items.append({'ref': lib_ref,
+                                  'label': label
+                                  #'data_attachment': ,
+                                  #'info':
+                                      })
             output_readsSet_obj = { 'description': readsSet_obj['data']['description']+" Trimmomatic paired reads",
                                     'items': items
                                     }
@@ -449,19 +452,22 @@ execTrimmomaticSingleLibrary() runs Trimmomatic on a single library
             # save unpaired forward readsSet
             if len(unpaired_fwd_readsSet_refs) > 0:
                 items = []
-                for i,lib_ref in enumerate(unpaired_fwd_readsSet_refs):
-                    try:
-                        label = input_readsSet_obj['data']['items'][i]['label']
-                    except:
-                        NAME_I = 1
-                        label = wsClient.get_object_info_new ({'objects':[{'ref':lib_ref}]})[0][NAME_I]
-                    label = lib_name+"_Trimm_unpaired_fwd"
+                if lib_ref == None:
+                    items.append(None)
+                else:
+                    for i,lib_ref in enumerate(unpaired_fwd_readsSet_refs):
+                        try:
+                            label = input_readsSet_obj['data']['items'][i]['label']
+                        except:
+                            NAME_I = 1
+                            label = wsClient.get_object_info_new ({'objects':[{'ref':lib_ref}]})[0][NAME_I]
+                        label = lib_name+"_Trimm_unpaired_fwd"
 
-                    items.append({'ref': lib_ref,
-                                  'label': label
-                                  #'data_attachment': ,
-                                  #'info':
-                                      })
+                        items.append({'ref': lib_ref,
+                                      'label': label
+                                      #'data_attachment': ,
+                                      #'info':
+                                          })
                 output_readsSet_obj = { 'description': readsSet_obj['data']['description']+" Trimmomatic unpaired fwd reads",
                                         'items': items
                                         }
@@ -473,26 +479,29 @@ execTrimmomaticSingleLibrary() runs Trimmomatic on a single library
             # save unpaired reverse readsSet
             if len(unpaired_rev_readsSet_refs) > 0:
                 items = []
-                for i,lib_ref in enumerate(unpaired_rev_readsSet_refs):
-                    try:
-                        label = input_readsSet_obj['data']['items'][i]['label']
-                    except:
-                        NAME_I = 1
-                        label = wsClient.get_object_info_new ({'objects':[{'ref':lib_ref}]})[0][NAME_I]
-                    label = lib_name+"_Trimm_unpaired_rev"
+                if lib_ref == None:
+                    items.append(None)
+                else:
+                    for i,lib_ref in enumerate(unpaired_rev_readsSet_refs):
+                        try:
+                            label = input_readsSet_obj['data']['items'][i]['label']
+                        except:
+                            NAME_I = 1
+                            label = wsClient.get_object_info_new ({'objects':[{'ref':lib_ref}]})[0][NAME_I]
+                        label = lib_name+"_Trimm_unpaired_rev"
 
-                    items.append({'ref': lib_ref,
-                                  'label': label
-                                  #'data_attachment': ,
-                                  #'info':
-                                      })
+                        items.append({'ref': lib_ref,
+                                      'label': label
+                                      #'data_attachment': ,
+                                      #'info':
+                                          })
                 output_readsSet_obj = { 'description': readsSet_obj['data']['description']+" Trimmomatic unpaired rev reads",
                                         'items': items
                                         }
                 unpaired_rev_readsSet_ref = setAPI_Client.save_reads_set_v1 ({'workspace_name': input_params['output_ws'],
-                                                                             'output_object_name': str(input_params['output_reads_name'])+'_trimm_unpaired_rev',
-                                                                             'data': output_readsSet_obj
-                                                                             })['set_ref']
+                                                                              'output_object_name': str(input_params['output_reads_name'])+'_trimm_unpaired_rev',
+                                                                              'data': output_readsSet_obj
+                                                                              })['set_ref']
 
 
             # create return output object
