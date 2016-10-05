@@ -363,11 +363,11 @@ execTrimmomaticSingleLibrary() runs Trimmomatic on a single library
                 #self.log (console, "INPUT_READS_REF: '"+input_params['input_reads_ref']+"'")  # DEBUG
                 #setAPI_Client = SetAPI (url=self.callbackURL, token=ctx['token'])  # for SDK local.  doesn't work for SetAPI
                 setAPI_Client = SetAPI (url=self.serviceWizardURL, token=ctx['token'])  # for dynamic service
-                readsSet_obj = setAPI_Client.get_reads_set_v1 ({'ref':input_params['input_reads_ref'],'include_item_info':1})
+                input_readsSet_obj = setAPI_Client.get_reads_set_v1 ({'ref':input_params['input_reads_ref'],'include_item_info':1})
 
             except Exception as e:
                 raise ValueError('SetAPI FAILURE: Unable to get read library set object from workspace: (' + str(input_params['input_reads_ref'])+")\n" + str(e))
-            for readsLibrary_obj in readsSet_obj['data']['items']:
+            for readsLibrary_obj in input_readsSet_obj['data']['items']:
                 readsSet_ref_list.append(readsLibrary_obj['ref'])
                 NAME_I = 1
                 readsSet_names_list.append(readsLibrary_obj['info'][NAME_I])
@@ -404,7 +404,7 @@ execTrimmomaticSingleLibrary() runs Trimmomatic on a single library
                 execTrimmomaticParams['output_reads_name'] = readsSet_names_list[reads_item_i]
 
             report += "RUNNING TRIMMOMATIC ON LIBRARY: "+str(input_reads_library_ref)+"\n"
-            report += "--------------------------------\n\n"
+            report += "----------------------------------------------------------------------------\n\n"
             trimmomatic_retVal = self.execTrimmomaticSingleLibrary (ctx, execTrimmomaticParams)[0]
             report += trimmomatic_retVal['report']+"\n\n"
             trimmed_readsSet_refs.append (trimmomatic_retVal['output_filtered_ref'])
@@ -425,12 +425,16 @@ execTrimmomaticSingleLibrary() runs Trimmomatic on a single library
         else:
             # save trimmed readsSet
             items = []
-            for lib_ref in trimmed_readsSet:
-                NAME_I = 1
-                lib_name = wsClient.get_object_info_new ({'objects':[{'ref':lib_ref}]})[0][NAME_I]
-                
+            for i,lib_ref in enumerate(trimmed_readsSet_refs):
+                try:
+                    label = input_readsSet_obj['data']['items'][i]['label']
+                except:
+                    NAME_I = 1
+                    label = wsClient.get_object_info_new ({'objects':[{'ref':lib_ref}]})[0][NAME_I]
+                label = lib_name+"_Trimm_paired"
+
                 items.append({'ref': lib_ref,
-                              'label': lib_name
+                              'label': label
                               #'data_attachment': ,
                               #'info':
                              })
@@ -443,14 +447,18 @@ execTrimmomaticSingleLibrary() runs Trimmomatic on a single library
                                                                      })['set_ref']
                               
             # save unpaired forward readsSet
-            if len(unpaired_fwd_readsSet) > 0:
+            if len(unpaired_fwd_readsSet_refs) > 0:
                 items = []
-                for lib_ref in unpaired_fwd_readsSet:
-                    NAME_I = 1
-                    lib_name = wsClient.get_object_info_new ({'objects':[{'ref':lib_ref}]})[0][NAME_I]
+                for i,lib_ref in enumerate(unpaired_fwd_readsSet_refs):
+                    try:
+                        label = input_readsSet_obj['data']['items'][i]['label']
+                    except:
+                        NAME_I = 1
+                        label = wsClient.get_object_info_new ({'objects':[{'ref':lib_ref}]})[0][NAME_I]
+                    label = lib_name+"_Trimm_unpaired_fwd"
 
                     items.append({'ref': lib_ref,
-                                  'label': lib_name
+                                  'label': label
                                   #'data_attachment': ,
                                   #'info':
                                       })
@@ -463,18 +471,22 @@ execTrimmomaticSingleLibrary() runs Trimmomatic on a single library
                                                                               })['set_ref']
                               
             # save unpaired reverse readsSet
-            if len(unpaired_rev_readsSet) > 0:
+            if len(unpaired_rev_readsSet_refs) > 0:
                 items = []
-                for lib_ref in unpaired_rev_readsSet:
-                    NAME_I = 1
-                    lib_name = wsClient.get_object_info_new ({'objects':[{'ref':lib_ref}]})[0][NAME_I]
-                    
+                for i,lib_ref in enumerate(unpaired_rev_readsSet_refs):
+                    try:
+                        label = input_readsSet_obj['data']['items'][i]['label']
+                    except:
+                        NAME_I = 1
+                        label = wsClient.get_object_info_new ({'objects':[{'ref':lib_ref}]})[0][NAME_I]
+                    label = lib_name+"_Trimm_unpaired_rev"
+
                     items.append({'ref': lib_ref,
-                                  'label': lib_name
+                                  'label': label
                                   #'data_attachment': ,
                                   #'info':
                                       })
-                output_readsSet_obj = { 'description': readsSet_obj['data']['description']+" Trimmomatic unpaired fwd reads",
+                output_readsSet_obj = { 'description': readsSet_obj['data']['description']+" Trimmomatic unpaired rev reads",
                                         'items': items
                                         }
                 unpaired_rev_readsSet_ref = setAPI_Client.save_reads_set_v1 ({'workspace_name': input_params['output_ws'],
