@@ -358,6 +358,7 @@ execTrimmomaticSingleLibrary() runs Trimmomatic on a single library
         if input_reads_obj_type != "KBaseSets.ReadsSet":
             readsSet_ref_list = [input_params['input_reads_ref']]
         else:
+            self.log (console, "INPUT_READS_REF: '"+input_params['input_reads_ref']+"'")  # DEBUG
             try:
                 #setAPI_Client = SetAPI (url=self.callbackURL, token=ctx['token'])
                 setAPI_Client = SetAPI (self.callbackURL)
