@@ -13,7 +13,7 @@ import uuid
 
 # SDK Utils
 #from ReadsUtils.ReadsUtilsClient import ReadsUtilsClient  # FIX
-#from ReadsUtils.ReadsUtilsClient import ReadsUtils
+from ReadsUtils.ReadsUtilsClient import ReadsUtils
 from SetAPI.SetAPIClient import SetAPI
 #END_HEADER
 
@@ -646,103 +646,48 @@ execTrimmomaticSingleLibrary() runs Trimmomatic on a single library
         self.log(console, pformat(trimmomatic_options))
 
 
-        #
-        # FIX: USE ReadsUtils HERE INSTEAD
+        # Instatiate ReadsUtils
         #
         try:
-            readLibrary = wsClient.get_objects ([{'ref':input_params['input_reads_ref']}])[0]
-            info = readLibrary['info']
-            input_obj_name = info[1]
-
+            ReadsUtils_Client = ReadsUtils (url=self.callbackURL, token=ctx['token'])  # SDK local
+            
+            readLibrary = ReadsUtils_Client.download_reads ({'read_libraries': [input_params['input_reads_ref']],
+                                                                 'interleaved': False
+                                                                 })
         except Exception as e:
-            raise ValueError('Unable to get read library object from workspace: (' + str(input_params['input_reads_ref']) +')' + str(e))
+            raise ValueError('Unable to get read library object from workspace: (' + str(input_params['input_reads_ref']) +")\n" + str(e))
 
 
-        # PairedEndLibrary
-        #
         if input_params['read_type'] == 'PE':
 
-            fr_type = ''
-            rv_type = ''
-            if 'lib1' in readLibrary['data']:
-                forward_reads = readLibrary['data']['lib1']['file']
-                # type is required if lib1 is present
-                fr_type = '.' + readLibrary['data']['lib1']['type']
-            elif 'handle_1' in readLibrary['data']:
-                forward_reads = readLibrary['data']['handle_1']
-            if 'lib2' in readLibrary['data']:
-                reverse_reads = readLibrary['data']['lib2']['file']
-                # type is required if lib2 is present
-                rv_type = '.' + readLibrary['data']['lib2']['type']
-            elif 'handle_2' in readLibrary['data']:
-                reverse_reads = readLibrary['data']['handle_2']
-            else:
-                reverse_reads={}
+            # Download reads Libs to FASTQ files
+            input_fwd_file_path = readLibrary['files'][input_reads_ref]['files']['fwd']
+            input_rev_file_path = readLibrary['files'][input_reads_ref]['files']['rev']
 
-            fr_file_name = str(forward_reads['id']) + fr_type
-            if 'file_name' in forward_reads:
-                fr_file_name = forward_reads['file_name']
 
-            self.log(console, "\nDownloading Paired End reads file...")
-            forward_reads_file = open(fr_file_name, 'w', 0)
-            print("cwd: " + str(os.getcwd()) )
+            # Run Trimmomatic
+            #
+            self.log(console, 'Starting Trimmomatic')
+            input_fwd_file_path = re.sub ("\.fastq", "", input_fwd_file_path)
+            input_fwd_file_path = re.sub ("\.FASTQ", "", input_fwd_file_path)
+            input_rev_file_path = re.sub ("\.fastq", "", input_rev_file_path)
+            input_rev_file_path = re.sub ("\.FASTQ", "", input_rev_file_path)
+            output_fwd_paired_file_path   = input_fwd_file_path+"_trimm_fwd_paired.fastq"
+            output_fwd_unpaired_file_path = input_fwd_file_path+"_trimm_fwd_unpaired.fastq"
+            output_rev_paired_file_path   = input_rev_file_path+"_trimm_rev_paired.fastq"
+            output_rev_unpaired_file_path = input_rev_file_path+"_trimm_rev_unpaired.fastq"
+            input_fwd_file_path           = input_fwd_file_path+".fastq"
+            input_rev_file_path           = input_rev_file_path+".fastq"
             
-            r = requests.get(forward_reads['url']+'/node/'+str(forward_reads['id'])+'?download', stream=True, headers=headers)
-            for chunk in r.iter_content(1024):
-                forward_reads_file.write(chunk)
-            forward_reads_file.close()
-            self.log(console, 'done\n')
-
-            if 'interleaved' in readLibrary['data'] and readLibrary['data']['interleaved']:
-                if re.search('gz', fr_file_name, re.I):
-                    bcmdstring = 'gunzip -c ' + fr_file_name
-                    self.log(console, "Reads are gzip'd and interleaved, uncompressing and deinterleaving.")
-                else:    
-                    bcmdstring = 'cat ' + fr_file_name 
-                    self.log(console, "Reads are interleaved, deinterleaving.")
-
-                
-                cmdstring = bcmdstring + '| (paste - - - - - - - -  | tee >(cut -f 1-4 | tr "\t" "\n" > forward.fastq) | cut -f 5-8 | tr "\t" "\n" > reverse.fastq )'
-                cmdProcess = subprocess.Popen(cmdstring, stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell=True, executable='/bin/bash')
-                stdout, stderr = cmdProcess.communicate()
-
-                # Check return status
-                report = "cmdstring: " + cmdstring + " stdout: " + stdout + " stderr: " + stderr
-                self.log(console, 'done\n')
-                fr_file_name='forward.fastq'
-                rev_file_name='reverse.fastq'
-            else:
-                self.log(console, 'Downloading reverse reads.')
-                rev_file_name = str(reverse_reads['id']) + rv_type
-                if 'file_name' in reverse_reads:
-                    rev_file_name = reverse_reads['file_name']
-                reverse_reads_file = open(rev_file_name, 'w', 0)
-
-                r = requests.get(reverse_reads['url']+'/node/'+str(reverse_reads['id'])+'?download', stream=True, headers=headers)
-                for chunk in r.iter_content(1024):
-                    reverse_reads_file.write(chunk)
-                reverse_reads_file.close()
-                self.log(console, 'done\n')
-
-                if re.search('gz', rev_file_name, re.I):
-                    bcmdstring = 'gunzip ' + rev_file_name + ' ' + fr_file_name
-                    self.log(console, "Reads are compressed, uncompressing.")
-                    cmdProcess = subprocess.Popen(bcmdstring, stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell=True, executable='/bin/bash')
-                    stdout, stderr = cmdProcess.communicate()
-                    self.log(console, "\n".join((stdout, stderr, "done")))
-                    rev_file_name = re.sub(r'\.gz\Z', '', rev_file_name)
-                    fr_file_name = re.sub(r'\.gz\Z', '', fr_file_name)
-
             cmdstring = " ".join( (self.TRIMMOMATIC, trimmomatic_options, 
-                            fr_file_name, 
-                            rev_file_name,
-                            'forward_paired_'   +fr_file_name,
-                            'unpaired_fwd_' +fr_file_name,
-                            'reverse_paired_'   +rev_file_name,
-                            'unpaired_rev_' +rev_file_name,
+                            input_fwd_file_path, 
+                            input_rev_file_path,
+                            output_fwd_paired_file_path,
+                            output_fwd_unpaired_file_path,
+                            output_rev_paired_file_path,
+                            output_rev_unpaired_file_path,
                             trimmomatic_params) )
 
-            self.log(console, 'Starting Trimmomatic')
             cmdProcess = subprocess.Popen(cmdstring, stdout=subprocess.PIPE, stderr=subprocess.STDOUT, shell=True)
 
             outputlines = []
