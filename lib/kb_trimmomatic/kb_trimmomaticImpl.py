@@ -133,7 +133,7 @@ execTrimmomaticSingleLibrary() runs Trimmomatic on a single library
         self.shockURL = config['shock-url']
         self.scratch = os.path.abspath(config['scratch'])
         self.handleURL = config['handle-service-url']
-        self.serviceWizardURL = config['service-wizard-url']  # FIX
+        self.serviceWizardURL = config['service-wizard-url']
 
         #self.callbackURL = os.environ['SDK_CALLBACK_URL'] if os.environ['SDK_CALLBACK_URL'] != None else 'https://kbase.us/services/njs_wrapper'  # DEBUG
         self.callbackURL = os.environ.get('SDK_CALLBACK_URL')
@@ -361,8 +361,7 @@ execTrimmomaticSingleLibrary() runs Trimmomatic on a single library
         else:
             self.log (console, "INPUT_READS_REF: '"+input_params['input_reads_ref']+"'")  # DEBUG
             try:
-                #setAPI_Client = SetAPI (url=self.serviceWizardURL, token=ctx['token'])  # for dynamic service
-                setAPI_Client = SetAPI (url=self.serviceWizardURL)  # for dynamic service
+                setAPI_Client = SetAPI (url=self.serviceWizardURL, token=ctx['token'])  # for dynamic service
                 #setAPI_Client = SetAPI (self.callbackURL)  # for SDK local
 
             except Exception as e:
