@@ -649,9 +649,9 @@ execTrimmomaticSingleLibrary() runs Trimmomatic on a single library
         # Instatiate ReadsUtils
         #
         try:
-            ReadsUtils_Client = ReadsUtils (url=self.callbackURL, token=ctx['token'])  # SDK local
+            readsUtils_Client = ReadsUtils (url=self.callbackURL, token=ctx['token'])  # SDK local
             
-            readLibrary = ReadsUtils_Client.download_reads ({'read_libraries': [input_params['input_reads_ref']]
+            readLibrary = readsUtils_Client.download_reads ({'read_libraries': [input_params['input_reads_ref']]
 #                                                             'interleaved': 'false'
                                                              })
         except Exception as e:
@@ -719,56 +719,33 @@ execTrimmomaticSingleLibrary() runs Trimmomatic on a single library
                 'Reverse Only Surviving: '+ read_count_reverse_only,
                 'Dropped: '+ read_count_dropped) )
 
-            #upload paired reads
+            # upload paired reads
             output_obj_name = input_params['output_reads_name']+'_trimm_paired'
-            self.log(console, 'Uploading trimmed paired reads.')
-            cmdstring = " ".join( ('ws-tools fastX2reads --inputfile', 'forward_paired_' + fr_file_name, 
-                                   '--inputfile2', 'reverse_paired_' + rev_file_name,
-                                   '--wsurl', self.workspaceURL, '--shockurl', self.shockURL, '--outws', str(input_params['output_ws']),
-                                   '--outobj', output_obj_name, '--readcount', read_count_paired ) )
-
-            cmdProcess = subprocess.Popen(cmdstring, stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell=True, env=env)
-            stdout, stderr = cmdProcess.communicate()
-            print("cmdstring: " + cmdstring + " stdout: " + stdout + " stderr: " + stderr)
-            #report += "cmdstring: " + cmdstring + " stdout: " + stdout + " stderr: " + stderr
-            #reportObj['objects_created'].append({'ref':str(input_params['input_ws'])+'/'+input_params['output_reads_name']+'_paired', 
-            #            'description':'Trimmed Paired-End Reads'})
-            #retVal['output_filtered_ref'] = str(input_params['output_ws'])+'/'+str(input_params['output_reads_name']+'_paired')
-            retVal['output_filtered_ref'] = str(input_params['output_ws']+'/'+output_obj_name)
+            self.log(console, 'Uploading trimmed paired reads: '+output_obj_name)
+            retVal['output_filtered_ref'] = readsUtils_Client.upload_reads ({ 'wsname': str(input_params['output_ws']),
+                                                                              'name': output_obj_name,
+                                                                              'fwd_file': output_fwd_paired_file_path,
+                                                                              'rev_file': output_rev_paired_file_path
+                                                                              })
 
 
-            #upload reads forward unpaired
+            # upload reads forward unpaired
             output_obj_name = input_params['output_reads_name']+'_trimm_unpaired_fwd'
-            self.log(console, '\nUploading trimmed unpaired forward reads.')
-            cmdstring = " ".join( ('ws-tools fastX2reads --inputfile', 'unpaired_fwd_' + fr_file_name, 
-                                   '--wsurl', self.workspaceURL, '--shockurl', self.shockURL, '--outws', str(input_params['output_ws']),
-                                   '--outobj', output_obj_name, '--readcount', read_count_forward_only ) )
-
-            cmdProcess = subprocess.Popen(cmdstring, stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell=True, env=env)
-            stdout, stderr = cmdProcess.communicate()
-            print("cmdstring: " + cmdstring + " stdout: " + stdout + " stderr: " + stderr)
-            #report += "cmdstring: " + cmdstring + " stdout: " + stdout + " stderr: " + stderr
-            #reportObj['objects_created'].append({'ref':str(input_params['input_ws'])+'/'+input_params['output_reads_name']+'_unpaired_fwd', 
-            #            'description':'Trimmed Unpaired Forward Reads'})
-            #retVal['output_unpaired_fwd_ref'] = str(input_params['output_ws'])+'/'+str(input_params['output_reads_name']+'_unpaired_fwd')
-            retVal['output_unpaired_fwd_ref'] = str(input_params['output_ws']+'/'+output_obj_name)
+            self.log(console, '\nUploading trimmed unpaired forward reads: '+output_obj_name)
+            retVal['output_unpaired_fwd_ref'] = readsUtils_Client.upload_reads ({ 'wsname': str(input_params['output_ws']),
+                                                                                  'name': output_obj_name,
+                                                                                  'fwd_file': output_fwd_unpaired_file_path
+                                                                                  })
 
 
-            #upload reads reverse unpaired
+
+            # upload reads reverse unpaired
             output_obj_name = input_params['output_reads_name']+'_trimm_unpaired_rev'
-            self.log(console, '\nUploading trimmed unpaired reverse reads.')
-            cmdstring = " ".join( ('ws-tools fastX2reads --inputfile', 'unpaired_rev_' + rev_file_name, 
-                                   '--wsurl', self.workspaceURL, '--shockurl', self.shockURL, '--outws', str(input_params['output_ws']),
-                                   '--outobj', output_obj_name, '--readcount', read_count_reverse_only ) )
-
-            cmdProcess = subprocess.Popen(cmdstring, stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell=True, env=env)
-            stdout, stderr = cmdProcess.communicate()
-            print("cmdstring: " + cmdstring + " stdout: " + stdout + " stderr: " + stderr)
-            #report += "cmdstring: " + cmdstring + " stdout: " + stdout + " stderr: " + stderr
-            #reportObj['objects_created'].append({'ref':str(input_params['input_ws'])+'/'+input_params['output_reads_name']+'_unpaired_rev', 
-            #            'description':'Trimmed Unpaired Reverse Reads'})
-            #retVal['output_unpaired_rev_ref'] = str(input_params['output_ws'])+'/'+str(input_params['output_reads_name']+'_unpaired_rev')
-            retVal['output_unpaired_rev_ref'] = str(input_params['output_ws']+'/'+output_obj_name)
+            self.log(console, '\nUploading trimmed unpaired reverse reads: '+output_obj_name)
+            retVal['output_unpaired_rev_ref'] = readsUtils_Client.upload_reads ({ 'wsname': str(input_params['output_ws']),
+                                                                                  'name': output_obj_name,
+                                                                                  'fwd_file': output_rev_unpaired_file_path
+                                                                                  })
 
 
         # SingleEndLibrary
