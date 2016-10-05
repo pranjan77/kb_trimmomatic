@@ -360,8 +360,8 @@ execTrimmomaticSingleLibrary() runs Trimmomatic on a single library
         else:
             self.log (console, "INPUT_READS_REF: '"+input_params['input_reads_ref']+"'")  # DEBUG
             try:
-                #setAPI_Client = SetAPI (url=self.callbackURL, token=ctx['token'])
-                setAPI_Client = SetAPI (self.callbackURL)
+                setAPI_Client = SetAPI (url=self.callbackURL, token=ctx['token'])
+                #setAPI_Client = SetAPI (self.callbackURL)
 
             except Exception as e:
                 raise ValueError("SetAPI FAILURE: Unable to instantiate SetAPI\n" + str(e))
