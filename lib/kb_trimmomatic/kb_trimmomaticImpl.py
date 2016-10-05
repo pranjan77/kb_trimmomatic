@@ -359,15 +359,10 @@ execTrimmomaticSingleLibrary() runs Trimmomatic on a single library
         if input_reads_obj_type != "KBaseSets.ReadsSet":
             readsSet_ref_list = [input_params['input_reads_ref']]
         else:
-            self.log (console, "INPUT_READS_REF: '"+input_params['input_reads_ref']+"'")  # DEBUG
             try:
+                #self.log (console, "INPUT_READS_REF: '"+input_params['input_reads_ref']+"'")  # DEBUG
+                #setAPI_Client = SetAPI (url=self.callbackURL, token=ctx['token'])  # for SDK local.  doesn't work for SetAPI
                 setAPI_Client = SetAPI (url=self.serviceWizardURL, token=ctx['token'])  # for dynamic service
-                #setAPI_Client = SetAPI (self.callbackURL)  # for SDK local
-
-            except Exception as e:
-                raise ValueError("SetAPI FAILURE: Unable to instantiate SetAPI\n" + str(e))
-
-            try:
                 readsSet_obj = setAPI_Client.get_reads_set_v1 ({'ref':input_params['input_reads_ref'],'include_item_info':1})
 
             except Exception as e:
@@ -435,7 +430,7 @@ execTrimmomaticSingleLibrary() runs Trimmomatic on a single library
                 lib_name = wsClient.get_object_info_new ({'objects':[{'ref':lib_ref}]})[0][NAME_I]
                 
                 items.append({'ref': lib_ref,
-                              'label': lib_name,
+                              'label': lib_name
                               #'data_attachment': ,
                               #'info':
                              })
@@ -455,7 +450,7 @@ execTrimmomaticSingleLibrary() runs Trimmomatic on a single library
                     lib_name = wsClient.get_object_info_new ({'objects':[{'ref':lib_ref}]})[0][NAME_I]
 
                     items.append({'ref': lib_ref,
-                                  'label': lib_name,
+                                  'label': lib_name
                                   #'data_attachment': ,
                                   #'info':
                                       })
@@ -475,7 +470,7 @@ execTrimmomaticSingleLibrary() runs Trimmomatic on a single library
                     lib_name = wsClient.get_object_info_new ({'objects':[{'ref':lib_ref}]})[0][NAME_I]
                     
                     items.append({'ref': lib_ref,
-                                  'label': lib_name,
+                                  'label': lib_name
                                   #'data_attachment': ,
                                   #'info':
                                       })
