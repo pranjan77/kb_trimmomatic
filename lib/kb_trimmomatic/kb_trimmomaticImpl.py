@@ -434,7 +434,7 @@ execTrimmomaticSingleLibrary() runs Trimmomatic on a single library
                     except:
                         NAME_I = 1
                         label = wsClient.get_object_info_new ({'objects':[{'ref':lib_ref}]})[0][NAME_I]
-                    label = lib_name+"_Trimm_paired"
+                    label = label + "_Trimm_paired"
 
                     items.append({'ref': lib_ref,
                                   'label': label
@@ -461,7 +461,7 @@ execTrimmomaticSingleLibrary() runs Trimmomatic on a single library
                         except:
                             NAME_I = 1
                             label = wsClient.get_object_info_new ({'objects':[{'ref':lib_ref}]})[0][NAME_I]
-                        label = lib_name+"_Trimm_unpaired_fwd"
+                        label = label + "_Trimm_unpaired_fwd"
 
                         items.append({'ref': lib_ref,
                                       'label': label
@@ -488,7 +488,7 @@ execTrimmomaticSingleLibrary() runs Trimmomatic on a single library
                         except:
                             NAME_I = 1
                             label = wsClient.get_object_info_new ({'objects':[{'ref':lib_ref}]})[0][NAME_I]
-                        label = lib_name+"_Trimm_unpaired_rev"
+                        label = label + "_Trimm_unpaired_rev"
 
                         items.append({'ref': lib_ref,
                                       'label': label
