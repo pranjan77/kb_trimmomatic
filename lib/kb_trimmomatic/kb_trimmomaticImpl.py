@@ -362,10 +362,15 @@ execTrimmomaticSingleLibrary() runs Trimmomatic on a single library
             try:
                 #setAPI_Client = SetAPI (url=self.callbackURL, token=ctx['token'])
                 setAPI_Client = SetAPI (self.callbackURL)
+
+            except Exception as e:
+                raise ValueError("SetAPI FAILURE: Unable to instantiate SetAPI\n" + str(e))
+
+            try:
                 readsSet_obj = setAPI_Client.get_reads_set_v1 ({'ref':input_params['input_reads_ref'],'include_item_info':1})
 
             except Exception as e:
-                raise ValueError('SetAPI FAILURE: Unable to get read library set object from workspace: (' + str(input_params['input_reads_ref'])+')' + str(e))
+                raise ValueError('SetAPI FAILURE: Unable to get read library set object from workspace: (' + str(input_params['input_reads_ref'])+")\n" + str(e))
             for readsLibrary_obj in readsSet_obj['data']['items']:
                 readsSet_ref_list.append(readsLibrary_obj['ref'])
                 NAME_I = 1
