@@ -652,8 +652,8 @@ execTrimmomaticSingleLibrary() runs Trimmomatic on a single library
             ReadsUtils_Client = ReadsUtils (url=self.callbackURL, token=ctx['token'])  # SDK local
             
             readLibrary = ReadsUtils_Client.download_reads ({'read_libraries': [input_params['input_reads_ref']],
-                                                                 'interleaved': 'false'
-                                                                 })
+                                                             'interleaved': 'false'
+                                                             })
         except Exception as e:
             raise ValueError('Unable to get read library object from workspace: (' + str(input_params['input_reads_ref']) +")\n" + str(e))
 
@@ -661,8 +661,8 @@ execTrimmomaticSingleLibrary() runs Trimmomatic on a single library
         if input_params['read_type'] == 'PE':
 
             # Download reads Libs to FASTQ files
-            input_fwd_file_path = readLibrary['files'][input_reads_ref]['files']['fwd']
-            input_rev_file_path = readLibrary['files'][input_reads_ref]['files']['rev']
+            input_fwd_file_path = readLibrary['files'][input_params['input_reads_ref']]['files']['fwd']
+            input_rev_file_path = readLibrary['files'][input_params['input_reads_ref']]['files']['rev']
 
 
             # Run Trimmomatic
