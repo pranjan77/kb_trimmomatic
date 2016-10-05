@@ -651,8 +651,8 @@ execTrimmomaticSingleLibrary() runs Trimmomatic on a single library
         try:
             ReadsUtils_Client = ReadsUtils (url=self.callbackURL, token=ctx['token'])  # SDK local
             
-            readLibrary = ReadsUtils_Client.download_reads ({'read_libraries': [input_params['input_reads_ref']],
-                                                             'interleaved': 'false'
+            readLibrary = ReadsUtils_Client.download_reads ({'read_libraries': [input_params['input_reads_ref']]
+#                                                             'interleaved': 'false'
                                                              })
         except Exception as e:
             raise ValueError('Unable to get read library object from workspace: (' + str(input_params['input_reads_ref']) +")\n" + str(e))
@@ -668,10 +668,10 @@ execTrimmomaticSingleLibrary() runs Trimmomatic on a single library
             # Run Trimmomatic
             #
             self.log(console, 'Starting Trimmomatic')
-            input_fwd_file_path = re.sub ("\.fastq", "", input_fwd_file_path)
-            input_fwd_file_path = re.sub ("\.FASTQ", "", input_fwd_file_path)
-            input_rev_file_path = re.sub ("\.fastq", "", input_rev_file_path)
-            input_rev_file_path = re.sub ("\.FASTQ", "", input_rev_file_path)
+            input_fwd_file_path = re.sub ("\.fastq$", "", input_fwd_file_path)
+            input_fwd_file_path = re.sub ("\.FASTQ$", "", input_fwd_file_path)
+            input_rev_file_path = re.sub ("\.fastq$", "", input_rev_file_path)
+            input_rev_file_path = re.sub ("\.FASTQ$", "", input_rev_file_path)
             output_fwd_paired_file_path   = input_fwd_file_path+"_trimm_fwd_paired.fastq"
             output_fwd_unpaired_file_path = input_fwd_file_path+"_trimm_fwd_unpaired.fastq"
             output_rev_paired_file_path   = input_rev_file_path+"_trimm_rev_paired.fastq"
