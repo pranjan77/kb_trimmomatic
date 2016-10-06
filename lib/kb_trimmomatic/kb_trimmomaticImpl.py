@@ -756,26 +756,23 @@ execTrimmomaticSingleLibrary() runs Trimmomatic on a single library
         #
         else:
             self.log(console, "Downloading Single End reads file...")
-            fr_file_name = ''
-            if 'handle' in readLibrary['data']:
-                forward_reads = readLibrary['data']['handle']
-            elif 'lib' in readLibrary['data']:
-                forward_reads = readLibrary['data']['lib']['file']
+
+            # Download reads Libs to FASTQ files
+            input_fwd_file_path = readLibrary['files'][input_params['input_reads_ref']]['files']['fwd']
+            sequencing_tech     = readLibrary['files'][input_params['input_reads_ref']]['sequencing_tech']
 
 
-            fr_file_name = str(forward_reads['id'])
-            if 'file_name' in forward_reads:
-                    fr_file_name = forward_reads['file_name']
-
-            reads_file = open(fr_file_name, 'w', 0)
-            r = requests.get(forward_reads['url']+'/node/'+forward_reads['id']+'?download', stream=True, headers=headers)
-            for chunk in r.iter_content(1024):
-                reads_file.write(chunk)
-            self.log(console, "done.\n")
+            # Run Trimmomatic
+            #
+            self.log(console, 'Starting Trimmomatic')
+            input_fwd_file_path = re.sub ("\.fastq$", "", input_fwd_file_path)
+            input_fwd_file_path = re.sub ("\.FASTQ$", "", input_fwd_file_path)
+            output_fwd_file_path = input_fwd_file_path+"_trimm_fwd.fastq"
+            input_fwd_file_path  = input_fwd_file_path+".fastq"
 
             cmdstring = " ".join( (self.TRIMMOMATIC, trimmomatic_options,
-                            fr_file_name,
-                            'trimmed_' + fr_file_name,
+                            input_fwd_file_path,
+                            output_fwd_file_path,
                             trimmomatic_params) )
 
             cmdProcess = subprocess.Popen(cmdstring, stdout=subprocess.PIPE, stderr=subprocess.STDOUT, shell=True)
@@ -798,17 +795,12 @@ execTrimmomaticSingleLibrary() runs Trimmomatic on a single library
 
             #upload reads
             output_obj_name = input_params['output_reads_name']
-            cmdstring = " ".join( ('ws-tools fastX2reads --inputfile', 'trimmed_' + fr_file_name, 
-                                   '--wsurl', self.workspaceURL, '--shockurl', self.shockURL, '--outws', str(input_params['output_ws']),
-                                   '--outobj', output_obj_name, '--readcount', readcount ) )
-
-            cmdProcess = subprocess.Popen(cmdstring, stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell=True, env=env)
-            stdout, stderr = cmdProcess.communicate()
-            #report += "cmdstring: " + cmdstring + " stdout: " + stdout + " stderr: " + stderr
-            #reportObj['objects_created'].append({'ref':str(input_params['input_ws'])+'/'+input_params['output_reads_name'], 
-            #            'description':'Trimmed Reads'})
-            #retVal['output_filtered_ref'] = str(input_params['output_ws'])+'/'+str(input_params['output_reads_name'])
-            retVal['output_filtered_ref'] = str(input_params['output_ws']+'/'+output_obj_name)
+            self.log(console, 'Uploading trimmed reads: '+output_obj_name)
+            retVal['output_filtered_ref'] = readsUtils_Client.upload_reads ({ 'wsname': str(input_params['output_ws']),
+                                                                              'name': output_obj_name,
+                                                                              'sequencing_tech': sequencing_tech,
+                                                                              'fwd_file': output_fwd_file_path
+                                                                              })
 
 
         # return created objects
