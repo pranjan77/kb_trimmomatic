@@ -599,7 +599,7 @@ execTrimmomaticSingleLibrary() runs Trimmomatic on a single library
                 raise ValueError ("Must define required param: '"+required_param+"'")
 
         # and param defaults
-        defaults = { 'quality_encoding':           'phred64',
+        defaults = { 'quality_encoding':           'phred33',
                      'seed_mismatches':            '2',
                      'palindrom_clip_threshold':   '3',
                      'simple_clip_threshold':      '10',
