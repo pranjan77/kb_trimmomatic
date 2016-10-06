@@ -14,8 +14,8 @@ RUN . /kb/dev_container/user-env.sh && cd /kb/dev_container/modules && \
 
 WORKDIR /kb/module
 
-RUN curl http://www.usadellab.org/cms/uploads/supplementary/Trimmomatic/Trimmomatic-0.33.zip -o Trimmomatic-0.33.zip && \
-    unzip Trimmomatic-0.33.zip
+RUN curl http://www.usadellab.org/cms/uploads/supplementary/Trimmomatic/Trimmomatic-0.36.zip -o Trimmomatic-0.36.zip && \
+    unzip Trimmomatic-0.36.zip
 
 # -----------------------------------------
 
