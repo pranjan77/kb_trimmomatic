@@ -44,8 +44,8 @@ execTrimmomaticSingleLibrary() runs Trimmomatic on a single library
     
     #BEGIN_CLASS_HEADER
     workspaceURL = None
-    TRIMMOMATIC = 'java -jar /kb/module/Trimmomatic-0.33/trimmomatic-0.33.jar'
-    ADAPTER_DIR = '/kb/module/Trimmomatic-0.33/adapters/'
+    TRIMMOMATIC = 'java -jar /kb/module/Trimmomatic-0.36/trimmomatic-0.36.jar'
+    ADAPTER_DIR = '/kb/module/Trimmomatic-0.36/adapters/'
 
     def log(self, target, message):
         if target is not None:
