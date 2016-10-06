@@ -373,7 +373,7 @@ execTrimmomaticSingleLibrary() runs Trimmomatic on a single library
                 readsSet_names_list.append(readsLibrary_obj['info'][NAME_I])
 
 
-        # Iterate through readLibrary memebers of set
+        # Iterate through readsLibrary memebers of set
         #
         report = ''
         trimmed_readsSet_refs      = []
@@ -651,7 +651,7 @@ execTrimmomaticSingleLibrary() runs Trimmomatic on a single library
         try:
             readsUtils_Client = ReadsUtils (url=self.callbackURL, token=ctx['token'])  # SDK local
             
-            readLibrary = readsUtils_Client.download_reads ({'read_libraries': [input_params['input_reads_ref']]
+            readsLibrary = readsUtils_Client.download_reads ({'read_libraries': [input_params['input_reads_ref']]
 #                                                             'interleaved': 'false'
                                                              })
         except Exception as e:
@@ -661,22 +661,22 @@ execTrimmomaticSingleLibrary() runs Trimmomatic on a single library
         if input_params['read_type'] == 'PE':
 
             # Download reads Libs to FASTQ files
-            input_fwd_file_path = readLibrary['files'][input_params['input_reads_ref']]['files']['fwd']
-            input_rev_file_path = readLibrary['files'][input_params['input_reads_ref']]['files']['rev']
-            sequencing_tech     = readLibrary['files'][input_params['input_reads_ref']]['sequencing_tech']
+            input_fwd_file_path = readsLibrary['files'][input_params['input_reads_ref']]['files']['fwd']
+            input_rev_file_path = readsLibrary['files'][input_params['input_reads_ref']]['files']['rev']
+            sequencing_tech     = readsLibrary['files'][input_params['input_reads_ref']]['sequencing_tech']
 
 
             # DEBUG
-            self.log (console, "FWD_INPUT\n")
-            fwd_reads_handle = open (input_fwd_file_path, 'r')
-            for line_i in range(20):
-                self.log (console, fwd_reads_handle.readline())
-            input_fwd_file_path.close ()
-            self.log (console, "REV_INPUT\n")
-            rev_reads_handle = open (input_rev_file_path, 'r')
-            for line_i in range(20):
-                self.log (console, rev_reads_handle.readline())
-            input_rev_file_path.close ()
+#            self.log (console, "FWD_INPUT\n")
+#            fwd_reads_handle = open (input_fwd_file_path, 'r')
+#            for line_i in range(20):
+#                self.log (console, fwd_reads_handle.readline())
+#            fwd_reads_handle.close ()
+#            self.log (console, "REV_INPUT\n")
+#            rev_reads_handle = open (input_rev_file_path, 'r')
+#            for line_i in range(20):
+#                self.log (console, rev_reads_handle.readline())
+#            rev_reads_handle.close ()
 
 
             # Run Trimmomatic
@@ -788,8 +788,8 @@ execTrimmomaticSingleLibrary() runs Trimmomatic on a single library
             self.log(console, "Downloading Single End reads file...")
 
             # Download reads Libs to FASTQ files
-            input_fwd_file_path = readLibrary['files'][input_params['input_reads_ref']]['files']['fwd']
-            sequencing_tech     = readLibrary['files'][input_params['input_reads_ref']]['sequencing_tech']
+            input_fwd_file_path = readsLibrary['files'][input_params['input_reads_ref']]['files']['fwd']
+            sequencing_tech     = readsLibrary['files'][input_params['input_reads_ref']]['sequencing_tech']
 
 
             # Run Trimmomatic
