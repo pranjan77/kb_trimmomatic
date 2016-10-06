@@ -116,7 +116,7 @@ execTrimmomaticSingleLibrary() runs Trimmomatic on a single library
                 and input_params['sliding_window_min_quality'] > 0:
             parameter_string += 'SLIDINGWINDOW:' + str(input_params['sliding_window_size']) + ":" + str(input_params['sliding_window_min_quality']) + ' '
         elif ('sliding_window_size' in input_params and input_params['sliding_window_size'] is not None \
-                and input_params['sliding_window_size'] > 0) \                    
+                and input_params['sliding_window_size'] > 0) \
              or ('sliding_window_min_quality' in input_params and input_params['sliding_window_min_quality'] is not None \
                 and input_params['sliding_window_size'] > 0):
             raise ValueError('Sliding Window filtering requires both Window Size and Window Minimum Quality to be set')
