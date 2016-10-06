@@ -666,6 +666,19 @@ execTrimmomaticSingleLibrary() runs Trimmomatic on a single library
             sequencing_tech     = readLibrary['files'][input_params['input_reads_ref']]['sequencing_tech']
 
 
+            # DEBUG
+            self.log (console, "FWD_INPUT\n")
+            fwd_reads_handle = open (input_fwd_file_path, 'r')
+            for line_i in range(20):
+                self.log (console, fwd_reads_handle.readline())
+            close (input_fwd_file_path)
+            self.log (console, "REV_INPUT\n")
+            rev_reads_handle = open (input_rev_file_path, 'r')
+            for line_i in range(20):
+                self.log (console, rev_reads_handle.readline())
+            close (input_rev_file_path)
+
+
             # Run Trimmomatic
             #
             self.log(console, 'Starting Trimmomatic')
@@ -721,35 +734,52 @@ execTrimmomaticSingleLibrary() runs Trimmomatic on a single library
                 'Dropped: '+ read_count_dropped) )
 
             # upload paired reads
-            output_obj_name = input_params['output_reads_name']+'_trimm_paired'
-            self.log(console, 'Uploading trimmed paired reads: '+output_obj_name)
-            retVal['output_filtered_ref'] = readsUtils_Client.upload_reads ({ 'wsname': str(input_params['output_ws']),
-                                                                              'name': output_obj_name,
-                                                                              'sequencing_tech': sequencing_tech,
-                                                                              'fwd_file': output_fwd_paired_file_path,
-                                                                              'rev_file': output_rev_paired_file_path
-                                                                              })
+            if not os.path.isfile (output_fwd_paired_file_path) \
+                or os.path.getsize (output_fwd_paired_file_path) == 0 \
+                or not os.path.isfile (output_rev_paired_file_path) \
+                or os.path.getsize (output_rev_paired_file_path) == 0:
+
+                retVal['output_filtered_ref'] = None
+            else:
+                output_obj_name = input_params['output_reads_name']+'_trimm_paired'
+                self.log(console, 'Uploading trimmed paired reads: '+output_obj_name)
+                retVal['output_filtered_ref'] = readsUtils_Client.upload_reads ({ 'wsname': str(input_params['output_ws']),
+                                                                                  'name': output_obj_name,
+                                                                                  'sequencing_tech': sequencing_tech,
+                                                                                  'fwd_file': output_fwd_paired_file_path,
+                                                                                  'rev_file': output_rev_paired_file_path
+                                                                                  })
 
 
             # upload reads forward unpaired
-            output_obj_name = input_params['output_reads_name']+'_trimm_unpaired_fwd'
-            self.log(console, '\nUploading trimmed unpaired forward reads: '+output_obj_name)
-            retVal['output_unpaired_fwd_ref'] = readsUtils_Client.upload_reads ({ 'wsname': str(input_params['output_ws']),
-                                                                                  'name': output_obj_name,
-                                                                                  'sequencing_tech': sequencing_tech,
-                                                                                  'fwd_file': output_fwd_unpaired_file_path
-                                                                                  })
+            if not os.path.isfile (output_fwd_unpaired_file_path) \
+                or os.path.getsize (output_fwd_unpaired_file_path) == 0:
+
+                retVal['output_unpaired_fwd_ref'] = None
+            else:
+                output_obj_name = input_params['output_reads_name']+'_trimm_unpaired_fwd'
+                self.log(console, '\nUploading trimmed unpaired forward reads: '+output_obj_name)
+                retVal['output_unpaired_fwd_ref'] = readsUtils_Client.upload_reads ({ 'wsname': str(input_params['output_ws']),
+                                                                                      'name': output_obj_name,
+                                                                                      'sequencing_tech': sequencing_tech,
+                                                                                      'fwd_file': output_fwd_unpaired_file_path
+                                                                                      })
 
 
 
             # upload reads reverse unpaired
-            output_obj_name = input_params['output_reads_name']+'_trimm_unpaired_rev'
-            self.log(console, '\nUploading trimmed unpaired reverse reads: '+output_obj_name)
-            retVal['output_unpaired_rev_ref'] = readsUtils_Client.upload_reads ({ 'wsname': str(input_params['output_ws']),
-                                                                                  'name': output_obj_name,
-                                                                                  'sequencing_tech': sequencing_tech,
-                                                                                  'fwd_file': output_rev_unpaired_file_path
-                                                                                  })
+            if not os.path.isfile (output_rev_unpaired_file_path) \
+                or os.path.getsize (output_rev_unpaired_file_path) == 0:
+
+                retVal['output_unpaired_rev_ref'] = None
+            else:
+                output_obj_name = input_params['output_reads_name']+'_trimm_unpaired_rev'
+                self.log(console, '\nUploading trimmed unpaired reverse reads: '+output_obj_name)
+                retVal['output_unpaired_rev_ref'] = readsUtils_Client.upload_reads ({ 'wsname': str(input_params['output_ws']),
+                                                                                      'name': output_obj_name,
+                                                                                      'sequencing_tech': sequencing_tech,
+                                                                                      'fwd_file': output_rev_unpaired_file_path
+                                                                                      })
 
 
         # SingleEndLibrary  # FIX: USE READUTILS
@@ -789,18 +819,23 @@ execTrimmomaticSingleLibrary() runs Trimmomatic on a single library
 
             report += "\n".join(outputlines)
 
-            #get read count
+            # get read count
             match = re.search(r'Surviving: (\d+)', report)
             readcount = match.group(1)
 
-            #upload reads
-            output_obj_name = input_params['output_reads_name']
-            self.log(console, 'Uploading trimmed reads: '+output_obj_name)
-            retVal['output_filtered_ref'] = readsUtils_Client.upload_reads ({ 'wsname': str(input_params['output_ws']),
-                                                                              'name': output_obj_name,
-                                                                              'sequencing_tech': sequencing_tech,
-                                                                              'fwd_file': output_fwd_file_path
-                                                                              })
+            # upload reads
+            if not os.path.isfile (output_fwd_file_path) \
+                or os.path.getsize (output_fwd_file_path) == 0:
+
+                retVal['output_filtered_ref'] = None
+            else:
+                output_obj_name = input_params['output_reads_name']
+                self.log(console, 'Uploading trimmed reads: '+output_obj_name)
+                retVal['output_filtered_ref'] = readsUtils_Client.upload_reads ({ 'wsname': str(input_params['output_ws']),
+                                                                                  'name': output_obj_name,
+                                                                                  'sequencing_tech': sequencing_tech,
+                                                                                  'fwd_file': output_fwd_file_path
+                                                                                  })
 
 
         # return created objects
