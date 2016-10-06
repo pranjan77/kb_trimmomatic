@@ -15,6 +15,7 @@ import uuid
 #from ReadsUtils.ReadsUtilsClient import ReadsUtilsClient  # FIX
 from ReadsUtils.ReadsUtilsClient import ReadsUtils
 from SetAPI.SetAPIClient import SetAPI
+from KBaseReport.KBaseReportClient import KBaseReport
 #END_HEADER
 
 
@@ -189,6 +190,9 @@ execTrimmomaticSingleLibrary() runs Trimmomatic on a single library
         env = os.environ.copy()
         env['KB_AUTH_TOKEN'] = token
 
+        service_ver = 'dev'
+
+
         # load provenance
         provenance = [{}]
         if 'provenance' in ctx:
@@ -266,22 +270,10 @@ execTrimmomaticSingleLibrary() runs Trimmomatic on a single library
 
         # save report object
         #
-        reportName = 'trimmomatic_report_' + str(uuid.uuid4())
-        report_obj_info = wsClient.save_objects({
-                'workspace': input_params['input_ws'],
-                'objects':[
-                    {
-                        'type':'KBaseReport.Report',
-                        'data':reportObj,
-                        'name':reportName,
-                        'meta':{},
-                        'hidden':1,
-                        'provenance':provenance
-                    }
-                ]
-            })[0]
+        report = KBaseReport(self.callbackURL, token=ctx['token'], service_ver=SERVICE_VER)
+        report_info = report.create({'report':reportObj, 'workspace_name':params['input_ws']})
 
-        output = { 'report_name': reportName, 'report_ref': str(report_obj_info[6]) + '/' + str(report_obj_info[0]) + '/' + str(report_obj_info[4]) }
+        output = { 'report_name': report_info['name'], 'report_ref': report_info['ref'] }
         #END runTrimmomatic
 
         # At some point might do deeper type checking...
