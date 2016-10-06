@@ -671,12 +671,12 @@ execTrimmomaticSingleLibrary() runs Trimmomatic on a single library
             fwd_reads_handle = open (input_fwd_file_path, 'r')
             for line_i in range(20):
                 self.log (console, fwd_reads_handle.readline())
-            close (input_fwd_file_path)
+            input_fwd_file_path.close ()
             self.log (console, "REV_INPUT\n")
             rev_reads_handle = open (input_rev_file_path, 'r')
             for line_i in range(20):
                 self.log (console, rev_reads_handle.readline())
-            close (input_rev_file_path)
+            input_rev_file_path.close ()
 
 
             # Run Trimmomatic
