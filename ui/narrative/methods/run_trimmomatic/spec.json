@@ -62,19 +62,19 @@
 			"optional": false,
 			"advanced": false,
 			"allow_multiple": false,
-			"default_values": [ "phred64" ],
+			"default_values": [ "phred33" ],
 			"field_type": "dropdown",
 				"dropdown_options": {
 					"options": [
 						{
 							"value": "phred33",
-							"display": "phred33",
+							"display": "phred33 (Sanger, 454, SRA, Illumina >= 1.8)",
 							"id": "phred33",
 							"ui-name": "phred33"
 						},
 						{
 							"value": "phred64",
-							"display": "phred64",
+							"display": "phred64 (Illumina <= 1.7)",
 							"id": "phred64",
 							"ui-name": "phred64"
 						}
