@@ -87,35 +87,45 @@ execTrimmomaticSingleLibrary() runs Trimmomatic on a single library
             raise ValueError('Adapter Cliping requires Adapter, Seed Mismatches, Palindrome Clip Threshold and Simple Clip Threshold')
 
         # set Crop
-        if 'crop_length' in input_params and input_params['crop_length'] is not None:
+        if 'crop_length' in input_params and input_params['crop_length'] is not None \
+                and input_params['crop_length'] > 0:
             parameter_string += 'CROP:' + str(input_params['crop_length']) + ' '
 
         # set Headcrop
-        if 'head_crop_length' in input_params and input_params['head_crop_length'] is not None:
+        if 'head_crop_length' in input_params and input_params['head_crop_length'] is not None \
+                and input_params['head_crop_length'] > 0:
             parameter_string += 'HEADCROP:' + str(input_params['head_crop_length']) + ' '
 
 
         # set Leading
-        if 'leading_min_quality' in input_params and input_params['leading_min_quality'] is not None:
+        if 'leading_min_quality' in input_params and input_params['leading_min_quality'] is not None \
+                and input_params['leading_min_quality'] > 0:
             parameter_string += 'LEADING:' + str(input_params['leading_min_quality']) + ' '
 
 
         # set Trailing
-        if 'trailing_min_quality' in input_params and input_params['trailing_min_quality'] is not None:
+        if 'trailing_min_quality' in input_params and input_params['trailing_min_quality'] is not None \
+                and input_params['trailing_min_quality'] > 0:
             parameter_string += 'TRAILING:' + str(input_params['trailing_min_quality']) + ' '
 
 
         # set sliding window
-        if ('sliding_window_size' in input_params and input_params['sliding_window_size'] is not None and 
-            'sliding_window_min_quality' in input_params and input_params['sliding_window_min_quality'] is not None):
+        if 'sliding_window_size' in input_params and input_params['sliding_window_size'] is not None \
+                and input_params['sliding_window_size'] > 0 \
+            'sliding_window_min_quality' in input_params and input_params['sliding_window_min_quality'] is not None \
+                and input_params['sliding_window_min_quality'] > 0:
             parameter_string += 'SLIDINGWINDOW:' + str(input_params['sliding_window_size']) + ":" + str(input_params['sliding_window_min_quality']) + ' '
-        elif ( ('sliding_window_size' in input_params and input_params['sliding_window_size'] is not None) or 
-               ('sliding_window_min_quality' in input_params and input_params['sliding_window_min_quality'] is not None) ):
+        elif ('sliding_window_size' in input_params and input_params['sliding_window_size'] is not None \
+                and input_params['sliding_window_size'] > 0) \                    
+             or 
+             ('sliding_window_min_quality' in input_params and input_params['sliding_window_min_quality'] is not None \
+                and input_params['sliding_window_size'] > 0):
             raise ValueError('Sliding Window filtering requires both Window Size and Window Minimum Quality to be set')
             
 
         # set min length
-        if 'min_length' in input_params and input_params['min_length'] is not None:
+        if 'min_length' in input_params and input_params['min_length'] is not None \
+                and input_params['min_length'] > 0:
             parameter_string += 'MINLEN:' + str(input_params['min_length']) + ' '
 
         if parameter_string == '':
