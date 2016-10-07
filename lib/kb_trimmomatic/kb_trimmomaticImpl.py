@@ -271,7 +271,7 @@ execTrimmomaticSingleLibrary() runs Trimmomatic on a single library
         # save report object
         #
         report = KBaseReport(self.callbackURL, token=ctx['token'], service_ver=SERVICE_VER)
-        report_info = report.create({'report':reportObj, 'workspace_name':params['input_ws']})
+        report_info = report.create({'report':reportObj, 'workspace_name':input_params['input_ws']})
 
         output = { 'report_name': report_info['name'], 'report_ref': report_info['ref'] }
         #END runTrimmomatic
