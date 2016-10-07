@@ -386,6 +386,9 @@ execTrimmomaticSingleLibrary() runs Trimmomatic on a single library
         # Iterate through readsLibrary memebers of set
         #
         report = ''
+        trimmed_readsSet_ref       = None
+        unpaired_fwd_readsSet_ref  = None
+        unpaired_rev_readsSet_ref  = None
         trimmed_readsSet_refs      = []
         unpaired_fwd_readsSet_refs = []
         unpaired_rev_readsSet_refs = []
@@ -458,10 +461,17 @@ execTrimmomaticSingleLibrary() runs Trimmomatic on a single library
                 output_readsSet_obj = { 'description': input_readsSet_obj['data']['description']+" Trimmomatic paired reads",
                                         'items': items
                                         }
-                trimmed_readsSet_ref = setAPI_Client.save_reads_set_v1 ({'workspace_name': input_params['output_ws'],
-                                                                         'output_object_name': str(input_params['output_reads_name'])+'_trimm_paired',
+                output_readsSet_name = str(input_params['output_reads_name'])+'_trimm_paired'
+#                trimmed_readsSet_ref = setAPI_Client.save_reads_set_v1 ({'workspace_name': input_params['output_ws'],
+#                                                                         'output_object_name': output_readsSet_name,
+#                                                                         'data': output_readsSet_obj
+#                                                                         })['set_ref']
+                # DEBUG
+                trimmed_readsSet_obj = setAPI_Client.save_reads_set_v1 ({'workspace_name': input_params['output_ws'],
+                                                                         'output_object_name': output_readsSet_name, 
                                                                          'data': output_readsSet_obj
-                                                                         })['set_ref']
+                                                                         })
+                trimmed_readsSet_ref = str(input_params['output_ws'])+'/'+str(output_readsSet_name)
             else:
                 raise ValueError ("No trimmed output created")
 
@@ -491,10 +501,17 @@ execTrimmomaticSingleLibrary() runs Trimmomatic on a single library
                     output_readsSet_obj = { 'description': input_readsSet_obj['data']['description']+" Trimmomatic unpaired fwd reads",
                                             'items': items
                                             }
-                    unpaired_fwd_readsSet_ref = setAPI_Client.save_reads_set_v1 ({'workspace_name': input_params['output_ws'],
-                                                                                  'output_object_name': str(input_params['output_reads_name'])+'_trimm_unpaired_fwd',
+                    output_readsSet_name = str(input_params['output_reads_name'])+'_trimm_unpaired_fwd'
+#                    unpaired_fwd_readsSet_ref = setAPI_Client.save_reads_set_v1 ({'workspace_name': input_params['output_ws'],
+#                                                                                  'output_object_name': output_readsSet_name,
+#                                                                                  'data': output_readsSet_obj
+#                                                                                  })['set_ref']
+                    # DEBUG
+                    unpaired_fwd_readsSet_obj = setAPI_Client.save_reads_set_v1 ({'workspace_name': input_params['output_ws'],
+                                                                                  'output_object_name': output_readsSet_name,
                                                                                   'data': output_readsSet_obj
-                                                                                  })['set_ref']
+                                                                                  })
+                    unpaired_fwd_readsSet_ref = str(input_params['output_ws'])+'/'+str(output_readsSet_name)
                 else:
                     self.log (console, "no unpaired_fwd readsLibraries created")
                     unpaired_fwd_readsSet_ref = None
@@ -524,10 +541,17 @@ execTrimmomaticSingleLibrary() runs Trimmomatic on a single library
                     output_readsSet_obj = { 'description': input_readsSet_obj['data']['description']+" Trimmomatic unpaired rev reads",
                                             'items': items
                                             }
-                    unpaired_rev_readsSet_ref = setAPI_Client.save_reads_set_v1 ({'workspace_name': input_params['output_ws'],
-                                                                                  'output_object_name': str(input_params['output_reads_name'])+'_trimm_unpaired_rev',
+                    output_readsSet_name = str(input_params['output_reads_name'])+'_trimm_unpaired_rev'
+#                    unpaired_rev_readsSet_ref = setAPI_Client.save_reads_set_v1 ({'workspace_name': input_params['output_ws'],
+#                                                                                  'output_object_name': output_readsSet_name,
+#                                                                                  'data': output_readsSet_obj
+#                                                                                  })['set_ref']
+                    # DEBUG
+                    unpaired_rev_readsSet_obj = setAPI_Client.save_reads_set_v1 ({'workspace_name': input_params['output_ws'],
+                                                                                  'output_object_name': output_readsSet_name,
                                                                                   'data': output_readsSet_obj
-                                                                                  })['set_ref']
+                                                                                  })
+                    unpaired_rev_readsSet_ref = str(input_params['output_ws'])+'/'+str(output_readsSet_name)
                 else:
                     self.log (console, "no unpaired_rev readsLibraries created")
                     unpaired_rev_readsSet_ref = None
