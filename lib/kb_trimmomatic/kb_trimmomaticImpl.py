@@ -540,7 +540,7 @@ execTrimmomaticSingleLibrary() runs Trimmomatic on a single library
                                           #'data_attachment': ,
                                           #'info':
                                               })
-                if some_unpaired_fwd_output_created:
+                if some_unpaired_rev_output_created:
                     output_readsSet_obj = { 'description': input_readsSet_obj['data']['description']+" Trimmomatic unpaired rev reads",
                                             'items': items
                                             }
