@@ -701,8 +701,8 @@ execTrimmomaticSingleLibrary() runs Trimmomatic on a single library
         try:
             readsUtils_Client = ReadsUtils (url=self.callbackURL, token=ctx['token'])  # SDK local
             
-            readsLibrary = readsUtils_Client.download_reads ({'read_libraries': [input_params['input_reads_ref']]
-#                                                             'interleaved': 'false'
+            readsLibrary = readsUtils_Client.download_reads ({'read_libraries': [input_params['input_reads_ref']],
+                                                             'interleaved': 'false'
                                                              })
         except Exception as e:
             raise ValueError('Unable to get read library object from workspace: (' + str(input_params['input_reads_ref']) +")\n" + str(e))
