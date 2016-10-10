@@ -241,6 +241,9 @@ execTrimmomaticSingleLibrary() runs Trimmomatic on a single library
         # trimmed object
         if trimmomatic_retVal['output_filtered_ref'] != None:
             try:
+                # DEBUG
+                #self.log(console,"OBJECT CREATED: '"+str(trimmomatic_retVal['output_filtered_ref'])+"'")
+
                 reportObj['objects_created'].append({'ref':trimmomatic_retVal['output_filtered_ref'],
                                                      'description':'Trimmed Reads'})
             except:
@@ -420,11 +423,13 @@ execTrimmomaticSingleLibrary() runs Trimmomatic on a single library
 
             report += "RUNNING TRIMMOMATIC ON LIBRARY: "+str(input_reads_library_ref)+"\n"
             report += "----------------------------------------------------------------------------\n\n"
-            trimmomatic_retVal = self.execTrimmomaticSingleLibrary (ctx, execTrimmomaticParams)[0]
-            report += trimmomatic_retVal['report']+"\n\n"
-            trimmed_readsSet_refs.append (trimmomatic_retVal['output_filtered_ref'])
-            unpaired_fwd_readsSet_refs.append (trimmomatic_retVal['output_unpaired_fwd_ref'])
-            unpaired_rev_readsSet_refs.append (trimmomatic_retVal['output_unpaired_rev_ref'])
+
+            trimmomaticSingleLibrary_retVal = self.execTrimmomaticSingleLibrary (ctx, execTrimmomaticParams)[0]
+
+            report += trimmomaticSingleLibrary_retVal['report']+"\n\n"
+            trimmed_readsSet_refs.append (trimmomaticSingleLibrary_retVal['output_filtered_ref'])
+            unpaired_fwd_readsSet_refs.append (trimmomaticSingleLibrary_retVal['output_unpaired_fwd_ref'])
+            unpaired_rev_readsSet_refs.append (trimmomaticSingleLibrary_retVal['output_unpaired_rev_ref'])
 
         
         # Just one Library
@@ -432,9 +437,9 @@ execTrimmomaticSingleLibrary() runs Trimmomatic on a single library
 
             # create return output object
             output = { 'report': report,
-                       'output_filtered_ref': trimmomatic_retVal['output_filtered_ref'],
-                       'output_unpaired_fwd_ref': trimmomatic_retVal['output_unpaired_fwd_ref'],
-                       'output_unpaired_rev_ref': trimmomatic_retVal['output_unpaired_rev_ref']
+                       'output_filtered_ref': trimmed_readsSet_refs[0],
+                       'output_unpaired_fwd_ref': unpaired_fwd_readsSet_refs[0],
+                       'output_unpaired_rev_ref': unpaired_rev_readsSet_refs[0],
                      }
         # ReadsSet
         else:
@@ -803,7 +808,7 @@ execTrimmomaticSingleLibrary() runs Trimmomatic on a single library
                                                                                   'sequencing_tech': sequencing_tech,
                                                                                   'fwd_file': output_fwd_paired_file_path,
                                                                                   'rev_file': output_rev_paired_file_path
-                                                                                  })
+                                                                                  })['objref']
 
 
             # upload reads forward unpaired
@@ -818,7 +823,7 @@ execTrimmomaticSingleLibrary() runs Trimmomatic on a single library
                                                                                       'name': output_obj_name,
                                                                                       'sequencing_tech': sequencing_tech,
                                                                                       'fwd_file': output_fwd_unpaired_file_path
-                                                                                      })
+                                                                                      })['obj_ref']
 
 
 
@@ -834,10 +839,10 @@ execTrimmomaticSingleLibrary() runs Trimmomatic on a single library
                                                                                       'name': output_obj_name,
                                                                                       'sequencing_tech': sequencing_tech,
                                                                                       'fwd_file': output_rev_unpaired_file_path
-                                                                                      })
+                                                                                      })['obj_ref']
 
 
-        # SingleEndLibrary  # FIX: USE READUTILS
+        # SingleEndLibrary
         #
         else:
             self.log(console, "Downloading Single End reads file...")
@@ -890,7 +895,7 @@ execTrimmomaticSingleLibrary() runs Trimmomatic on a single library
                                                                                   'name': output_obj_name,
                                                                                   'sequencing_tech': sequencing_tech,
                                                                                   'fwd_file': output_fwd_file_path
-                                                                                  })
+                                                                                  })['obj_ref']
 
 
         # return created objects
