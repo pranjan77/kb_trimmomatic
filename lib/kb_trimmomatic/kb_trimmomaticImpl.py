@@ -791,7 +791,7 @@ execTrimmomaticSingleLibrary() runs Trimmomatic on a single library
 
                 retVal['output_filtered_ref'] = None
             else:
-                output_obj_name = input_params['output_reads_name']+'_trimm_paired'
+                output_obj_name = input_params['output_reads_name']+'_paired'
                 self.log(console, 'Uploading trimmed paired reads: '+output_obj_name)
                 retVal['output_filtered_ref'] = readsUtils_Client.upload_reads ({ 'wsname': str(input_params['output_ws']),
                                                                                   'name': output_obj_name,
@@ -807,7 +807,7 @@ execTrimmomaticSingleLibrary() runs Trimmomatic on a single library
 
                 retVal['output_unpaired_fwd_ref'] = None
             else:
-                output_obj_name = input_params['output_reads_name']+'_trimm_unpaired_fwd'
+                output_obj_name = input_params['output_reads_name']+'_unpaired_fwd'
                 self.log(console, '\nUploading trimmed unpaired forward reads: '+output_obj_name)
                 retVal['output_unpaired_fwd_ref'] = readsUtils_Client.upload_reads ({ 'wsname': str(input_params['output_ws']),
                                                                                       'name': output_obj_name,
@@ -823,7 +823,7 @@ execTrimmomaticSingleLibrary() runs Trimmomatic on a single library
 
                 retVal['output_unpaired_rev_ref'] = None
             else:
-                output_obj_name = input_params['output_reads_name']+'_trimm_unpaired_rev'
+                output_obj_name = input_params['output_reads_name']+'_unpaired_rev'
                 self.log(console, '\nUploading trimmed unpaired reverse reads: '+output_obj_name)
                 retVal['output_unpaired_rev_ref'] = readsUtils_Client.upload_reads ({ 'wsname': str(input_params['output_ws']),
                                                                                       'name': output_obj_name,
