@@ -469,7 +469,7 @@ execTrimmomaticSingleLibrary() runs Trimmomatic on a single library
                     reads_desc_ext = " Trimmomatic trimmed SingleEndLibrary"
                 else:
                     reads_desc_ext = " Trimmomatic trimmed paired reads"
-                output_readsSet_obj = { 'description': input_readsSet_obj['data']['description']+reads_desc_ext
+                output_readsSet_obj = { 'description': input_readsSet_obj['data']['description']+reads_desc_ext,
                                         'items': items
                                         }
                 output_readsSet_name = str(input_params['output_reads_name'])+'_trimm_paired'
