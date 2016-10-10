@@ -419,7 +419,7 @@ execTrimmomaticSingleLibrary() runs Trimmomatic on a single library
             if input_reads_obj_type != "KBaseSets.ReadsSet":
                 execTrimmomaticParams['output_reads_name'] = input_params['output_reads_name']
             else:
-                execTrimmomaticParams['output_reads_name'] = readsSet_names_list[reads_item_i]
+                execTrimmomaticParams['output_reads_name'] = readsSet_names_list[reads_item_i]+'_trimm'
 
             report += "RUNNING TRIMMOMATIC ON LIBRARY: "+str(input_reads_library_ref)+"\n"
             report += "----------------------------------------------------------------------------\n\n"
@@ -465,7 +465,11 @@ execTrimmomaticSingleLibrary() runs Trimmomatic on a single library
                                   #'info':
                                       })
             if some_trimmed_output_created:
-                output_readsSet_obj = { 'description': input_readsSet_obj['data']['description']+" Trimmomatic paired reads",
+                if input_params['read_type'] == 'SE':
+                    reads_desc_ext = " Trimmomatic trimmed SingleEndLibrary"
+                else:
+                    reads_desc_ext = " Trimmomatic trimmed paired reads"
+                output_readsSet_obj = { 'description': input_readsSet_obj['data']['description']+reads_desc_ext
                                         'items': items
                                         }
                 output_readsSet_name = str(input_params['output_reads_name'])+'_trimm_paired'
@@ -487,23 +491,24 @@ execTrimmomaticSingleLibrary() runs Trimmomatic on a single library
             some_unpaired_fwd_output_created = False
             if len(unpaired_fwd_readsSet_refs) > 0:
                 items = []
-                if lib_ref == None:
-                    items.append(None)
-                else:
-                    some_unpaired_fwd_output_created = True
-                    for i,lib_ref in enumerate(unpaired_fwd_readsSet_refs):
-                        try:
-                            label = input_readsSet_obj['data']['items'][i]['label']
-                        except:
-                            NAME_I = 1
-                            label = wsClient.get_object_info_new ({'objects':[{'ref':lib_ref}]})[0][NAME_I]
-                        label = label + "_Trimm_unpaired_fwd"
+                for i,lib_ref in enumerate(unpaired_fwd_readsSet_refs):
+                    if lib_ref == None:
+                        items.append(None)
+                    else:
+                        some_unpaired_fwd_output_created = True
+                        for i,lib_ref in enumerate(unpaired_fwd_readsSet_refs):
+                            try:
+                                label = input_readsSet_obj['data']['items'][i]['label']
+                            except:
+                                NAME_I = 1
+                                label = wsClient.get_object_info_new ({'objects':[{'ref':lib_ref}]})[0][NAME_I]
+                            label = label + "_Trimm_unpaired_fwd"
 
-                        items.append({'ref': lib_ref,
-                                      'label': label
-                                      #'data_attachment': ,
-                                      #'info':
-                                          })
+                            items.append({'ref': lib_ref,
+                                          'label': label
+                                          #'data_attachment': ,
+                                          #'info':
+                                              })
                 if some_unpaired_fwd_output_created:
                     output_readsSet_obj = { 'description': input_readsSet_obj['data']['description']+" Trimmomatic unpaired fwd reads",
                                             'items': items
@@ -527,23 +532,24 @@ execTrimmomaticSingleLibrary() runs Trimmomatic on a single library
             some_unpaired_rev_output_created = False
             if len(unpaired_rev_readsSet_refs) > 0:
                 items = []
-                if lib_ref == None:
-                    items.append(None)
-                else:
-                    some_unpaired_rev_output_created = True
-                    for i,lib_ref in enumerate(unpaired_rev_readsSet_refs):
-                        try:
-                            label = input_readsSet_obj['data']['items'][i]['label']
-                        except:
-                            NAME_I = 1
-                            label = wsClient.get_object_info_new ({'objects':[{'ref':lib_ref}]})[0][NAME_I]
-                        label = label + "_Trimm_unpaired_rev"
+                for i,lib_ref in enumerate(unpaired_fwd_readsSet_refs):
+                    if lib_ref == None:
+                        items.append(None)
+                    else:
+                        some_unpaired_rev_output_created = True
+                        for i,lib_ref in enumerate(unpaired_rev_readsSet_refs):
+                            try:
+                                label = input_readsSet_obj['data']['items'][i]['label']
+                            except:
+                                NAME_I = 1
+                                label = wsClient.get_object_info_new ({'objects':[{'ref':lib_ref}]})[0][NAME_I]
+                            label = label + "_Trimm_unpaired_rev"
 
-                        items.append({'ref': lib_ref,
-                                      'label': label
-                                      #'data_attachment': ,
-                                      #'info':
-                                          })
+                            items.append({'ref': lib_ref,
+                                          'label': label
+                                          #'data_attachment': ,
+                                          #'info':
+                                              })
                 if some_unpaired_fwd_output_created:
                     output_readsSet_obj = { 'description': input_readsSet_obj['data']['description']+" Trimmomatic unpaired rev reads",
                                             'items': items
