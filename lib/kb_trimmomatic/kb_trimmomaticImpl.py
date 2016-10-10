@@ -808,7 +808,7 @@ execTrimmomaticSingleLibrary() runs Trimmomatic on a single library
                                                                                   'sequencing_tech': sequencing_tech,
                                                                                   'fwd_file': output_fwd_paired_file_path,
                                                                                   'rev_file': output_rev_paired_file_path
-                                                                                  })['objref']
+                                                                                  })['obj_ref']
 
 
             # upload reads forward unpaired
