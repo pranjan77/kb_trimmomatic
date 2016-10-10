@@ -467,22 +467,18 @@ execTrimmomaticSingleLibrary() runs Trimmomatic on a single library
             if some_trimmed_output_created:
                 if input_params['read_type'] == 'SE':
                     reads_desc_ext = " Trimmomatic trimmed SingleEndLibrary"
+                    reads_name_ext = "_trimm"
                 else:
                     reads_desc_ext = " Trimmomatic trimmed paired reads"
+                    reads_name_ext = "_trimm_paired"
                 output_readsSet_obj = { 'description': input_readsSet_obj['data']['description']+reads_desc_ext,
                                         'items': items
                                         }
-                output_readsSet_name = str(input_params['output_reads_name'])+'_trimm_paired'
-#                trimmed_readsSet_ref = setAPI_Client.save_reads_set_v1 ({'workspace_name': input_params['output_ws'],
-#                                                                         'output_object_name': output_readsSet_name,
-#                                                                         'data': output_readsSet_obj
-#                                                                         })['set_ref']
-                # DEBUG
-                trimmed_readsSet_obj = setAPI_Client.save_reads_set_v1 ({'workspace_name': input_params['output_ws'],
-                                                                         'output_object_name': output_readsSet_name, 
+                output_readsSet_name = str(input_params['output_reads_name'])+reads_name_ext
+                trimmed_readsSet_ref = setAPI_Client.save_reads_set_v1 ({'workspace_name': input_params['output_ws'],
+                                                                         'output_object_name': output_readsSet_name,
                                                                          'data': output_readsSet_obj
-                                                                         })
-                trimmed_readsSet_ref = str(input_params['output_ws'])+'/'+str(output_readsSet_name)
+                                                                         })['set_ref']
             else:
                 raise ValueError ("No trimmed output created")
 
@@ -514,16 +510,10 @@ execTrimmomaticSingleLibrary() runs Trimmomatic on a single library
                                             'items': items
                                             }
                     output_readsSet_name = str(input_params['output_reads_name'])+'_trimm_unpaired_fwd'
-#                    unpaired_fwd_readsSet_ref = setAPI_Client.save_reads_set_v1 ({'workspace_name': input_params['output_ws'],
-#                                                                                  'output_object_name': output_readsSet_name,
-#                                                                                  'data': output_readsSet_obj
-#                                                                                  })['set_ref']
-                    # DEBUG
-                    unpaired_fwd_readsSet_obj = setAPI_Client.save_reads_set_v1 ({'workspace_name': input_params['output_ws'],
+                    unpaired_fwd_readsSet_ref = setAPI_Client.save_reads_set_v1 ({'workspace_name': input_params['output_ws'],
                                                                                   'output_object_name': output_readsSet_name,
                                                                                   'data': output_readsSet_obj
-                                                                                  })
-                    unpaired_fwd_readsSet_ref = str(input_params['output_ws'])+'/'+str(output_readsSet_name)
+                                                                                  })['set_ref']
                 else:
                     self.log (console, "no unpaired_fwd readsLibraries created")
                     unpaired_fwd_readsSet_ref = None
@@ -555,16 +545,10 @@ execTrimmomaticSingleLibrary() runs Trimmomatic on a single library
                                             'items': items
                                             }
                     output_readsSet_name = str(input_params['output_reads_name'])+'_trimm_unpaired_rev'
-#                    unpaired_rev_readsSet_ref = setAPI_Client.save_reads_set_v1 ({'workspace_name': input_params['output_ws'],
-#                                                                                  'output_object_name': output_readsSet_name,
-#                                                                                  'data': output_readsSet_obj
-#                                                                                  })['set_ref']
-                    # DEBUG
-                    unpaired_rev_readsSet_obj = setAPI_Client.save_reads_set_v1 ({'workspace_name': input_params['output_ws'],
+                    unpaired_rev_readsSet_ref = setAPI_Client.save_reads_set_v1 ({'workspace_name': input_params['output_ws'],
                                                                                   'output_object_name': output_readsSet_name,
                                                                                   'data': output_readsSet_obj
-                                                                                  })
-                    unpaired_rev_readsSet_ref = str(input_params['output_ws'])+'/'+str(output_readsSet_name)
+                                                                                  })['set_ref']
                 else:
                     self.log (console, "no unpaired_rev readsLibraries created")
                     unpaired_rev_readsSet_ref = None
@@ -638,16 +622,16 @@ execTrimmomaticSingleLibrary() runs Trimmomatic on a single library
 
         # and param defaults
         defaults = { 'quality_encoding':           'phred33',
-                     'seed_mismatches':            '2',
-                     'palindrom_clip_threshold':   '3',
-                     'simple_clip_threshold':      '10',
+                     'seed_mismatches':            '0', # '2',
+                     'palindrom_clip_threshold':   '0', # '3',
+                     'simple_clip_threshold':      '0', # '10',
                      'crop_length':                '0',
                      'head_crop_length':           '0',
-                     'leading_min_quality':        '3',
-                     'trailing_min_quality':       '3',
-                     'sliding_window_size':        '4',
-                     'sliding_window_min_quality': '15',
-                     'min_length':                 '36'
+                     'leading_min_quality':        '0', # '3',
+                     'trailing_min_quality':       '0', # '3',
+                     'sliding_window_size':        '0', # '4',
+                     'sliding_window_min_quality': '0', # '15',
+                     'min_length':                 '0', # '36'
                    }
         for arg in defaults.keys():
             if arg not in input_params or input_params[arg] == None or input_params[arg] == '':
