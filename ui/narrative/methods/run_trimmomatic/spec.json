@@ -7,7 +7,7 @@
 	],
 	"contact": "help@kbase.us",
 	"visible": true,
-	"categories": ["active", "reads"],
+	"categories": ["active", "reads", "assembly", "util" ],
 	"widgets": {
 		"input": null,
 		"output": "kbaseReportView"
