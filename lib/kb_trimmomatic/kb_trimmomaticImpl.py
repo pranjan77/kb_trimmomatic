@@ -449,7 +449,8 @@ execTrimmomaticSingleLibrary() runs Trimmomatic on a single library
             items = []
             for i,lib_ref in enumerate(trimmed_readsSet_refs):
                 if lib_ref == None:
-                    items.append(None)
+                    #items.append(None)  # can't have 'None' items in ReadsSet
+                    continue
                 else:
                     some_trimmed_output_created = True
                     try:
@@ -489,7 +490,8 @@ execTrimmomaticSingleLibrary() runs Trimmomatic on a single library
                 items = []
                 for i,lib_ref in enumerate(unpaired_fwd_readsSet_refs):
                     if lib_ref == None:
-                        items.append(None)
+                        #items.append(None)  # can't have 'None' items in ReadsSet
+                        continue
                     else:
                         some_unpaired_fwd_output_created = True
                         for i,lib_ref in enumerate(unpaired_fwd_readsSet_refs):
@@ -524,7 +526,8 @@ execTrimmomaticSingleLibrary() runs Trimmomatic on a single library
                 items = []
                 for i,lib_ref in enumerate(unpaired_fwd_readsSet_refs):
                     if lib_ref == None:
-                        items.append(None)
+                        #items.append(None)  # can't have 'None' items in ReadsSet
+                        continue
                     else:
                         some_unpaired_rev_output_created = True
                         for i,lib_ref in enumerate(unpaired_rev_readsSet_refs):
