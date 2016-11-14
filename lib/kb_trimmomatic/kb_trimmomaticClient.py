@@ -38,8 +38,8 @@ class kb_trimmomatic(object):
         :param input_params: instance of type "runTrimmomaticInput"
            (runTrimmomatic() ** ** to backend a KBase App, potentially
            operating on ReadSets) -> structure: parameter "input_ws" of type
-           "workspace_name" (** Common types), parameter "input_reads_name"
-           of type "data_obj_name", parameter "output_ws" of type
+           "workspace_name" (** Common types), parameter "input_reads_ref" of
+           type "data_obj_ref", parameter "output_ws" of type
            "workspace_name" (** Common types), parameter "output_reads_name"
            of type "data_obj_name", parameter "read_type" of String,
            parameter "adapterFa" of String, parameter "seed_mismatches" of

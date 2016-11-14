@@ -129,7 +129,7 @@ $input_params is a kb_trimmomatic.runTrimmomaticInput
 $output is a kb_trimmomatic.runTrimmomaticOutput
 runTrimmomaticInput is a reference to a hash where the following keys are defined:
 	input_ws has a value which is a kb_trimmomatic.workspace_name
-	input_reads_name has a value which is a kb_trimmomatic.data_obj_name
+	input_reads_ref has a value which is a kb_trimmomatic.data_obj_ref
 	output_ws has a value which is a kb_trimmomatic.workspace_name
 	output_reads_name has a value which is a kb_trimmomatic.data_obj_name
 	read_type has a value which is a string
@@ -146,6 +146,7 @@ runTrimmomaticInput is a reference to a hash where the following keys are define
 	head_crop_length has a value which is an int
 	min_length has a value which is an int
 workspace_name is a string
+data_obj_ref is a string
 data_obj_name is a string
 runTrimmomaticOutput is a reference to a hash where the following keys are defined:
 	report_name has a value which is a string
@@ -161,7 +162,7 @@ $input_params is a kb_trimmomatic.runTrimmomaticInput
 $output is a kb_trimmomatic.runTrimmomaticOutput
 runTrimmomaticInput is a reference to a hash where the following keys are defined:
 	input_ws has a value which is a kb_trimmomatic.workspace_name
-	input_reads_name has a value which is a kb_trimmomatic.data_obj_name
+	input_reads_ref has a value which is a kb_trimmomatic.data_obj_ref
 	output_ws has a value which is a kb_trimmomatic.workspace_name
 	output_reads_name has a value which is a kb_trimmomatic.data_obj_name
 	read_type has a value which is a string
@@ -178,6 +179,7 @@ runTrimmomaticInput is a reference to a hash where the following keys are define
 	head_crop_length has a value which is an int
 	min_length has a value which is an int
 workspace_name is a string
+data_obj_ref is a string
 data_obj_name is a string
 runTrimmomaticOutput is a reference to a hash where the following keys are defined:
 	report_name has a value which is a string
@@ -696,7 +698,7 @@ runTrimmomatic()
 <pre>
 a reference to a hash where the following keys are defined:
 input_ws has a value which is a kb_trimmomatic.workspace_name
-input_reads_name has a value which is a kb_trimmomatic.data_obj_name
+input_reads_ref has a value which is a kb_trimmomatic.data_obj_ref
 output_ws has a value which is a kb_trimmomatic.workspace_name
 output_reads_name has a value which is a kb_trimmomatic.data_obj_name
 read_type has a value which is a string
@@ -721,7 +723,7 @@ min_length has a value which is an int
 
 a reference to a hash where the following keys are defined:
 input_ws has a value which is a kb_trimmomatic.workspace_name
-input_reads_name has a value which is a kb_trimmomatic.data_obj_name
+input_reads_ref has a value which is a kb_trimmomatic.data_obj_ref
 output_ws has a value which is a kb_trimmomatic.workspace_name
 output_reads_name has a value which is a kb_trimmomatic.data_obj_name
 read_type has a value which is a string

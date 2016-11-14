@@ -39,9 +39,9 @@ execTrimmomaticSingleLibrary() runs Trimmomatic on a single library
     # state. A method could easily clobber the state set by another while
     # the latter method is running.
     #########################################
-    VERSION = "0.0.3"
+    VERSION = "0.0.11"
     GIT_URL = "https://github.com/kbaseapps/kb_trimmomatic"
-    GIT_COMMIT_HASH = "a0822ba2b3b598a4f610cea20204a242dd72ff60"
+    GIT_COMMIT_HASH = "16f3e4e888858188f7b5fa8a064b76adbd0d8970"
     
     #BEGIN_CLASS_HEADER
     workspaceURL = None
@@ -162,8 +162,8 @@ execTrimmomaticSingleLibrary() runs Trimmomatic on a single library
         :param input_params: instance of type "runTrimmomaticInput"
            (runTrimmomatic() ** ** to backend a KBase App, potentially
            operating on ReadSets) -> structure: parameter "input_ws" of type
-           "workspace_name" (** Common types), parameter "input_reads_name"
-           of type "data_obj_name", parameter "output_ws" of type
+           "workspace_name" (** Common types), parameter "input_reads_ref" of
+           type "data_obj_ref", parameter "output_ws" of type
            "workspace_name" (** Common types), parameter "output_reads_name"
            of type "data_obj_name", parameter "read_type" of String,
            parameter "adapterFa" of String, parameter "seed_mismatches" of
@@ -197,7 +197,7 @@ execTrimmomaticSingleLibrary() runs Trimmomatic on a single library
         provenance = [{}]
         if 'provenance' in ctx:
             provenance = ctx['provenance']
-        provenance[0]['input_ws_objects']=[str(input_params['input_ws'])+'/'+str(input_params['input_reads_name'])]
+        provenance[0]['input_ws_objects']=[str(input_params['input_reads_ref'])]
 
         # set up and run execTrimmomatic()
         #
@@ -205,7 +205,7 @@ execTrimmomaticSingleLibrary() runs Trimmomatic on a single library
             input_params['output_ws'] = input_params['input_ws']
 
 
-        execTrimmomaticParams = { 'input_reads_ref': str(input_params['input_ws']) + '/' + str(input_params['input_reads_name']),
+        execTrimmomaticParams = { 'input_reads_ref': str(input_params['input_reads_ref']),
                                   'output_ws': input_params['output_ws'],
                                   'output_reads_name': input_params['output_reads_name'],
                                   'read_type': input_params['read_type'],
