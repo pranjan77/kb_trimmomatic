@@ -34,7 +34,7 @@ parameters :
 			Library type, paired end or single end sequencing
 		long-hint : |
 			Library type, paired end or single end sequencing
-	input_reads_name :
+	input_reads_ref :
 		ui-name : |
 			Read library (or Set) object
 		short-hint : |
