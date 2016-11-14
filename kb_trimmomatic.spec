@@ -24,10 +24,11 @@ module kb_trimmomatic {
     typedef structure {
         workspace_name input_ws;
         /*string input_read_library;*/
-        data_obj_name input_reads_name;  /* may be either ReadSet, PairedEndLibrary, or SingleEndLibrary */
+        /*data_obj_name input_reads_name;*/  /* may be either ReadSet, PairedEndLibrary, or SingleEndLibrary */
+        data_obj_ref input_reads_ref;  /* may be either ReadSet, PairedEndLibrary, or SingleEndLibrary */
         workspace_name output_ws;
         /*string output_read_library;*/
-        data_obj_name output_reads_name;
+	data_obj_name output_reads_name;
 
         string read_type;
         string adapterFa;
