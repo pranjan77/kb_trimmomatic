@@ -50,13 +50,13 @@
 		},
 		{
 			"id": "output_reads_name",
+			"is_output_name": true
 			"optional": false,
 			"advanced": false,
 			"allow_multiple": false,
 			"default_values": [ "" ],
 			"field_type": "text",
 			"text_options": {
-				"is_output_name": true
 			}
 		},
 		{
