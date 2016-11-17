@@ -50,7 +50,7 @@
 		},
 		{
 			"id": "output_reads_name",
-			"is_output_name": true
+			"is_output_name": true,
 			"optional": false,
 			"advanced": false,
 			"allow_multiple": false,
