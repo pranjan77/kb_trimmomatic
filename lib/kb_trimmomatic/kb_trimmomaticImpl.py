@@ -219,11 +219,11 @@ execTrimmomaticSingleLibrary() runs Trimmomatic on a single library
                                   'simple_clip_threshold': input_params['adapter_clip']['simple_clip_threshold'],
                                   'sliding_window_size': input_params['sliding_window']['sliding_window_size'],
                                   'sliding_window_min_quality': input_params['sliding_window']['sliding_window_min_quality'],
-                                  'leading_min_quality': input_params['others']['leading_min_quality'],
-                                  'trailing_min_quality': input_params['others']['trailing_min_quality'],
-                                  'crop_length': input_params['others']['crop_length'],
-                                  'head_crop_length': input_params['others']['head_crop_length'],
-                                  'min_length': input_params['others']['min_length']
+                                  'leading_min_quality': input_params['leading_min_quality'],
+                                  'trailing_min_quality': input_params['trailing_min_quality'],
+                                  'crop_length': input_params['crop_length'],
+                                  'head_crop_length': input_params['head_crop_length'],
+                                  'min_length': input_params['min_length']
                                   }
 
         trimmomatic_retVal = self.execTrimmomatic (ctx, execTrimmomaticParams)[0]
