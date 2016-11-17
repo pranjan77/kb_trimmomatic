@@ -1,5 +1,5 @@
 {
-	"ver": "0.0.3",
+	"ver": "0.0.12",
 	
 	"authors": [
 		"psdehal",
@@ -81,10 +81,11 @@
 					]
 				}
 		},
+
 		{
 			"id": "adapterFa",
 			"optional": true,
-			"advanced": false,
+			"advanced": true,
 			"allow_multiple": false,
 			"default_values": [""],
 			"field_type": "dropdown",
@@ -162,6 +163,30 @@
 				"validate_as": "int"
 			}
 		},
+
+		{
+			"id": "sliding_window_size",
+			"optional": true,
+			"advanced": true,
+			"allow_multiple": false,
+			"default_values": [ "4" ],
+			"field_type": "text",
+			"text_options": {
+				"validate_as": "int"
+			}
+		},
+		{
+			"id": "sliding_window_min_quality",
+			"optional": true,
+			"advanced": true,
+			"allow_multiple": false,
+			"default_values": [ "15" ],
+			"field_type": "text",
+			"text_options": {
+				"validate_as": "int"
+			}
+		},
+
 		{
 			"id": "crop_length",
 			"optional": true,
@@ -207,28 +232,6 @@
 			}
 		},
 		{
-			"id": "sliding_window_size",
-			"optional": true,
-			"advanced": true,
-			"allow_multiple": false,
-			"default_values": [ "4" ],
-			"field_type": "text",
-			"text_options": {
-				"validate_as": "int"
-			}
-		},
-		{
-			"id": "sliding_window_min_quality",
-			"optional": true,
-			"advanced": true,
-			"allow_multiple": false,
-			"default_values": [ "15" ],
-			"field_type": "text",
-			"text_options": {
-				"validate_as": "int"
-			}
-		},
-		{
 			"id": "min_length",
 			"optional": true,
 			"advanced": true,
@@ -240,6 +243,30 @@
 			}
 		}
 	],
+	"parameter-groups": [
+	    {
+	      "id": "adapter_clip",
+	      "parameters": ["adapterFa", "seed_mismatches", "palindrome_clip_threshold", "simple_clip_threshold"],
+	      "optional": true,
+	      "allow_multiple": false,
+	      "with_border": true
+	    },
+	    {
+	      "id": "sliding_window",
+	      "parameters": ["sliding_window_size", "sliding_window_min_quality"],
+	      "optional": true,
+	      "allow_multiple": false,
+	      "with_border": true
+	    },
+	    {
+	      "id": "others",
+	      "parameters": ["leading_min_quality", "trailing_min_quality", "crop_length", "head_crop_length", "min_length"],
+	      "optional": true,
+	      "allow_multiple": false,
+	      "with_border": true
+	    }
+	],
+
 	"behavior": {
 		"service-mapping": {
 			"url": "",
@@ -265,52 +292,16 @@
 					"target_property": "quality_encoding"
 				},
 				{
-					"input_parameter": "adapterFa",
-					"target_property": "adapterFa"
+					"input_parameter": "adapter_clip",
+					"target_property": "adapter_clip"
 				},
 				{
-					"input_parameter": "seed_mismatches",
-					"target_property": "seed_mismatches"
+					"input_parameter": "sliding_window",
+					"target_property": "sliding_window"
 				},
 				{
-					"input_parameter": "palindrome_clip_threshold",
-					"target_property": "palindrome_clip_threshold"
-				},
-				{
-					"input_parameter": "simple_clip_threshold",
-					"target_property": "simple_clip_threshold"
-				},
-				{
-					"input_parameter": "crop_length",
-					"target_property": "crop_length"
-				},
-				{
-					"input_parameter": "head_crop_length",
-					"target_property": "head_crop_length"
-				},
-				{
-					"input_parameter": "leading_min_quality",
-					"target_property": "leading_min_quality"
-				},
-				{
-					"input_parameter": "trailing_min_quality",
-					"target_property": "trailing_min_quality"
-				},
-				{
-					"input_parameter": "sliding_window_size",
-					"target_property": "sliding_window_size"
-				},
-				{
-					"input_parameter": "sliding_window_min_quality",
-					"target_property": "sliding_window_min_quality"
-				},
-				{
-					"input_parameter": "min_length",
-					"target_property": "min_length"
-				},
-				{
-					"input_parameter": "output_reads_name",
-					"target_property": "output_reads_name"
+					"input_parameter": "others",
+					"target_property": "others"
 				}
 
 			],

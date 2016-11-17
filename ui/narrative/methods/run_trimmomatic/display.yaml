@@ -83,6 +83,20 @@ parameters :
 			Specifies how accurate the match between any adapter etc. sequence must be against a read.
 		long-hint : |
 			Specifies how accurate the match between any adapter etc. sequence must be against a read.
+	sliding_window_size :
+		ui-name : |
+			Sliding window size
+		short-hint : |
+			Specifies the number of bases to average across.
+		long-hint : |
+			Perform a sliding window trimming, cutting once the average quality within the window falls below a threshold. By considering multiple bases, a single poor quality base will not cause the removal of high quality data later in the read.
+	sliding_window_min_quality :
+		ui-name : |
+			Sliding window minimum quality
+		short-hint : |
+			Specifies the average quality required.
+		long-hint : |
+			Perform a sliding window trimming, cutting once the average quality within the window falls below a threshold. By considering multiple bases, a single poor quality base will not cause the removal of high quality data later in the read.
 	crop_length :
 		ui-name : |
 			Crop length
@@ -111,20 +125,6 @@ parameters :
 			Specifies the minimum quality required to keep a base at end of read.
 		long-hint : |
 			Remove low quality bases from the end. As long as a base has a value below this threshold the base is removed and the next base (which as trimmomatic is starting from the 3‟ prime end would be base preceding the just removed base) will be investigated. This approach can be used removing the special illumina „low quality segment‟ regions (which are marked with quality score of 2), but we recommend Sliding Window or MaxInfo instead.
-	sliding_window_size :
-		ui-name : |
-			Sliding window size
-		short-hint : |
-			Specifies the number of bases to average across.
-		long-hint : |
-			Perform a sliding window trimming, cutting once the average quality within the window falls below a threshold. By considering multiple bases, a single poor quality base will not cause the removal of high quality data later in the read.
-	sliding_window_min_quality :
-		ui-name : |
-			Sliding window minimum quality
-		short-hint : |
-			Specifies the average quality required.
-		long-hint : |
-			Perform a sliding window trimming, cutting once the average quality within the window falls below a threshold. By considering multiple bases, a single poor quality base will not cause the removal of high quality data later in the read.
 	min_length :
 		ui-name : |
 			Minimum read length
@@ -133,6 +133,29 @@ parameters :
 		long-hint : |
 			This module removes reads that fall below the specified minimal length. Reads removed by this step will be counted and included in the "dropped reads" count presented in the trimmomatic summary.
 
+#
+# Configure the display and description of parameters
+#
+parameter-groups :
+	adapter_clip :
+		ui-name : |
+			Adapter clipping options
+		short-hint : |
+			Configure if you wish to remove standard adapters
+	sliding_window :
+		ui-name : |
+			Sliding window options
+		short-hint : |
+			Linked parameters for sliding window-based quality trimming
+	others :
+		ui-name : |
+			Other options
+		short-hint : |
+			Various other independent options
+
+#
+# Desc
+#
 description : |
 	<p>This is a Narrative Method for running <a href="http://www.usadellab.org/cms/?page=trimmomatic">Trimmomatic: A flexible read trimming tool for Illumina NGS data.</a> 
 	Trimmomatic is written by <a href="http://www.usadellab.org/cms/index.php?page=BolgerAnthony">Anthony Bolger</a> from the <a href="http://www.usadellab.org">Bjorn Usadel Lab</a>. 

@@ -39,9 +39,9 @@ execTrimmomaticSingleLibrary() runs Trimmomatic on a single library
     # state. A method could easily clobber the state set by another while
     # the latter method is running.
     #########################################
-    VERSION = "0.0.11"
+    VERSION = "0.0.12"
     GIT_URL = "https://github.com/kbaseapps/kb_trimmomatic"
-    GIT_COMMIT_HASH = "16f3e4e888858188f7b5fa8a064b76adbd0d8970"
+    GIT_COMMIT_HASH = "b29235f0ef8f55ed81c74da665bf55c133418a0c"
     
     #BEGIN_CLASS_HEADER
     workspaceURL = None
@@ -166,14 +166,18 @@ execTrimmomaticSingleLibrary() runs Trimmomatic on a single library
            type "data_obj_ref", parameter "output_ws" of type
            "workspace_name" (** Common types), parameter "output_reads_name"
            of type "data_obj_name", parameter "read_type" of String,
-           parameter "adapterFa" of String, parameter "seed_mismatches" of
-           Long, parameter "palindrome_clip_threshold" of Long, parameter
-           "simple_clip_threshold" of Long, parameter "quality_encoding" of
-           String, parameter "sliding_window_size" of Long, parameter
-           "sliding_window_min_quality" of Long, parameter
-           "leading_min_quality" of Long, parameter "trailing_min_quality" of
-           Long, parameter "crop_length" of Long, parameter
-           "head_crop_length" of Long, parameter "min_length" of Long
+           parameter "quality_encoding" of String, parameter "adapter_clip"
+           of type "AdapterClip_Options" -> structure: parameter "adapterFa"
+           of String, parameter "seed_mismatches" of Long, parameter
+           "palindrome_clip_threshold" of Long, parameter
+           "simple_clip_threshold" of Long, parameter "sliding_window" of
+           type "SlidingWindow_Options" (parameter groups) -> structure:
+           parameter "sliding_window_size" of Long, parameter
+           "sliding_window_min_quality" of Long, parameter "others" of type
+           "Other_Options" -> structure: parameter "leading_min_quality" of
+           Long, parameter "trailing_min_quality" of Long, parameter
+           "crop_length" of Long, parameter "head_crop_length" of Long,
+           parameter "min_length" of Long
         :returns: instance of type "runTrimmomaticOutput" -> structure:
            parameter "report_name" of String, parameter "report_ref" of String
         """
@@ -209,18 +213,18 @@ execTrimmomaticSingleLibrary() runs Trimmomatic on a single library
                                   'output_ws': input_params['output_ws'],
                                   'output_reads_name': input_params['output_reads_name'],
                                   'read_type': input_params['read_type'],
-                                  'adapterFa': input_params['adapterFa'],
-                                  'seed_mismatches': input_params['seed_mismatches'],
-                                  'palindrome_clip_threshold': input_params['palindrome_clip_threshold'],
-                                  'simple_clip_threshold': input_params['simple_clip_threshold'],
                                   'quality_encoding': input_params['quality_encoding'],
-                                  'sliding_window_size': input_params['sliding_window_size'],
-                                  'sliding_window_min_quality': input_params['sliding_window_min_quality'],
-                                  'leading_min_quality': input_params['leading_min_quality'],
-                                  'trailing_min_quality': input_params['trailing_min_quality'],
-                                  'crop_length': input_params['crop_length'],
-                                  'head_crop_length': input_params['head_crop_length'],
-                                  'min_length': input_params['min_length']
+                                  'adapterFa': input_params['adapter_clip']['adapterFa'],
+                                  'seed_mismatches': input_params['adapter_clip']['seed_mismatches'],
+                                  'palindrome_clip_threshold': input_params['adapter_clip']['palindrome_clip_threshold'],
+                                  'simple_clip_threshold': input_params['adapter_clip']['simple_clip_threshold'],
+                                  'sliding_window_size': input_params['sliding_window']['sliding_window_size'],
+                                  'sliding_window_min_quality': input_params['sliding_window']['sliding_window_min_quality'],
+                                  'leading_min_quality': input_params['others']['leading_min_quality'],
+                                  'trailing_min_quality': input_params['others']['trailing_min_quality'],
+                                  'crop_length': input_params['others']['crop_length'],
+                                  'head_crop_length': input_params['others']['head_crop_length'],
+                                  'min_length': input_params['others']['min_length']
                                   }
 
         trimmomatic_retVal = self.execTrimmomatic (ctx, execTrimmomaticParams)[0]

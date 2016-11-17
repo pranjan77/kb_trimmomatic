@@ -133,21 +133,27 @@ runTrimmomaticInput is a reference to a hash where the following keys are define
 	output_ws has a value which is a kb_trimmomatic.workspace_name
 	output_reads_name has a value which is a kb_trimmomatic.data_obj_name
 	read_type has a value which is a string
+	quality_encoding has a value which is a string
+	adapter_clip has a value which is a kb_trimmomatic.AdapterClip_Options
+	sliding_window has a value which is a kb_trimmomatic.SlidingWindow_Options
+	others has a value which is a kb_trimmomatic.Other_Options
+workspace_name is a string
+data_obj_ref is a string
+data_obj_name is a string
+AdapterClip_Options is a reference to a hash where the following keys are defined:
 	adapterFa has a value which is a string
 	seed_mismatches has a value which is an int
 	palindrome_clip_threshold has a value which is an int
 	simple_clip_threshold has a value which is an int
-	quality_encoding has a value which is a string
+SlidingWindow_Options is a reference to a hash where the following keys are defined:
 	sliding_window_size has a value which is an int
 	sliding_window_min_quality has a value which is an int
+Other_Options is a reference to a hash where the following keys are defined:
 	leading_min_quality has a value which is an int
 	trailing_min_quality has a value which is an int
 	crop_length has a value which is an int
 	head_crop_length has a value which is an int
 	min_length has a value which is an int
-workspace_name is a string
-data_obj_ref is a string
-data_obj_name is a string
 runTrimmomaticOutput is a reference to a hash where the following keys are defined:
 	report_name has a value which is a string
 	report_ref has a value which is a string
@@ -166,21 +172,27 @@ runTrimmomaticInput is a reference to a hash where the following keys are define
 	output_ws has a value which is a kb_trimmomatic.workspace_name
 	output_reads_name has a value which is a kb_trimmomatic.data_obj_name
 	read_type has a value which is a string
+	quality_encoding has a value which is a string
+	adapter_clip has a value which is a kb_trimmomatic.AdapterClip_Options
+	sliding_window has a value which is a kb_trimmomatic.SlidingWindow_Options
+	others has a value which is a kb_trimmomatic.Other_Options
+workspace_name is a string
+data_obj_ref is a string
+data_obj_name is a string
+AdapterClip_Options is a reference to a hash where the following keys are defined:
 	adapterFa has a value which is a string
 	seed_mismatches has a value which is an int
 	palindrome_clip_threshold has a value which is an int
 	simple_clip_threshold has a value which is an int
-	quality_encoding has a value which is a string
+SlidingWindow_Options is a reference to a hash where the following keys are defined:
 	sliding_window_size has a value which is an int
 	sliding_window_min_quality has a value which is an int
+Other_Options is a reference to a hash where the following keys are defined:
 	leading_min_quality has a value which is an int
 	trailing_min_quality has a value which is an int
 	crop_length has a value which is an int
 	head_crop_length has a value which is an int
 	min_length has a value which is an int
-workspace_name is a string
-data_obj_ref is a string
-data_obj_name is a string
 runTrimmomaticOutput is a reference to a hash where the following keys are defined:
 	report_name has a value which is a string
 	report_ref has a value which is a string
@@ -678,6 +690,117 @@ a string
 
 
 
+=head2 SlidingWindow_Options
+
+=over 4
+
+
+
+=item Description
+
+parameter groups
+
+
+=item Definition
+
+=begin html
+
+<pre>
+a reference to a hash where the following keys are defined:
+sliding_window_size has a value which is an int
+sliding_window_min_quality has a value which is an int
+
+</pre>
+
+=end html
+
+=begin text
+
+a reference to a hash where the following keys are defined:
+sliding_window_size has a value which is an int
+sliding_window_min_quality has a value which is an int
+
+
+=end text
+
+=back
+
+
+
+=head2 AdapterClip_Options
+
+=over 4
+
+
+
+=item Definition
+
+=begin html
+
+<pre>
+a reference to a hash where the following keys are defined:
+adapterFa has a value which is a string
+seed_mismatches has a value which is an int
+palindrome_clip_threshold has a value which is an int
+simple_clip_threshold has a value which is an int
+
+</pre>
+
+=end html
+
+=begin text
+
+a reference to a hash where the following keys are defined:
+adapterFa has a value which is a string
+seed_mismatches has a value which is an int
+palindrome_clip_threshold has a value which is an int
+simple_clip_threshold has a value which is an int
+
+
+=end text
+
+=back
+
+
+
+=head2 Other_Options
+
+=over 4
+
+
+
+=item Definition
+
+=begin html
+
+<pre>
+a reference to a hash where the following keys are defined:
+leading_min_quality has a value which is an int
+trailing_min_quality has a value which is an int
+crop_length has a value which is an int
+head_crop_length has a value which is an int
+min_length has a value which is an int
+
+</pre>
+
+=end html
+
+=begin text
+
+a reference to a hash where the following keys are defined:
+leading_min_quality has a value which is an int
+trailing_min_quality has a value which is an int
+crop_length has a value which is an int
+head_crop_length has a value which is an int
+min_length has a value which is an int
+
+
+=end text
+
+=back
+
+
+
 =head2 runTrimmomaticInput
 
 =over 4
@@ -702,18 +825,10 @@ input_reads_ref has a value which is a kb_trimmomatic.data_obj_ref
 output_ws has a value which is a kb_trimmomatic.workspace_name
 output_reads_name has a value which is a kb_trimmomatic.data_obj_name
 read_type has a value which is a string
-adapterFa has a value which is a string
-seed_mismatches has a value which is an int
-palindrome_clip_threshold has a value which is an int
-simple_clip_threshold has a value which is an int
 quality_encoding has a value which is a string
-sliding_window_size has a value which is an int
-sliding_window_min_quality has a value which is an int
-leading_min_quality has a value which is an int
-trailing_min_quality has a value which is an int
-crop_length has a value which is an int
-head_crop_length has a value which is an int
-min_length has a value which is an int
+adapter_clip has a value which is a kb_trimmomatic.AdapterClip_Options
+sliding_window has a value which is a kb_trimmomatic.SlidingWindow_Options
+others has a value which is a kb_trimmomatic.Other_Options
 
 </pre>
 
@@ -727,18 +842,10 @@ input_reads_ref has a value which is a kb_trimmomatic.data_obj_ref
 output_ws has a value which is a kb_trimmomatic.workspace_name
 output_reads_name has a value which is a kb_trimmomatic.data_obj_name
 read_type has a value which is a string
-adapterFa has a value which is a string
-seed_mismatches has a value which is an int
-palindrome_clip_threshold has a value which is an int
-simple_clip_threshold has a value which is an int
 quality_encoding has a value which is a string
-sliding_window_size has a value which is an int
-sliding_window_min_quality has a value which is an int
-leading_min_quality has a value which is an int
-trailing_min_quality has a value which is an int
-crop_length has a value which is an int
-head_crop_length has a value which is an int
-min_length has a value which is an int
+adapter_clip has a value which is a kb_trimmomatic.AdapterClip_Options
+sliding_window has a value which is a kb_trimmomatic.SlidingWindow_Options
+others has a value which is a kb_trimmomatic.Other_Options
 
 
 =end text

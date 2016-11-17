@@ -16,6 +16,29 @@ module kb_trimmomatic {
     typedef string data_obj_ref;
     typedef string data_obj_name;
 
+
+    /* parameter groups
+    */
+    typedef structure {
+        int sliding_window_size;
+        int sliding_window_min_quality;
+    } SlidingWindow_Options;
+
+    typedef structure {
+        string adapterFa;
+        int seed_mismatches;
+        int palindrome_clip_threshold;
+        int simple_clip_threshold;
+    } AdapterClip_Options;
+
+    typedef structure {
+        int leading_min_quality;
+        int trailing_min_quality;
+        int crop_length;
+        int head_crop_length;
+        int min_length;
+    } Other_Options;
+
     
     /* runTrimmomatic()
     **
@@ -30,19 +53,11 @@ module kb_trimmomatic {
         /*string output_read_library;*/
 	data_obj_name output_reads_name;
 
-        string read_type;
-        string adapterFa;
-        int seed_mismatches;
-        int palindrome_clip_threshold;
-        int simple_clip_threshold;
-        string quality_encoding;
-        int sliding_window_size;
-        int sliding_window_min_quality;
-        int leading_min_quality;
-        int trailing_min_quality;
-        int crop_length;
-        int head_crop_length;
-        int min_length;
+        string                read_type;
+        string                quality_encoding;
+	AdapterClip_Options   adapter_clip;
+	SlidingWindow_Options sliding_window;
+	Other_Options         others;
     } runTrimmomaticInput;
 
     typedef structure {
