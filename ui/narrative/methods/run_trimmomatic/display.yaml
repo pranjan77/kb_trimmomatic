@@ -6,7 +6,7 @@ tooltip: |
 	Trim paired- or single-end Illumina reads with Trimmomatic.
 screenshots: []
 
-icon: trimmomatic-orange.png
+icon: trimmomatic-pink.png
 
 #
 # define a set of similar methods that might be useful to the user
@@ -21,19 +21,12 @@ suggestions:
 		related:
 			[]
 		next:
-			[annotate_contigset]
+			[]
 
 #
 # Configure the display and description of parameters
 #
 parameters :
-	read_type :
-		ui-name : |
-			Read library type
-		short-hint : |
-			Library type, paired end or single end sequencing
-		long-hint : |
-			Library type, paired end or single end sequencing
 	input_reads_ref :
 		ui-name : |
 			Read library (or Set) object
@@ -48,6 +41,13 @@ parameters :
 			Read quality encoding format.
 		long-hint : |
 			Read quality encoding format.
+	read_type :
+		ui-name : |
+			Read library type
+		short-hint : |
+			Library type, paired end or single end sequencing
+		long-hint : |
+			Library type, paired end or single end sequencing
 	output_reads_name :
 		ui-name : |
 			Output library (or Set) name
