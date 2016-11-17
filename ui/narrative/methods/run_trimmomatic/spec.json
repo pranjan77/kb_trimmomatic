@@ -284,6 +284,11 @@
 
 				},
 				{
+					"input_parameter": "output_reads_name",
+					"target_property": "output_reads_name"
+
+				},
+				{
 					"input_parameter": "quality_encoding",
 					"target_property": "quality_encoding"
 				},
