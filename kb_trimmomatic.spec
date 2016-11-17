@@ -31,14 +31,6 @@ module kb_trimmomatic {
         int simple_clip_threshold;
     } AdapterClip_Options;
 
-    typedef structure {
-        int leading_min_quality;
-        int trailing_min_quality;
-        int crop_length;
-        int head_crop_length;
-        int min_length;
-    } Other_Options;
-
     
     /* runTrimmomatic()
     **
@@ -57,7 +49,11 @@ module kb_trimmomatic {
         string                quality_encoding;
 	AdapterClip_Options   adapter_clip;
 	SlidingWindow_Options sliding_window;
-	Other_Options         others;
+        int leading_min_quality;
+        int trailing_min_quality;
+        int crop_length;
+        int head_crop_length;
+        int min_length;
     } runTrimmomaticInput;
 
     typedef structure {

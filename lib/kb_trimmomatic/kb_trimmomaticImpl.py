@@ -33,16 +33,16 @@ execTrimmomatic() the local method that handles overloading Trimmomatic to run o
 execTrimmomaticSingleLibrary() runs Trimmomatic on a single library
     '''
 
-    ######## WARNING FOR GEVENT USERS #######
+    ######## WARNING FOR GEVENT USERS ####### noqa
     # Since asynchronous IO can lead to methods - even the same method -
     # interrupting each other, you must be *very* careful when using global
     # state. A method could easily clobber the state set by another while
     # the latter method is running.
-    #########################################
+    ######################################### noqa
     VERSION = "0.0.12"
     GIT_URL = "https://github.com/kbaseapps/kb_trimmomatic"
-    GIT_COMMIT_HASH = "b29235f0ef8f55ed81c74da665bf55c133418a0c"
-    
+    GIT_COMMIT_HASH = "0e7aaaa0dc72db3cb3a65ccf31bb110b7cc7ede7"
+
     #BEGIN_CLASS_HEADER
     workspaceURL = None
     TRIMMOMATIC = 'java -jar /kb/module/Trimmomatic-0.36/trimmomatic-0.36.jar'
@@ -155,7 +155,7 @@ execTrimmomaticSingleLibrary() runs Trimmomatic on a single library
         os.chdir(self.scratch)
         #END_CONSTRUCTOR
         pass
-    
+
 
     def runTrimmomatic(self, ctx, input_params):
         """
@@ -173,11 +173,10 @@ execTrimmomaticSingleLibrary() runs Trimmomatic on a single library
            "simple_clip_threshold" of Long, parameter "sliding_window" of
            type "SlidingWindow_Options" (parameter groups) -> structure:
            parameter "sliding_window_size" of Long, parameter
-           "sliding_window_min_quality" of Long, parameter "others" of type
-           "Other_Options" -> structure: parameter "leading_min_quality" of
-           Long, parameter "trailing_min_quality" of Long, parameter
-           "crop_length" of Long, parameter "head_crop_length" of Long,
-           parameter "min_length" of Long
+           "sliding_window_min_quality" of Long, parameter
+           "leading_min_quality" of Long, parameter "trailing_min_quality" of
+           Long, parameter "crop_length" of Long, parameter
+           "head_crop_length" of Long, parameter "min_length" of Long
         :returns: instance of type "runTrimmomaticOutput" -> structure:
            parameter "report_name" of String, parameter "report_ref" of String
         """
@@ -917,7 +916,6 @@ execTrimmomaticSingleLibrary() runs Trimmomatic on a single library
                              'output is not type dict as required.')
         # return the results
         return [output]
-
     def status(self, ctx):
         #BEGIN_STATUS
         returnVal = {'state': "OK", 'message': "", 'version': self.VERSION, 

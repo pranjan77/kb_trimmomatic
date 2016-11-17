@@ -136,7 +136,11 @@ runTrimmomaticInput is a reference to a hash where the following keys are define
 	quality_encoding has a value which is a string
 	adapter_clip has a value which is a kb_trimmomatic.AdapterClip_Options
 	sliding_window has a value which is a kb_trimmomatic.SlidingWindow_Options
-	others has a value which is a kb_trimmomatic.Other_Options
+	leading_min_quality has a value which is an int
+	trailing_min_quality has a value which is an int
+	crop_length has a value which is an int
+	head_crop_length has a value which is an int
+	min_length has a value which is an int
 workspace_name is a string
 data_obj_ref is a string
 data_obj_name is a string
@@ -148,12 +152,6 @@ AdapterClip_Options is a reference to a hash where the following keys are define
 SlidingWindow_Options is a reference to a hash where the following keys are defined:
 	sliding_window_size has a value which is an int
 	sliding_window_min_quality has a value which is an int
-Other_Options is a reference to a hash where the following keys are defined:
-	leading_min_quality has a value which is an int
-	trailing_min_quality has a value which is an int
-	crop_length has a value which is an int
-	head_crop_length has a value which is an int
-	min_length has a value which is an int
 runTrimmomaticOutput is a reference to a hash where the following keys are defined:
 	report_name has a value which is a string
 	report_ref has a value which is a string
@@ -175,7 +173,11 @@ runTrimmomaticInput is a reference to a hash where the following keys are define
 	quality_encoding has a value which is a string
 	adapter_clip has a value which is a kb_trimmomatic.AdapterClip_Options
 	sliding_window has a value which is a kb_trimmomatic.SlidingWindow_Options
-	others has a value which is a kb_trimmomatic.Other_Options
+	leading_min_quality has a value which is an int
+	trailing_min_quality has a value which is an int
+	crop_length has a value which is an int
+	head_crop_length has a value which is an int
+	min_length has a value which is an int
 workspace_name is a string
 data_obj_ref is a string
 data_obj_name is a string
@@ -187,12 +189,6 @@ AdapterClip_Options is a reference to a hash where the following keys are define
 SlidingWindow_Options is a reference to a hash where the following keys are defined:
 	sliding_window_size has a value which is an int
 	sliding_window_min_quality has a value which is an int
-Other_Options is a reference to a hash where the following keys are defined:
-	leading_min_quality has a value which is an int
-	trailing_min_quality has a value which is an int
-	crop_length has a value which is an int
-	head_crop_length has a value which is an int
-	min_length has a value which is an int
 runTrimmomaticOutput is a reference to a hash where the following keys are defined:
 	report_name has a value which is a string
 	report_ref has a value which is a string
@@ -763,44 +759,6 @@ simple_clip_threshold has a value which is an int
 
 
 
-=head2 Other_Options
-
-=over 4
-
-
-
-=item Definition
-
-=begin html
-
-<pre>
-a reference to a hash where the following keys are defined:
-leading_min_quality has a value which is an int
-trailing_min_quality has a value which is an int
-crop_length has a value which is an int
-head_crop_length has a value which is an int
-min_length has a value which is an int
-
-</pre>
-
-=end html
-
-=begin text
-
-a reference to a hash where the following keys are defined:
-leading_min_quality has a value which is an int
-trailing_min_quality has a value which is an int
-crop_length has a value which is an int
-head_crop_length has a value which is an int
-min_length has a value which is an int
-
-
-=end text
-
-=back
-
-
-
 =head2 runTrimmomaticInput
 
 =over 4
@@ -828,7 +786,11 @@ read_type has a value which is a string
 quality_encoding has a value which is a string
 adapter_clip has a value which is a kb_trimmomatic.AdapterClip_Options
 sliding_window has a value which is a kb_trimmomatic.SlidingWindow_Options
-others has a value which is a kb_trimmomatic.Other_Options
+leading_min_quality has a value which is an int
+trailing_min_quality has a value which is an int
+crop_length has a value which is an int
+head_crop_length has a value which is an int
+min_length has a value which is an int
 
 </pre>
 
@@ -845,7 +807,11 @@ read_type has a value which is a string
 quality_encoding has a value which is a string
 adapter_clip has a value which is a kb_trimmomatic.AdapterClip_Options
 sliding_window has a value which is a kb_trimmomatic.SlidingWindow_Options
-others has a value which is a kb_trimmomatic.Other_Options
+leading_min_quality has a value which is an int
+trailing_min_quality has a value which is an int
+crop_length has a value which is an int
+head_crop_length has a value which is an int
+min_length has a value which is an int
 
 
 =end text

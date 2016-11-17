@@ -257,13 +257,6 @@
 	      "optional": true,
 	      "allow_multiple": false,
 	      "with_border": true
-	    },
-	    {
-	      "id": "others",
-	      "parameters": ["leading_min_quality", "trailing_min_quality", "crop_length", "head_crop_length", "min_length"],
-	      "optional": true,
-	      "allow_multiple": false,
-	      "with_border": true
 	    }
 	],
 
@@ -300,10 +293,25 @@
 					"target_property": "sliding_window"
 				},
 				{
-					"input_parameter": "others",
-					"target_property": "others"
+					"input_parameter": "leading_min_quality",
+					"target_property": "leading_min_quality"
+				},
+				{
+					"input_parameter": "trailing_min_quality",
+					"target_property": "trailing_min_quality"
+				},
+				{
+					"input_parameter": "crop_length",
+					"target_property": "crop_length"
+				},
+				{
+					"input_parameter": "head_crop_length",
+					"target_property": "head_crop_length"
+				},
+				{
+					"input_parameter": "min_length",
+					"target_property": "min_length"
 				}
-
 			],
 			"output_mapping": [
 				{

@@ -147,11 +147,6 @@ parameter-groups :
 			Sliding window options
 		short-hint : |
 			Linked parameters for sliding window-based quality trimming
-	others :
-		ui-name : |
-			Other options
-		short-hint : |
-			Various other independent options
 
 #
 # Desc

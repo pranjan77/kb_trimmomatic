@@ -49,11 +49,10 @@ class kb_trimmomatic(object):
            "simple_clip_threshold" of Long, parameter "sliding_window" of
            type "SlidingWindow_Options" (parameter groups) -> structure:
            parameter "sliding_window_size" of Long, parameter
-           "sliding_window_min_quality" of Long, parameter "others" of type
-           "Other_Options" -> structure: parameter "leading_min_quality" of
-           Long, parameter "trailing_min_quality" of Long, parameter
-           "crop_length" of Long, parameter "head_crop_length" of Long,
-           parameter "min_length" of Long
+           "sliding_window_min_quality" of Long, parameter
+           "leading_min_quality" of Long, parameter "trailing_min_quality" of
+           Long, parameter "crop_length" of Long, parameter
+           "head_crop_length" of Long, parameter "min_length" of Long
         :returns: instance of type "runTrimmomaticOutput" -> structure:
            parameter "report_name" of String, parameter "report_ref" of String
         """
@@ -115,4 +114,4 @@ class kb_trimmomatic(object):
 
     def status(self, context=None):
         return self._client.call_method('kb_trimmomatic.status',
-            [], self._service_ver, context)
+                                        [], self._service_ver, context)
