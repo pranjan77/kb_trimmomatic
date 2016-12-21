@@ -2,21 +2,29 @@ FROM kbase/kbase:sdkbase.latest
 MAINTAINER KBase Developer
 # -----------------------------------------
 
+# Temporary trick updating of SDK to latest develop commit inside image
+RUN . /kb/dev_container/user-env.sh && cd /kb/dev_container/modules && \
+  rm -rf kb_sdk && git clone https://github.com/kbase/kb_sdk -b develop && \
+  cd /kb/dev_container/modules/kb_sdk && make && make deploy && echo "3"
+
 # Insert apt-get instructions here to install
 # any required dependencies for your module.
 
 # RUN apt-get update
-RUN pip install coverage
+
+WORKDIR /kb/module
+
+RUN curl http://www.usadellab.org/cms/uploads/supplementary/Trimmomatic/Trimmomatic-0.36.zip -o Trimmomatic-0.36.zip && \
+    unzip Trimmomatic-0.36.zip
 
 # -----------------------------------------
 
 COPY ./ /kb/module
 RUN mkdir -p /kb/module/work
-RUN chmod 777 /kb/module
 
 WORKDIR /kb/module
 
-RUN make all
+RUN make
 
 ENTRYPOINT [ "./scripts/entrypoint.sh" ]
 
