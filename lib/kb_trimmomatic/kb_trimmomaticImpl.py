@@ -33,16 +33,16 @@ execTrimmomatic() the local method that handles overloading Trimmomatic to run o
 execTrimmomaticSingleLibrary() runs Trimmomatic on a single library
     '''
 
-    ######## WARNING FOR GEVENT USERS #######
+    ######## WARNING FOR GEVENT USERS ####### noqa
     # Since asynchronous IO can lead to methods - even the same method -
     # interrupting each other, you must be *very* careful when using global
     # state. A method could easily clobber the state set by another while
     # the latter method is running.
-    #########################################
+    ######################################### noqa
     VERSION = "0.0.12"
     GIT_URL = "https://github.com/kbaseapps/kb_trimmomatic"
-    GIT_COMMIT_HASH = "9e6a5498084c494ded87c5a9b056b5436126e4af"
-    
+    GIT_COMMIT_HASH = "dcf3866a2a7e4ad34f7ca366eca4276f08b6fc42"
+
     #BEGIN_CLASS_HEADER
     workspaceURL = None
     TRIMMOMATIC = 'java -jar /kb/module/Trimmomatic-0.36/trimmomatic-0.36.jar'
@@ -155,7 +155,7 @@ execTrimmomaticSingleLibrary() runs Trimmomatic on a single library
         os.chdir(self.scratch)
         #END_CONSTRUCTOR
         pass
-    
+
 
     def runTrimmomatic(self, ctx, input_params):
         """
@@ -917,7 +917,6 @@ execTrimmomaticSingleLibrary() runs Trimmomatic on a single library
                              'output is not type dict as required.')
         # return the results
         return [output]
-
     def status(self, ctx):
         #BEGIN_STATUS
         returnVal = {'state': "OK", 'message': "", 'version': self.VERSION, 

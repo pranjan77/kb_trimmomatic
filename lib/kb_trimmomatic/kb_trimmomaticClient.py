@@ -114,4 +114,4 @@ class kb_trimmomatic(object):
 
     def status(self, context=None):
         return self._client.call_method('kb_trimmomatic.status',
-            [], self._service_ver, context)
+                                        [], self._service_ver, context)
