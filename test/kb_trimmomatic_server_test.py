@@ -321,7 +321,7 @@ class kb_trimmomaticTest(unittest.TestCase):
             'input_ws': pe_lib_info[7],
             'output_ws': pe_lib_info[7],
             'input_reads_ref': str(pe_lib_info[6])+'/'+str(pe_lib_info[0]),
-            'output_reads_name': output_name
+            'output_reads_name': output_name,
             'read_type': 'PE',
             'quality_encoding': 'phred33',
             #'adapter_clip': {
@@ -367,7 +367,7 @@ class kb_trimmomaticTest(unittest.TestCase):
             'input_ws': pe_lib_set_info[7],
             'output_ws': pe_lib_set_info[7],
             'input_reads_ref': str(pe_lib_set_info[6])+'/'+str(pe_lib_set_info[0]),
-            'output_reads_name': output_name
+            'output_reads_name': output_name,
             'read_type': 'PE',
             'quality_encoding': 'phred33',
             #'adapter_clip': {
