@@ -4,6 +4,7 @@ import os
 import json
 import time
 import requests
+requests.packages.urllib3.disable_warnings()
 
 from os import environ
 try:
@@ -62,6 +63,10 @@ class kb_trimmomaticTest(unittest.TestCase):
         if hasattr(cls, 'wsName'):
             cls.wsClient.delete_workspace({'workspace': cls.wsName})
             print('Test workspace was deleted')
+        if hasattr(cls, 'shock_ids'):
+            for shock_id in cls.shock_ids:
+                print('Deleting SHOCK node: '+str(shock_id))
+                cls.delete_shock_node(shock_id)
 
     def getWsClient(self):
         return self.__class__.wsClient
@@ -108,7 +113,19 @@ class kb_trimmomaticTest(unittest.TestCase):
         if result['error']:
             raise Exception(result['error'][0])
         else:
+            shock_id = result['data']['id']
+            if not hasattr(cls, 'shock_ids'):
+                cls.shock_ids = []
+            cls.shock_ids.append(shock_id)
+
             return result["data"]
+
+    @classmethod
+    def delete_shock_node(cls, node_id):
+        header = {'Authorization': 'Oauth {0}'.format(cls.token)}
+        requests.delete(cls.shockURL + '/node/' + node_id, headers=header,
+                        allow_redirects=True)
+        print('Deleted shock node ' + node_id)
 
 
     def getPairedEndLibInfo(self, read_lib_basename, lib_i=0):
@@ -267,24 +284,14 @@ class kb_trimmomaticTest(unittest.TestCase):
 
     # NOTE: According to Python unittest naming rules test method names should start from 'test'.
     #
-    def test_runTrimmomatic(self):
-
-        # Prepare test objects in workspace if needed using 
-        # self.getWsClient().save_objects({'workspace': self.getWsName(), 'objects': []})
-        #
-        # Run your method by
-        # ret = self.getImpl().your_method(self.getContext(), parameters...)
-        #
-        # Check returned data with
-        # self.assertEqual(ret[...], ...) or other unittest methods
-
-
-
-        ### TEST 1: run megahit against just one paired end library
-
-        # figure out where the test data lives
-        pe_lib_info = self.getPairedEndLibInfo('small_1')
-        pprint(pe_lib_info)
+    # Prepare test objects in workspace if needed using 
+    # self.getWsClient().save_objects({'workspace': self.getWsName(), 'objects': []})
+    #
+    # Run your method by
+    # ret = self.getImpl().your_method(self.getContext(), parameters...)
+    #
+    # Check returned data with
+    # self.assertEqual(ret[...], ...) or other unittest methods
 
         # Object Info Contents
         # 0 - obj_id objid
@@ -299,39 +306,94 @@ class kb_trimmomaticTest(unittest.TestCase):
         # 9 - int size
         # 10 - usermeta meta
 
+
+    ### TEST 1: run Trimmomatic against just one paired end library
+    #
+    def test_runTrimmomatic(self):
+
+        # figure out where the test data lives
+        pe_lib_info = self.getPairedEndLibInfo('small_1')
+        pprint(pe_lib_info)
+
+        # run method
         output_name = 'output_trim.PElib'
         params = {
             'input_ws': pe_lib_info[7],
             'output_ws': pe_lib_info[7],
             'input_reads_ref': str(pe_lib_info[6])+'/'+str(pe_lib_info[0]),
-            'output_read_name': output_name,
-            
-            'leading_min_quality': '1',
-            'trailing_min_quality': '1',
-            'crop_length': '200',
-            'head_crop_length': '1',
-            'min_length': '80',
+            'output_reads_name': output_name
             'read_type': 'PE',
             'quality_encoding': 'phred33',
+            #'adapter_clip': {
+            #    'adapterFa': '',
+            #    'seed_mismatches': ,
+            #    'palindrom_clip_threshold': ,
+            #    'simple_clip_threshold': 
+            #    },
             'sliding_window': {
-                'sliding_window_size': '4',
-                'sliding_window_min_quality': '5'
+                'sliding_window_size': 4,
+                'sliding_window_min_size': 15
                 },
-            'adapter_clip': {
-                'adapterFa': 'TruSeq3-PE.fa',
-                'seed_mismatches': '2',
-                'palindrome_clip_threshold': '30',
-                'simple_clip_threshold': '10'
-                }
+            'leading_min_quality': 3,
+            'trailing_min_quality': 3,
+            'crop_length': 0,
+            'head_crop_length': 0,
+            'min_length': 36
         }
 
-        result = self.getImpl().run_megahit(self.getContext(),params)
+        result = self.getImpl().runTrimmomatic(self.getContext(),params)
         print('RESULT:')
         pprint(result)
 
         # check the output
         info_list = self.wsClient.get_object_info([{'ref':pe_lib_info[7] + '/' + output_name}], 1)
         self.assertEqual(len(info_list),1)
-        read_lib_info = info_list[0]
-        self.assertEqual(read_lib_info[1],output_name)
-        self.assertEqual(read_lib_info[2].split('-')[0],'KBaseFile.PairedEndLibrary')
+        trimmed_reads_info = info_list[0]
+        self.assertEqual(trimmed_reads_info[1],output_name)
+        self.assertEqual(trimmed_reads_info[2].split('-')[0],'KBaseFile.PairedEndLibrary')
+
+
+    ### TEST 2: run Trimmomatic against a reads set
+    #
+    def test_runTrimmomatic_ReadsSet(self):
+
+        # figure out where the test data lives
+        pe_lib_set_info = self.getPairedEndLib_SetInfo(['small_1','small_2'])
+        pprint(pe_lib_set_info)
+
+        # run method
+        output_name = 'output_trim.PElib'
+        params = {
+            'input_ws': pe_lib_set_info[7],
+            'output_ws': pe_lib_set_info[7],
+            'input_reads_ref': str(pe_lib_set_info[6])+'/'+str(pe_lib_set_info[0]),
+            'output_reads_name': output_name
+            'read_type': 'PE',
+            'quality_encoding': 'phred33',
+            #'adapter_clip': {
+            #    'adapterFa': '',
+            #    'seed_mismatches': ,
+            #    'palindrom_clip_threshold': ,
+            #    'simple_clip_threshold': 
+            #    },
+            'sliding_window': {
+                'sliding_window_size': 4,
+                'sliding_window_min_size': 15
+                },
+            'leading_min_quality': 3,
+            'trailing_min_quality': 3,
+            'crop_length': 0,
+            'head_crop_length': 0,
+            'min_length': 36
+        }
+
+        result = self.getImpl().runTrimmomatic(self.getContext(),params)
+        print('RESULT:')
+        pprint(result)
+
+        # check the output
+        info_list = self.wsClient.get_object_info([{'ref':pe_lib_set_info[7] + '/' + output_name}], 1)
+        self.assertEqual(len(info_list),1)
+        trimmed_reads_info = info_list[0]
+        self.assertEqual(trimmed_reads_info[1],output_name)
+        self.assertEqual(trimmed_reads_info[2].split('-')[0],'KBaseSets.ReadsSet')
