@@ -226,11 +226,12 @@ execTrimmomaticSingleLibrary() runs Trimmomatic on a single library
         if 'quality_encoding' in input_params:
             execTrimmomaticParams['quality_encoding'] = input_params['quality_encoding']
 
+        # adapter_clip grouped params
         if 'adapter_clip' in input_params and input_params['adapter_clip'] != None:
             if 'adapterFa' in input_params['adapter_clip']:
-                execTrimmomaticParams['adapter_clip']['adapterFa'] = input_params['adapter_clip']['adapterFa']
+                execTrimmomaticParams['adapterFa'] = input_params['adapter_clip']['adapterFa']
             else:
-                execTrimmomaticParams['adapter_clip']['adapterFa'] = None
+                execTrimmomaticParams['adapterFa'] = None
 
             if 'seed_mismatches' in input_params['adapter_clip']:
                 execTrimmomaticParams['seed_mismatches'] = input_params['adapter_clip']['seed_mismatches']
@@ -247,6 +248,7 @@ execTrimmomaticSingleLibrary() runs Trimmomatic on a single library
             else:
                 execTrimmomaticParams['simple_clip_threshold'] = None
 
+        # sliding_window grouped params
         if 'sliding_window' in input_params and input_params['sliding_window'] != None:
             if 'sliding_window_size' in input_params['sliding_window']:
                 execTrimmomaticParams['sliding_window_size'] = input_params['sliding_window']['sliding_window_size']
@@ -258,7 +260,7 @@ execTrimmomaticSingleLibrary() runs Trimmomatic on a single library
             else:
                 execTrimmomaticParams['sliding_window_min_quality'] = None
         
-
+        # remaining params
         if 'leading_min_quality' in input_params:
             execTrimmomaticParams['leading_min_quality'] = input_params['leading_min_quality']
         if 'trailing_min_quality' in input_params:
