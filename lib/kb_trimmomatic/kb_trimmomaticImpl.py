@@ -196,6 +196,15 @@ execTrimmomaticSingleLibrary() runs Trimmomatic on a single library
         #SERVICE_VER = 'dev'  # DEBUG
         SERVICE_VER = 'release'
 
+        # param checks
+        required_params = ['input_reads_ref', 
+                           'output_ws', 
+                           'output_reads_name', 
+                           'read_type'
+                          ]
+        for required_param in required_params:
+            if required_param not in input_params or input_params[required_param] == None:
+                raise ValueError ("Must define required param: '"+required_param+"'")
 
         # load provenance
         provenance = [{}]
@@ -208,25 +217,43 @@ execTrimmomaticSingleLibrary() runs Trimmomatic on a single library
         if ('output_ws' not in input_params or input_params['output_ws'] is None):
             input_params['output_ws'] = input_params['input_ws']
 
-
         execTrimmomaticParams = { 'input_reads_ref': str(input_params['input_reads_ref']),
                                   'output_ws': input_params['output_ws'],
                                   'output_reads_name': input_params['output_reads_name'],
                                   'read_type': input_params['read_type'],
-                                  'quality_encoding': input_params['quality_encoding'],
-                                  'adapterFa': input_params['adapter_clip']['adapterFa'],
-                                  'seed_mismatches': input_params['adapter_clip']['seed_mismatches'],
-                                  'palindrome_clip_threshold': input_params['adapter_clip']['palindrome_clip_threshold'],
-                                  'simple_clip_threshold': input_params['adapter_clip']['simple_clip_threshold'],
-                                  'sliding_window_size': input_params['sliding_window']['sliding_window_size'],
-                                  'sliding_window_min_quality': input_params['sliding_window']['sliding_window_min_quality'],
-                                  'leading_min_quality': input_params['leading_min_quality'],
-                                  'trailing_min_quality': input_params['trailing_min_quality'],
-                                  'crop_length': input_params['crop_length'],
-                                  'head_crop_length': input_params['head_crop_length'],
-                                  'min_length': input_params['min_length']
-                                  }
+                                 }
 
+        if 'quality_encoding' in input_params:
+            execTrimmomaticParams['quality_encoding'] = input_params['quality_encoding']
+
+        if 'adapter_clip' in input_params and input_params['adapter_clip'] != None:
+            if 'adapterFa' in input_params['adapter_clip']:
+                execTrimmomaticParams['adapter_clip']['adapterFa'] = input_params['adapter_clip']['adapterFa']
+            if 'seed_mismatches' in input_params['adapter_clip']:
+                execTrimmomaticParams['seed_mismatches'] = input_params['adapter_clip']['seed_mismatches']
+            if 'palindrome_clip_threshold' in input_params['adapter_clip']:
+                execTrimmomaticParams['palindrome_clip_threshold'] = input_params['adapter_clip']['palindrome_clip_threshold']
+            if 'simple_clip_threshold' in input_params['adapter_clip']:
+                execTrimmomaticParams['simple_clip_threshold'] = input_params['adapter_clip']['simple_clip_threshold']
+
+        if 'sliding_window' in input_params and input_params['sliding_window'] != None:
+            if 'sliding_window_size' in input_params['sliding_window']:
+                execTrimmomaticParams['sliding_window_size'] = input_params['sliding_window']['sliding_window_size']
+            if 'sliding_window_min_quality' in input_params['sliding_window']:
+                execTrimmomaticParams['sliding_window_min_quality'] = input_params['sliding_window']['sliding_window_min_quality']
+
+        if 'leading_min_quality' in input_params:
+            execTrimmomaticParams['leading_min_quality'] = input_params['leading_min_quality']
+        if 'trailing_min_quality' in input_params:
+            execTrimmomaticParams['trailing_min_quality'] = input_params['trailing_min_quality']
+        if 'crop_length' in input_params:
+            execTrimmomaticParams['crop_length'] = input_params['crop_length']
+        if 'head_crop_length' in input_params:
+            execTrimmomaticParams['head_crop_length'] = input_params['head_crop_length']
+        if 'min_length' in input_params:
+            execTrimmomaticParams['min_length'] = input_params['min_length']
+
+        # RUN
         trimmomatic_retVal = self.execTrimmomatic (ctx, execTrimmomaticParams)[0]
 
 
