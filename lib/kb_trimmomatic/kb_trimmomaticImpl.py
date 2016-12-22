@@ -229,18 +229,35 @@ execTrimmomaticSingleLibrary() runs Trimmomatic on a single library
         if 'adapter_clip' in input_params and input_params['adapter_clip'] != None:
             if 'adapterFa' in input_params['adapter_clip']:
                 execTrimmomaticParams['adapter_clip']['adapterFa'] = input_params['adapter_clip']['adapterFa']
+            else:
+                execTrimmomaticParams['adapter_clip']['adapterFa'] = None
+
             if 'seed_mismatches' in input_params['adapter_clip']:
                 execTrimmomaticParams['seed_mismatches'] = input_params['adapter_clip']['seed_mismatches']
+            else:
+                execTrimmomaticParams['seed_mismatches'] = None
+
             if 'palindrome_clip_threshold' in input_params['adapter_clip']:
                 execTrimmomaticParams['palindrome_clip_threshold'] = input_params['adapter_clip']['palindrome_clip_threshold']
+            else:
+                execTrimmomaticParams['palindrome_clip_threshold'] = None
+
             if 'simple_clip_threshold' in input_params['adapter_clip']:
                 execTrimmomaticParams['simple_clip_threshold'] = input_params['adapter_clip']['simple_clip_threshold']
+            else:
+                execTrimmomaticParams['simple_clip_threshold'] = None
 
         if 'sliding_window' in input_params and input_params['sliding_window'] != None:
             if 'sliding_window_size' in input_params['sliding_window']:
                 execTrimmomaticParams['sliding_window_size'] = input_params['sliding_window']['sliding_window_size']
+            else:
+                execTrimmomaticParams['sliding_window_size'] = None
+
             if 'sliding_window_min_quality' in input_params['sliding_window']:
                 execTrimmomaticParams['sliding_window_min_quality'] = input_params['sliding_window']['sliding_window_min_quality']
+            else:
+                execTrimmomaticParams['sliding_window_min_quality'] = None
+        
 
         if 'leading_min_quality' in input_params:
             execTrimmomaticParams['leading_min_quality'] = input_params['leading_min_quality']
