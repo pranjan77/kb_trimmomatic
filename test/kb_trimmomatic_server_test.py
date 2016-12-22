@@ -324,12 +324,12 @@ class kb_trimmomaticTest(unittest.TestCase):
             'output_reads_name': output_name,
             'read_type': 'PE',
             'quality_encoding': 'phred33',
-            #'adapter_clip': {
-            #    'adapterFa': '',
-            #    'seed_mismatches': ,
-            #    'palindrom_clip_threshold': ,
-            #    'simple_clip_threshold': 
-            #    },
+            'adapter_clip': {
+                'adapterFa': None,
+                'seed_mismatches': None,
+                'palindrom_clip_threshold': None,
+                'simple_clip_threshold': None
+                },
             'sliding_window': {
                 'sliding_window_size': 4,
                 'sliding_window_min_size': 15
@@ -370,12 +370,12 @@ class kb_trimmomaticTest(unittest.TestCase):
             'output_reads_name': output_name,
             'read_type': 'PE',
             'quality_encoding': 'phred33',
-            #'adapter_clip': {
-            #    'adapterFa': '',
-            #    'seed_mismatches': ,
-            #    'palindrom_clip_threshold': ,
-            #    'simple_clip_threshold': 
-            #    },
+            'adapter_clip': {
+                'adapterFa': None,
+                'seed_mismatches': None,
+                'palindrom_clip_threshold': None,
+                'simple_clip_threshold':  None
+                },
             'sliding_window': {
                 'sliding_window_size': 4,
                 'sliding_window_min_size': 15
