@@ -12,7 +12,6 @@ from pprint import pprint, pformat
 import uuid
 
 ## SDK Utils
-#from ReadsUtils.ReadsUtilsClient import ReadsUtilsClient  # FIX
 from ReadsUtils.ReadsUtilsClient import ReadsUtils
 from SetAPI.SetAPIServiceClient import SetAPI
 from KBaseReport.KBaseReportClient import KBaseReport
@@ -815,7 +814,6 @@ execTrimmomaticSingleLibrary() runs Trimmomatic on a single library
             cmdProcess = subprocess.Popen(cmdstring, stdout=subprocess.PIPE, stderr=subprocess.STDOUT, shell=True)
 
             outputlines = []
-
             while True:
                 line = cmdProcess.stdout.readline()
                 outputlines.append(line)
@@ -825,6 +823,10 @@ execTrimmomaticSingleLibrary() runs Trimmomatic on a single library
             cmdProcess.stdout.close()
             cmdProcess.wait()
             self.log(console, 'return code: ' + str(cmdProcess.returncode) + '\n')
+            if cmdProcess.returncode != 0:
+                raise ValueError('Error running kb_trimmomatic, return code: ' +
+                                 str(cmdProcess.returncode) + '\n')
+
 
             report += "\n".join(outputlines)
             #report += "cmdstring: " + cmdstring + " stdout: " + stdout + " stderr " + stderr
@@ -920,12 +922,19 @@ execTrimmomaticSingleLibrary() runs Trimmomatic on a single library
             #report += "cmdstring: " + cmdstring
 
             outputlines = []
-
             while True:
                 line = cmdProcess.stdout.readline()
                 outputlines.append(line)
                 if not line: break
                 self.log(console, line.replace('\n', ''))
+
+            cmdProcess.stdout.close()
+            cmdProcess.wait()
+            self.log(console, 'return code: ' + str(cmdProcess.returncode) + '\n')
+            if cmdProcess.returncode != 0:
+                raise ValueError('Error running kb_trimmomatic, return code: ' +
+                                 str(cmdProcess.returncode) + '\n')
+
 
             report += "\n".join(outputlines)
 
