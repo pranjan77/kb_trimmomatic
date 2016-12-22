@@ -312,7 +312,7 @@ class kb_trimmomaticTest(unittest.TestCase):
     def test_runTrimmomatic(self):
 
         # figure out where the test data lives
-        pe_lib_info = self.getPairedEndLibInfo('small_1')
+        pe_lib_info = self.getPairedEndLibInfo('test_quick')
         pprint(pe_lib_info)
 
         # run method
@@ -358,7 +358,7 @@ class kb_trimmomaticTest(unittest.TestCase):
     def test_runTrimmomatic_ReadsSet(self):
 
         # figure out where the test data lives
-        pe_lib_set_info = self.getPairedEndLib_SetInfo(['small_1','small_2'])
+        pe_lib_set_info = self.getPairedEndLib_SetInfo(['test_quick','small_2'])
         pprint(pe_lib_set_info)
 
         # run method
