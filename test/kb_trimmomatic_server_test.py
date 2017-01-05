@@ -294,6 +294,60 @@ class kb_trimmomaticTest(unittest.TestCase):
         return new_obj_info
 
 
+    # call this method to get the WS object info of a Single End Library Set (will
+    # upload the example data if this is the first time the method is called during tests)
+    def getSingleEndLib_SetInfo(self, read_libs_basename_list):
+        if hasattr(self.__class__, 'singleEndLib_SetInfo'):
+            try:
+                info = self.__class__.singleEndLib_SetInfo
+                if info != None:
+                    return info
+            except:
+                pass
+
+        # build items and save each PairedEndLib
+        items = []
+        for lib_i,read_lib_basename in enumerate (read_libs_basename_list):
+            label    = read_lib_basename
+            lib_info = self.getSingleEndLibInfo (read_lib_basename, lib_i)
+            lib_ref  = str(lib_info[6])+'/'+str(lib_info[0])
+            print ("LIB_REF["+str(lib_i)+"]: "+lib_ref+" read_lib_basename")  # DEBUG
+
+            items.append({'ref': lib_ref,
+                          'label': label
+                          #'data_attachment': ,
+                          #'info':
+                         })
+
+        # save readsset
+        desc = 'test ReadsSet'
+        readsSet_obj = { 'description': desc,
+                         'items': items
+                       }
+        name = 'TEST_READSET'
+
+        new_obj_info = self.wsClient.save_objects({
+                        'workspace':self.getWsName(),
+                        'objects':[
+                            {
+                                'type':'KBaseSets.ReadsSet',
+                                'data':readsSet_obj,
+                                'name':name,
+                                'meta':{},
+                                'provenance':[
+                                    {
+                                        'service':'kb_trimmomatic',
+                                        'method':'test_runTrimmomatic'
+                                    }
+                                ]
+                            }]
+                        })[0]
+
+        # store it
+        self.__class__.singleEndLib_SetInfo = new_obj_info
+        return new_obj_info
+
+
     # call this method to get the WS object info of a Paired End Library Set (will
     # upload the example data if this is the first time the method is called during tests)
     def getPairedEndLib_SetInfo(self, read_libs_basename_list):
