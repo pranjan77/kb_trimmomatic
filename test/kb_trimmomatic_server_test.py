@@ -199,7 +199,7 @@ class kb_trimmomaticTest(unittest.TestCase):
                             {
                                 'type':'KBaseFile.PairedEndLibrary',
                                 'data':paired_end_library,
-                                'name':'test.pe.reads',
+                                'name':'test-'+str(lib_i)+'.pe.reads',
                                 'meta':{},
                                 'provenance':[
                                     {
@@ -220,6 +220,77 @@ class kb_trimmomaticTest(unittest.TestCase):
                 self.__class__.pairedEndLibInfo_list.append(None)
 
         self.__class__.pairedEndLibInfo_list.append(new_obj_info)
+        return new_obj_info
+
+
+    def getSingleEndLibInfo(self, read_lib_basename, lib_i=0):
+        if hasattr(self.__class__, 'singleEndLibInfo_list'):
+            try:
+                info = self.__class__.singleEndLibInfo_list[lib_i]
+                if info != None:
+                    return info
+            except:
+                pass
+
+        # 1) upload files to shock
+        token = self.ctx['token']
+        forward_shock_file = self.upload_file_to_shock('data/'+read_lib_basename+'.fwd.fq')
+        #pprint(forward_shock_file)
+
+        # 2) create handle
+        hs = HandleService(url=self.handleURL, token=token)
+        forward_handle = hs.persist_handle({
+                                        'id' : forward_shock_file['id'], 
+                                        'type' : 'shock',
+                                        'url' : self.shockURL,
+                                        'file_name': forward_shock_file['file']['name'],
+                                        'remote_md5': forward_shock_file['file']['checksum']['md5']})
+
+        # 3) save to WS
+        single_end_library = {
+            'lib1': {
+                'file': {
+                    'hid':forward_handle,
+                    'file_name': forward_shock_file['file']['name'],
+                    'id': forward_shock_file['id'],
+                    'url': self.shockURL,
+                    'type':'shock',
+                    'remote_md5':forward_shock_file['file']['checksum']['md5']
+                },
+                'encoding':'UTF8',
+                'type':'fastq',
+                'size':forward_shock_file['file']['size']
+            },
+            'sequencing_tech':'artificial reads'
+        }
+
+        new_obj_info = self.wsClient.save_objects({
+                        'workspace':self.getWsName(),
+                        'objects':[
+                            {
+                                'type':'KBaseFile.SingleEndLibrary',
+                                'data':single_end_library,
+                                'name':'test-'+str(lib_i)+'.se.reads',
+                                'meta':{},
+                                'provenance':[
+                                    {
+                                        'service':'kb_trimmomatic',
+                                        'method':'test_runTrimmomatic'
+                                    }
+                                ]
+                            }]
+                        })[0]
+
+        # store it
+        if not hasattr(self.__class__, 'singleEndLibInfo_list'):
+            self.__class__.singleEndLibInfo_list = []
+        for i in range(lib_i):
+            try:
+                assigned = self.__class__.singleEndLibInfo_list[i]
+            except:
+                self.__class__.singleEndLibInfo_list.append(None)
+
+        self.__class__.singleEndLibInfo_list.append(new_obj_info)
         return new_obj_info
 
 
