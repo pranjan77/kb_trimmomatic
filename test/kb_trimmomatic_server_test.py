@@ -378,9 +378,56 @@ class kb_trimmomaticTest(unittest.TestCase):
         # 10 - usermeta meta
 
 
-    ### TEST 1: run Trimmomatic against just one paired end library
+    ### TEST 1: run Trimmomatic against just one single end library
     #
-    def test_runTrimmomatic(self):
+    def test_runTrimmomatic_SingleEndLibrary(self):
+
+        # figure out where the test data lives
+        se_lib_info = self.getSingleEndLibInfo('test_quick')
+        pprint(se_lib_info)
+
+        # run method
+        output_name = 'output_trim.SElib'
+        params = {
+            'input_ws': se_lib_info[7],
+            'output_ws': se_lib_info[7],
+            'input_reads_ref': str(se_lib_info[6])+'/'+str(se_lib_info[0]),
+            'output_reads_name': output_name,
+            'read_type': 'SE',
+            'quality_encoding': 'phred33',
+            'adapter_clip': {
+                'adapterFa': None,
+                'seed_mismatches': None,
+                'palindrom_clip_threshold': None,
+                'simple_clip_threshold': None
+                },
+            'sliding_window': {
+                'sliding_window_size': 4,
+                'sliding_window_min_size': 15
+                },
+            'leading_min_quality': 3,
+            'trailing_min_quality': 3,
+            'crop_length': 0,
+            'head_crop_length': 0,
+            'min_length': 36
+        }
+
+        result = self.getImpl().runTrimmomatic(self.getContext(),params)
+        print('RESULT:')
+        pprint(result)
+
+        # check the output
+        single_output_name = output_name
+        info_list = self.wsClient.get_object_info([{'ref':se_lib_info[7] + '/' + single_output_name}], 1)
+        self.assertEqual(len(info_list),1)
+        trimmed_reads_info = info_list[0]
+        self.assertEqual(trimmed_reads_info[1],single_output_name)
+        self.assertEqual(trimmed_reads_info[2].split('-')[0],'KBaseFile.SingleEndLibrary')
+
+
+    ### TEST 2: run Trimmomatic against just one paired end library
+    #
+    def test_runTrimmomatic_PairedEndLibrary(self):
 
         # figure out where the test data lives
         pe_lib_info = self.getPairedEndLibInfo('test_quick')
@@ -425,9 +472,56 @@ class kb_trimmomaticTest(unittest.TestCase):
         self.assertEqual(trimmed_reads_info[2].split('-')[0],'KBaseFile.PairedEndLibrary')
 
 
-    ### TEST 2: run Trimmomatic against a reads set
+    ### TEST 3: run Trimmomatic against a Single End Library reads set
     #
-    def test_runTrimmomatic_ReadsSet(self):
+    def test_runTrimmomatic_SingleEndLibrary_ReadsSet(self):
+
+        # figure out where the test data lives
+        se_lib_set_info = self.getSingleEndLib_SetInfo(['test_quick','small_2'])
+        pprint(se_lib_set_info)
+
+        # run method
+        output_name = 'output_trim.SElib'
+        params = {
+            'input_ws': se_lib_set_info[7],
+            'output_ws': se_lib_set_info[7],
+            'input_reads_ref': str(se_lib_set_info[6])+'/'+str(se_lib_set_info[0]),
+            'output_reads_name': output_name,
+            'read_type': 'SE',
+            'quality_encoding': 'phred33',
+            'adapter_clip': {
+                'adapterFa': None,
+                'seed_mismatches': None,
+                'palindrom_clip_threshold': None,
+                'simple_clip_threshold':  None
+                },
+            'sliding_window': {
+                'sliding_window_size': 4,
+                'sliding_window_min_size': 15
+                },
+            'leading_min_quality': 3,
+            'trailing_min_quality': 3,
+            'crop_length': 0,
+            'head_crop_length': 0,
+            'min_length': 36
+        }
+
+        result = self.getImpl().runTrimmomatic(self.getContext(),params)
+        print('RESULT:')
+        pprint(result)
+
+        # check the output
+        single_output_name = output_name + '_trimm'
+        info_list = self.wsClient.get_object_info([{'ref':se_lib_set_info[7] + '/' + single_output_name}], 1)
+        self.assertEqual(len(info_list),1)
+        trimmed_reads_info = info_list[0]
+        self.assertEqual(trimmed_reads_info[1],single_output_name)
+        self.assertEqual(trimmed_reads_info[2].split('-')[0],'KBaseSets.ReadsSet')
+
+
+    ### TEST 4: run Trimmomatic against a Paired End Library reads set
+    #
+    def test_runTrimmomatic_PairedEndLibrary_ReadsSet(self):
 
         # figure out where the test data lives
         pe_lib_set_info = self.getPairedEndLib_SetInfo(['test_quick','small_2'])
