@@ -248,7 +248,7 @@ class kb_trimmomaticTest(unittest.TestCase):
 
         # 3) save to WS
         single_end_library = {
-            'lib1': {
+            'lib': {
                 'file': {
                     'hid':forward_handle,
                     'file_name': forward_shock_file['file']['name'],
