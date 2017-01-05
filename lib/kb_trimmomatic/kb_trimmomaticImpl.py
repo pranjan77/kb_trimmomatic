@@ -192,8 +192,8 @@ execTrimmomaticSingleLibrary() runs Trimmomatic on a single library
         env = os.environ.copy()
         env['KB_AUTH_TOKEN'] = token
 
-        #SERVICE_VER = 'dev'  # DEBUG
-        SERVICE_VER = 'release'
+        SERVICE_VER = 'dev'  # DEBUG
+        #SERVICE_VER = 'release'
 
         # param checks
         required_params = ['input_reads_ref', 
