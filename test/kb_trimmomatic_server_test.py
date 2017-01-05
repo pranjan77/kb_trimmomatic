@@ -346,10 +346,11 @@ class kb_trimmomaticTest(unittest.TestCase):
         pprint(result)
 
         # check the output
-        info_list = self.wsClient.get_object_info([{'ref':pe_lib_info[7] + '/' + output_name}], 1)
+        paired_output_name = output_name + '_paired'
+        info_list = self.wsClient.get_object_info([{'ref':pe_lib_info[7] + '/' + paired_output_name}], 1)
         self.assertEqual(len(info_list),1)
         trimmed_reads_info = info_list[0]
-        self.assertEqual(trimmed_reads_info[1],output_name)
+        self.assertEqual(trimmed_reads_info[1],paired_output_name)
         self.assertEqual(trimmed_reads_info[2].split('-')[0],'KBaseFile.PairedEndLibrary')
 
 
@@ -392,8 +393,9 @@ class kb_trimmomaticTest(unittest.TestCase):
         pprint(result)
 
         # check the output
-        info_list = self.wsClient.get_object_info([{'ref':pe_lib_set_info[7] + '/' + output_name}], 1)
+        paired_output_name = output_name + '_trimm_paired'
+        info_list = self.wsClient.get_object_info([{'ref':pe_lib_set_info[7] + '/' + paired_output_name}], 1)
         self.assertEqual(len(info_list),1)
         trimmed_reads_info = info_list[0]
-        self.assertEqual(trimmed_reads_info[1],output_name)
+        self.assertEqual(trimmed_reads_info[1],paired_output_name)
         self.assertEqual(trimmed_reads_info[2].split('-')[0],'KBaseSets.ReadsSet')
