@@ -436,6 +436,9 @@ class kb_trimmomaticTest(unittest.TestCase):
     #
     def test_runTrimmomatic_SingleEndLibrary(self):
 
+        print ("\n\nRUNNING: test_runTrimmomatic_SingleEndLibrary()\n")
+        print ("===============================================\n\n")
+
         # figure out where the test data lives
         se_lib_info = self.getSingleEndLibInfo('test_quick')
         pprint(se_lib_info)
@@ -482,6 +485,9 @@ class kb_trimmomaticTest(unittest.TestCase):
     ### TEST 2: run Trimmomatic against just one paired end library
     #
     def test_runTrimmomatic_PairedEndLibrary(self):
+
+        print ("\n\nRUNNING: test_runTrimmomatic_PairedEndLibrary()\n")
+        print ("\n=============================================\n\n")
 
         # figure out where the test data lives
         pe_lib_info = self.getPairedEndLibInfo('test_quick')
@@ -530,6 +536,9 @@ class kb_trimmomaticTest(unittest.TestCase):
     #
     def test_runTrimmomatic_SingleEndLibrary_ReadsSet(self):
 
+        print ("\n\nRUNNING: test_runTrimmomatic_SingleEndLibrary_ReadsSet()\n")
+        print ("========================================================\n\n")
+
         # figure out where the test data lives
         se_lib_set_info = self.getSingleEndLib_SetInfo(['test_quick','small_2'])
         pprint(se_lib_set_info)
@@ -576,6 +585,9 @@ class kb_trimmomaticTest(unittest.TestCase):
     ### TEST 4: run Trimmomatic against a Paired End Library reads set
     #
     def test_runTrimmomatic_PairedEndLibrary_ReadsSet(self):
+
+        print ("\n\nRUNNING: test_runTrimmomatic_PairedEndLibrary_ReadsSet()\n")
+        print ("========================================================\n\n")
 
         # figure out where the test data lives
         pe_lib_set_info = self.getPairedEndLib_SetInfo(['test_quick','small_2'])
