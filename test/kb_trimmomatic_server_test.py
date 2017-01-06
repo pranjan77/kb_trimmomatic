@@ -436,7 +436,7 @@ class kb_trimmomaticTest(unittest.TestCase):
     #
     def test_runTrimmomatic_SingleEndLibrary(self):
 
-        print ("\n\nRUNNING: test_runTrimmomatic_SingleEndLibrary()\n")
+        print ("\n\nRUNNING: test_runTrimmomatic_SingleEndLibrary()")
         print ("===============================================\n\n")
 
         # figure out where the test data lives
@@ -486,7 +486,7 @@ class kb_trimmomaticTest(unittest.TestCase):
     #
     def test_runTrimmomatic_PairedEndLibrary(self):
 
-        print ("\n\nRUNNING: test_runTrimmomatic_PairedEndLibrary()\n")
+        print ("\n\nRUNNING: test_runTrimmomatic_PairedEndLibrary()")
         print ("\n=============================================\n\n")
 
         # figure out where the test data lives
@@ -536,7 +536,7 @@ class kb_trimmomaticTest(unittest.TestCase):
     #
     def test_runTrimmomatic_SingleEndLibrary_ReadsSet(self):
 
-        print ("\n\nRUNNING: test_runTrimmomatic_SingleEndLibrary_ReadsSet()\n")
+        print ("\n\nRUNNING: test_runTrimmomatic_SingleEndLibrary_ReadsSet()")
         print ("========================================================\n\n")
 
         # figure out where the test data lives
@@ -586,7 +586,7 @@ class kb_trimmomaticTest(unittest.TestCase):
     #
     def test_runTrimmomatic_PairedEndLibrary_ReadsSet(self):
 
-        print ("\n\nRUNNING: test_runTrimmomatic_PairedEndLibrary_ReadsSet()\n")
+        print ("\n\nRUNNING: test_runTrimmomatic_PairedEndLibrary_ReadsSet()")
         print ("========================================================\n\n")
 
         # figure out where the test data lives
