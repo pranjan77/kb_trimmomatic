@@ -128,12 +128,96 @@ class kb_trimmomaticTest(unittest.TestCase):
         print('Deleted shock node ' + node_id)
 
 
+    def getSingleEndLibInfo(self, read_lib_basename, lib_i=0):
+        if hasattr(self.__class__, 'singleEndLibInfo_list'):
+            try:
+                info = self.__class__.singleEndLibInfo_list[lib_i]
+                name = self.__class__.singleEndLibName_list[lib_i]
+                if info != None:
+                    if name != read_lib_basename:
+                        self.__class__.singleEndLib_SetInfo[lib_i] = None
+                        self.__class__.singleEndLib_SetName[lib_i] = None
+                    else:
+                        return info
+            except:
+                pass
+
+        # 1) upload files to shock
+        token = self.ctx['token']
+        forward_shock_file = self.upload_file_to_shock('data/'+read_lib_basename+'.fwd.fq')
+        #pprint(forward_shock_file)
+
+        # 2) create handle
+        hs = HandleService(url=self.handleURL, token=token)
+        forward_handle = hs.persist_handle({
+                                        'id' : forward_shock_file['id'], 
+                                        'type' : 'shock',
+                                        'url' : self.shockURL,
+                                        'file_name': forward_shock_file['file']['name'],
+                                        'remote_md5': forward_shock_file['file']['checksum']['md5']})
+
+        # 3) save to WS
+        single_end_library = {
+            'lib': {
+                'file': {
+                    'hid':forward_handle,
+                    'file_name': forward_shock_file['file']['name'],
+                    'id': forward_shock_file['id'],
+                    'url': self.shockURL,
+                    'type':'shock',
+                    'remote_md5':forward_shock_file['file']['checksum']['md5']
+                },
+                'encoding':'UTF8',
+                'type':'fastq',
+                'size':forward_shock_file['file']['size']
+            },
+            'sequencing_tech':'artificial reads'
+        }
+
+        new_obj_info = self.wsClient.save_objects({
+                        'workspace':self.getWsName(),
+                        'objects':[
+                            {
+                                'type':'KBaseFile.SingleEndLibrary',
+                                'data':single_end_library,
+                                'name':'test-'+str(lib_i)+'.se.reads',
+                                'meta':{},
+                                'provenance':[
+                                    {
+                                        'service':'kb_trimmomatic',
+                                        'method':'test_runTrimmomatic'
+                                    }
+                                ]
+                            }]
+                        })[0]
+
+        # store it
+        if not hasattr(self.__class__, 'singleEndLibInfo_list'):
+            self.__class__.singleEndLibInfo_list = []
+            self.__class__.singleEndLibName_list = []
+        for i in range(lib_i+1):
+            try:
+                assigned = self.__class__.singleEndLibInfo_list[i]
+            except:
+                self.__class__.singleEndLibInfo_list.append(None)
+                self.__class__.singleEndLibName_list.append(None)
+
+        self.__class__.singleEndLibInfo_list[lib_i] = new_obj_info
+        self.__class__.singleEndLibName_list[lib_i] = read_lib_basename
+        return new_obj_info
+
+
     def getPairedEndLibInfo(self, read_lib_basename, lib_i=0):
         if hasattr(self.__class__, 'pairedEndLibInfo_list'):
             try:
                 info = self.__class__.pairedEndLibInfo_list[lib_i]
+                name = self.__class__.pairedEndLibName_list[lib_i]
                 if info != None:
-                    return info
+                    if name != read_lib_basename:
+                        self.__class__.singleEndLibInfo_list[lib_i] = None
+                        self.__class__.singleEndLibName_list[lib_i] = None
+                    else:
+                        return info
             except:
                 pass
 
@@ -213,95 +297,30 @@ class kb_trimmomaticTest(unittest.TestCase):
         # store it
         if not hasattr(self.__class__, 'pairedEndLibInfo_list'):
             self.__class__.pairedEndLibInfo_list = []
-        for i in range(lib_i):
+            self.__class__.pairedEndLibName_list = []
+        for i in range(lib_i+1):
             try:
                 assigned = self.__class__.pairedEndLibInfo_list[i]
             except:
                 self.__class__.pairedEndLibInfo_list.append(None)
+                self.__class__.pairedEndLibName_list.append(None)
 
-        self.__class__.pairedEndLibInfo_list.append(new_obj_info)
-        return new_obj_info
-
-
-    def getSingleEndLibInfo(self, read_lib_basename, lib_i=0):
-        if hasattr(self.__class__, 'singleEndLibInfo_list'):
-            try:
-                info = self.__class__.singleEndLibInfo_list[lib_i]
-                if info != None:
-                    return info
-            except:
-                pass
-
-        # 1) upload files to shock
-        token = self.ctx['token']
-        forward_shock_file = self.upload_file_to_shock('data/'+read_lib_basename+'.fwd.fq')
-        #pprint(forward_shock_file)
-
-        # 2) create handle
-        hs = HandleService(url=self.handleURL, token=token)
-        forward_handle = hs.persist_handle({
-                                        'id' : forward_shock_file['id'], 
-                                        'type' : 'shock',
-                                        'url' : self.shockURL,
-                                        'file_name': forward_shock_file['file']['name'],
-                                        'remote_md5': forward_shock_file['file']['checksum']['md5']})
-
-        # 3) save to WS
-        single_end_library = {
-            'lib': {
-                'file': {
-                    'hid':forward_handle,
-                    'file_name': forward_shock_file['file']['name'],
-                    'id': forward_shock_file['id'],
-                    'url': self.shockURL,
-                    'type':'shock',
-                    'remote_md5':forward_shock_file['file']['checksum']['md5']
-                },
-                'encoding':'UTF8',
-                'type':'fastq',
-                'size':forward_shock_file['file']['size']
-            },
-            'sequencing_tech':'artificial reads'
-        }
-
-        new_obj_info = self.wsClient.save_objects({
-                        'workspace':self.getWsName(),
-                        'objects':[
-                            {
-                                'type':'KBaseFile.SingleEndLibrary',
-                                'data':single_end_library,
-                                'name':'test-'+str(lib_i)+'.se.reads',
-                                'meta':{},
-                                'provenance':[
-                                    {
-                                        'service':'kb_trimmomatic',
-                                        'method':'test_runTrimmomatic'
-                                    }
-                                ]
-                            }]
-                        })[0]
-
-        # store it
-        if not hasattr(self.__class__, 'singleEndLibInfo_list'):
-            self.__class__.singleEndLibInfo_list = []
-        for i in range(lib_i):
-            try:
-                assigned = self.__class__.singleEndLibInfo_list[i]
-            except:
-                self.__class__.singleEndLibInfo_list.append(None)
-
-        self.__class__.singleEndLibInfo_list.append(new_obj_info)
+        self.__class__.pairedEndLibInfo_list[lib_i] = new_obj_info
+        self.__class__.pairedEndLibName_list[lib_i] = read_lib_basename
         return new_obj_info
 
 
     # call this method to get the WS object info of a Single End Library Set (will
     # upload the example data if this is the first time the method is called during tests)
-    def getSingleEndLib_SetInfo(self, read_libs_basename_list):
+    def getSingleEndLib_SetInfo(self, read_libs_basename_list, refresh=False):
         if hasattr(self.__class__, 'singleEndLib_SetInfo'):
             try:
                 info = self.__class__.singleEndLib_SetInfo
                 if info != None:
-                    return info
+                    if refresh:
+                        self.__class__.singleEndLib_SetInfo = None
+                    else:
+                        return info
             except:
                 pass
 
@@ -311,7 +330,7 @@ class kb_trimmomaticTest(unittest.TestCase):
             label    = read_lib_basename
             lib_info = self.getSingleEndLibInfo (read_lib_basename, lib_i)
             lib_ref  = str(lib_info[6])+'/'+str(lib_info[0])
-            print ("LIB_REF["+str(lib_i)+"]: "+lib_ref+" read_lib_basename")  # DEBUG
+            print ("LIB_REF["+str(lib_i)+"]: "+lib_ref+" "+read_lib_basename)  # DEBUG
 
             items.append({'ref': lib_ref,
                           'label': label
@@ -350,12 +369,15 @@ class kb_trimmomaticTest(unittest.TestCase):
 
     # call this method to get the WS object info of a Paired End Library Set (will
     # upload the example data if this is the first time the method is called during tests)
-    def getPairedEndLib_SetInfo(self, read_libs_basename_list):
+    def getPairedEndLib_SetInfo(self, read_libs_basename_list, refresh=False):
         if hasattr(self.__class__, 'pairedEndLib_SetInfo'):
             try:
                 info = self.__class__.pairedEndLib_SetInfo
                 if info != None:
-                    return info
+                    if refresh:
+                        self.__class__.pairedEndLib_SetInfo[lib_i] = None
+                    else:
+                        return info
             except:
                 pass
 
@@ -365,7 +387,7 @@ class kb_trimmomaticTest(unittest.TestCase):
             label    = read_lib_basename
             lib_info = self.getPairedEndLibInfo (read_lib_basename, lib_i)
             lib_ref  = str(lib_info[6])+'/'+str(lib_info[0])
-            print ("LIB_REF["+str(lib_i)+"]: "+lib_ref+" read_lib_basename")  # DEBUG
+            print ("LIB_REF["+str(lib_i)+"]: "+lib_ref+" "+read_lib_basename)  # DEBUG
 
             items.append({'ref': lib_ref,
                           'label': label
