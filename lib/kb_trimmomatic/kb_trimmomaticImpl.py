@@ -196,6 +196,9 @@ execTrimmomaticSingleLibrary() runs Trimmomatic on a single library
         SERVICE_VER = 'release'
 
         # param checks
+        if ('output_ws' not in input_params or input_params['output_ws'] is None):
+            input_params['output_ws'] = input_params['input_ws']
+
         required_params = ['input_reads_ref', 
                            'output_ws', 
                            'output_reads_name', 
@@ -213,9 +216,6 @@ execTrimmomaticSingleLibrary() runs Trimmomatic on a single library
 
         # set up and run execTrimmomatic()
         #
-        if ('output_ws' not in input_params or input_params['output_ws'] is None):
-            input_params['output_ws'] = input_params['input_ws']
-
         execTrimmomaticParams = { 'input_reads_ref': str(input_params['input_reads_ref']),
                                   'output_ws': input_params['output_ws'],
                                   'output_reads_name': input_params['output_reads_name'],
