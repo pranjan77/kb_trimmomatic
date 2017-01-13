@@ -278,7 +278,9 @@ execTrimmomaticSingleLibrary() runs Trimmomatic on a single library
         # build report
         #
         reportObj = {'objects_created':[], 
-                     'text_message':''}
+                     'text_message':'',  # or is it 'message'?
+                     'direct_html':''
+                     }
 
         # text report
         try:
@@ -322,6 +324,8 @@ execTrimmomaticSingleLibrary() runs Trimmomatic on a single library
         html_report_lines += ['</table>']
         html_report_lines += ['</body>']
         html_report_lines += ['</html>']
+
+        reportObj['direct_html'] = "\n".join(html_report_lines)
 
 
         # trimmed object
