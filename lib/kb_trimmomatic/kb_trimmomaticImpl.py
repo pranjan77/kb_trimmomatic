@@ -304,7 +304,7 @@ execTrimmomaticSingleLibrary() runs Trimmomatic on a single library
         html_report_lines += ['<html>']
         html_report_lines += ['<body bgcolor=white>']
         html_report_lines += ['<table cellpadding=2 cellspacing=0 border=0>']
-        html_report_lines += ['<tr><td></td><td>'+sp+sp+sp+sp+'</td><td></td><td>'+sp+sp+sp+sp+'</td></tr>']
+        html_report_lines += ['<tr><td></td><td>'+sp+sp+sp+sp+'</td><td></td><td>'+sp+sp+'</td></tr>']
 
         result_data_order = ['foobarfoo', 'animalcules', 'chicken', 'applesauce']
         result_data = { 'foobarfoo': 197,
@@ -322,11 +322,11 @@ execTrimmomaticSingleLibrary() runs Trimmomatic on a single library
             if result_data[name] > high_val:
                 high_val = result_data[name]
         for name in result_data_order:
-            this_width = int(round(float(width)*float(result_data[name])/float(high_val)))
+            this_width = int(round(float(width)*float(result_data[name])/float(high_val), 0))
             if this_width < 1 and result_data[name] != 0.0:
                 this_width = 1
             html_report_lines += ['<tr>']
-            html_report_lines += ['    <td align=right>'+str(name)+'</td><td></td><td align=right>'+str(result_data[name])+'</td>']
+            html_report_lines += ['    <td align=right>'+str(name)+'</td><td></td><td align=right>'+str(result_data[name])+'</td><td></td>']
             for tic in range(this_width):
                 html_report_lines += ['    <td bgcolor='+bar_color+'><font size='+bar_fontsize+' color='+bar_color+'>'+bar_char+'</font></td>']
             html_report_lines += ['</tr>']
