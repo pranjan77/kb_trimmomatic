@@ -343,7 +343,7 @@ execTrimmomaticSingleLibrary() runs Trimmomatic on a single library
             html_report_lines += ['<tr><td></td><td>'+sp+sp+sp+sp+'</td><td></td><td>'+sp+sp+'</td></tr>']
             high_val = 0
             width = 50
-            bar_color = "blue"
+            bar_color = "lightblue"
             row_spacing = "-2"
             bar_fontsize = "-2"
             bar_char = "."
