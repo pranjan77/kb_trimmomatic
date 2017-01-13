@@ -339,7 +339,7 @@ execTrimmomaticSingleLibrary() runs Trimmomatic on a single library
         for lib_i in range(len(report_data)):
             html_report_lines += ['<p><b>TRIMMOMATIC RESULTS FOR '+str(report_lib_names[lib_i])+' (object '+str(report_lib_refs[lib_i])+')</b><br>'+"\n"]
 
-            html_report_lines += ['<table cellpadding=2 cellspacing=0 border=0>']
+            html_report_lines += ['<table cellpadding=0 cellspacing=0 border=0>']
             html_report_lines += ['<tr><td></td><td>'+sp+sp+sp+sp+'</td><td></td><td>'+sp+sp+'</td></tr>']
             high_val = 0
             width = 50
@@ -352,6 +352,7 @@ execTrimmomaticSingleLibrary() runs Trimmomatic on a single library
                     high_val = report_data[lib_i][f_name]
             for f_name in report_field_order[lib_i]:
                 this_width = int(round(float(width)*float(report_data[lib_i][f_name])/float(high_val), 0))
+                self.log(console,"this_width: "+str(this_width)+" report_data: "+report_data[lib_i][f_name]+" calc: "+str(float(width)*float(report_data[lib_i][f_name])/float(high_val)))  # DEBUG
                 if this_width < 1:
                     if report_data[lib_i][f_name] != 0:
                         this_width = 1
