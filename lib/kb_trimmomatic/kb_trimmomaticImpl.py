@@ -321,7 +321,7 @@ execTrimmomaticSingleLibrary() runs Trimmomatic on a single library
             else:
                 [f_name, val] = line.split(': ')
                 report_field_order[lib_i].append(f_name)
-                report_data[lib_i][f_name] = val
+                report_data[lib_i][f_name] = int(val)
 
         # html report
         sp = '&nbsp;'
