@@ -282,7 +282,7 @@ execTrimmomaticSingleLibrary() runs Trimmomatic on a single library
         reportObj = {'objects_created': [], 
                      #'text_message': '',  # or is it 'message'?
                      'message': '',  # or is it 'text_message'?
-                     'direct_html': ''
+                     'direct_html': '',
                      'direct_html_index': 0,
                      'file_links': [],
                      'html_links': [],
