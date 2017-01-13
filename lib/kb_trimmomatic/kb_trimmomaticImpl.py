@@ -312,7 +312,7 @@ execTrimmomaticSingleLibrary() runs Trimmomatic on a single library
             if result_data[name] > high_val:
                 high_val = result_data[name]
         for name in result_data_order:
-            this_width = int(round(float(width)*float(result_data[name]/(float)high_val)))
+            this_width = int(round(float(width)*float(result_data[name])/float(high_val)))
             this_width = 1 if this_width < 1
             html_report_lines += ['<tr>']
             html_report_lines += ['    <td align=right>'+str(name)+'</td><td></td><td align=right>'+str(result_data[name])+'</td>']
