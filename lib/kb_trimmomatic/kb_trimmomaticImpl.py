@@ -359,8 +359,9 @@ execTrimmomaticSingleLibrary() runs Trimmomatic on a single library
                         this_width = 0
                 html_report_lines += ['<tr>']
                 html_report_lines += ['    <td align=right>'+str(f_name)+'</td><td></td><td align=right>'+str(report_data[lib_i][f_name])+'</td><td></td>']
-                for tic in range(this_width):
-                    html_report_lines += ['    <td bgcolor='+bar_color+'><font size='+bar_fontsize+' color='+bar_color+'>'+bar_char+'</font></td>']
+                if this_width > 0:
+                    for tic in range(this_width):
+                        html_report_lines += ['    <td bgcolor='+bar_color+'><font size='+bar_fontsize+' color='+bar_color+'>'+bar_char+'</font></td>']
                 html_report_lines += ['</tr>']
                 html_report_lines += ['<tr><td><font size='+row_spacing+'>'+sp+'</font></td></tr>']
 
