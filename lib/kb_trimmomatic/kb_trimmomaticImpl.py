@@ -351,7 +351,7 @@ execTrimmomaticSingleLibrary() runs Trimmomatic on a single library
                     high_val = report_data[lib_i][f_name]
             for f_name in report_field_order[lib_i]:
                 this_width = int(round(float(width)*float(report_data[lib_i][f_name])/float(high_val), 0))
-                if this_width < 1 and result_data[name] != 0.0:
+                if this_width < 1 and report_data[lib_i][f_name] != 0.0:
                     this_width = 1
                 html_report_lines += ['<tr>']
                 html_report_lines += ['    <td align=right>'+str(f_name)+'</td><td></td><td align=right>'+str(report_data[lib_i][f_name])+'</td><td></td>']
