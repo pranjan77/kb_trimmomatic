@@ -342,7 +342,7 @@ execTrimmomaticSingleLibrary() runs Trimmomatic on a single library
             html_report_lines += ['<table cellpadding=0 cellspacing=0 border=0>']
             html_report_lines += ['<tr><td></td><td>'+sp+sp+sp+sp+'</td><td></td><td>'+sp+sp+'</td></tr>']
             high_val = 0
-            width = 50
+            width = 100
             bar_color = "lightblue"
             row_spacing = "-2"
             bar_fontsize = "-2"
@@ -354,10 +354,11 @@ execTrimmomaticSingleLibrary() runs Trimmomatic on a single library
                 this_width = int(round(float(width)*float(report_data[lib_i][f_name])/float(high_val), 0))
                 self.log(console,"this_width: "+str(this_width)+" report_data: "+report_data[lib_i][f_name]+" calc: "+str(float(width)*float(report_data[lib_i][f_name])/float(high_val)))  # DEBUG
                 if this_width < 1:
-                    if report_data[lib_i][f_name] != 0:
+                    if report_data[lib_i][f_name] > 0:
                         this_width = 1
                     else:
                         this_width = 0
+                self.log(console,"AFTER: "+str(this_width))  # DEBUG
                 html_report_lines += ['<tr>']
                 html_report_lines += ['    <td align=right>'+str(f_name)+'</td><td></td><td align=right>'+str(report_data[lib_i][f_name])+'</td><td></td>']
                 if this_width > 0:
