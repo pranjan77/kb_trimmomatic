@@ -352,7 +352,7 @@ execTrimmomaticSingleLibrary() runs Trimmomatic on a single library
                     high_val = report_data[lib_i][f_name]
             for f_name in report_field_order[lib_i]:
                 this_width = int(round(float(width)*float(report_data[lib_i][f_name])/float(high_val), 0))
-                self.log(console,"this_width: "+str(this_width)+" report_data: "+report_data[lib_i][f_name]+" calc: "+str(float(width)*float(report_data[lib_i][f_name])/float(high_val)))  # DEBUG
+                self.log(console,"this_width: "+str(this_width)+" report_data: "+str(report_data[lib_i][f_name])+" calc: "+str(float(width)*float(report_data[lib_i][f_name])/float(high_val)))  # DEBUG
                 if this_width < 1:
                     if report_data[lib_i][f_name] > 0:
                         this_width = 1
