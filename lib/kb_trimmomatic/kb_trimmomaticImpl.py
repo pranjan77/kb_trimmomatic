@@ -328,6 +328,7 @@ execTrimmomaticSingleLibrary() runs Trimmomatic on a single library
 
         reportObj['direct_html'] = "\n".join(html_report_lines)
         reportObj['direct_html'] = '<html><body>HELLO KITTY</body></html>'
+        reportObj['direct_html_index'] = 0
 
         # trimmed object
         if trimmomatic_retVal['output_filtered_ref'] != None:
