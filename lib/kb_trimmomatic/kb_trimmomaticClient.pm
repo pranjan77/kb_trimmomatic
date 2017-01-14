@@ -135,8 +135,7 @@ runTrimmomaticInput is a reference to a hash where the following keys are define
 	read_type has a value which is a string
 	quality_encoding has a value which is a string
 	adapter_clip has a value which is a kb_trimmomatic.AdapterClip_Options
-	sliding_window_size has a value which is an int
-	sliding_window_min_quality has a value which is an int
+	sliding_window has a value which is a kb_trimmomatic.SlidingWindow_Options
 	leading_min_quality has a value which is an int
 	trailing_min_quality has a value which is an int
 	crop_length has a value which is an int
@@ -150,6 +149,9 @@ AdapterClip_Options is a reference to a hash where the following keys are define
 	seed_mismatches has a value which is an int
 	palindrome_clip_threshold has a value which is an int
 	simple_clip_threshold has a value which is an int
+SlidingWindow_Options is a reference to a hash where the following keys are defined:
+	sliding_window_size has a value which is an int
+	sliding_window_min_quality has a value which is an int
 runTrimmomaticOutput is a reference to a hash where the following keys are defined:
 	report_name has a value which is a string
 	report_ref has a value which is a string
@@ -170,8 +172,7 @@ runTrimmomaticInput is a reference to a hash where the following keys are define
 	read_type has a value which is a string
 	quality_encoding has a value which is a string
 	adapter_clip has a value which is a kb_trimmomatic.AdapterClip_Options
-	sliding_window_size has a value which is an int
-	sliding_window_min_quality has a value which is an int
+	sliding_window has a value which is a kb_trimmomatic.SlidingWindow_Options
 	leading_min_quality has a value which is an int
 	trailing_min_quality has a value which is an int
 	crop_length has a value which is an int
@@ -185,6 +186,9 @@ AdapterClip_Options is a reference to a hash where the following keys are define
 	seed_mismatches has a value which is an int
 	palindrome_clip_threshold has a value which is an int
 	simple_clip_threshold has a value which is an int
+SlidingWindow_Options is a reference to a hash where the following keys are defined:
+	sliding_window_size has a value which is an int
+	sliding_window_min_quality has a value which is an int
 runTrimmomaticOutput is a reference to a hash where the following keys are defined:
 	report_name has a value which is a string
 	report_ref has a value which is a string
@@ -682,7 +686,7 @@ a string
 
 
 
-=head2 AdapterClip_Options
+=head2 SlidingWindow_Options
 
 =over 4
 
@@ -691,6 +695,38 @@ a string
 =item Description
 
 parameter groups
+
+
+=item Definition
+
+=begin html
+
+<pre>
+a reference to a hash where the following keys are defined:
+sliding_window_size has a value which is an int
+sliding_window_min_quality has a value which is an int
+
+</pre>
+
+=end html
+
+=begin text
+
+a reference to a hash where the following keys are defined:
+sliding_window_size has a value which is an int
+sliding_window_min_quality has a value which is an int
+
+
+=end text
+
+=back
+
+
+
+=head2 AdapterClip_Options
+
+=over 4
+
 
 
 =item Definition
@@ -749,8 +785,7 @@ output_reads_name has a value which is a kb_trimmomatic.data_obj_name
 read_type has a value which is a string
 quality_encoding has a value which is a string
 adapter_clip has a value which is a kb_trimmomatic.AdapterClip_Options
-sliding_window_size has a value which is an int
-sliding_window_min_quality has a value which is an int
+sliding_window has a value which is a kb_trimmomatic.SlidingWindow_Options
 leading_min_quality has a value which is an int
 trailing_min_quality has a value which is an int
 crop_length has a value which is an int
@@ -771,8 +806,7 @@ output_reads_name has a value which is a kb_trimmomatic.data_obj_name
 read_type has a value which is a string
 quality_encoding has a value which is a string
 adapter_clip has a value which is a kb_trimmomatic.AdapterClip_Options
-sliding_window_size has a value which is an int
-sliding_window_min_quality has a value which is an int
+sliding_window has a value which is a kb_trimmomatic.SlidingWindow_Options
 leading_min_quality has a value which is an int
 trailing_min_quality has a value which is an int
 crop_length has a value which is an int
