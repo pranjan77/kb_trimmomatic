@@ -20,9 +20,6 @@ module kb_trimmomatic {
     /* parameter groups
     */
     typedef structure {
-    } SlidingWindow_Options;
-
-    typedef structure {
         string adapterFa;
         int seed_mismatches;
         int palindrome_clip_threshold;

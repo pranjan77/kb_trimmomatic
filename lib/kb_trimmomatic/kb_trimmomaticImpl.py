@@ -40,7 +40,7 @@ execTrimmomaticSingleLibrary() runs Trimmomatic on a single library
     ######################################### noqa
     VERSION = "0.0.13"
     GIT_URL = "https://github.com/kbaseapps/kb_trimmomatic"
-    GIT_COMMIT_HASH = "60091a2e394759b74cf8c7b4ae77bcbbd6da5577"
+    GIT_COMMIT_HASH = "0b9c2c7a6b314c2b87305fed1146e7cc186930f1"
 
     #BEGIN_CLASS_HEADER
     workspaceURL = None
@@ -166,9 +166,9 @@ execTrimmomaticSingleLibrary() runs Trimmomatic on a single library
            "workspace_name" (** Common types), parameter "output_reads_name"
            of type "data_obj_name", parameter "read_type" of String,
            parameter "quality_encoding" of String, parameter "adapter_clip"
-           of type "AdapterClip_Options" -> structure: parameter "adapterFa"
-           of String, parameter "seed_mismatches" of Long, parameter
-           "palindrome_clip_threshold" of Long, parameter
+           of type "AdapterClip_Options" (parameter groups) -> structure:
+           parameter "adapterFa" of String, parameter "seed_mismatches" of
+           Long, parameter "palindrome_clip_threshold" of Long, parameter
            "simple_clip_threshold" of Long, parameter "sliding_window_size"
            of Long, parameter "sliding_window_min_quality" of Long, parameter
            "leading_min_quality" of Long, parameter "trailing_min_quality" of

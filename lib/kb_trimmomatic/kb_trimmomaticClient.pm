@@ -682,7 +682,7 @@ a string
 
 
 
-=head2 SlidingWindow_Options
+=head2 AdapterClip_Options
 
 =over 4
 
@@ -691,32 +691,6 @@ a string
 =item Description
 
 parameter groups
-
-
-=item Definition
-
-=begin html
-
-<pre>
-a reference to a hash where the following keys are defined
-</pre>
-
-=end html
-
-=begin text
-
-a reference to a hash where the following keys are defined
-
-=end text
-
-=back
-
-
-
-=head2 AdapterClip_Options
-
-=over 4
-
 
 
 =item Definition
