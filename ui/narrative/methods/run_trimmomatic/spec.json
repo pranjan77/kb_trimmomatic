@@ -253,13 +253,6 @@
 	      "optional": true,
 	      "allow_multiple": false,
 	      "with_border": true
-	    },
-	    {
-	      "id": "sliding_window",
-	      "parameters": ["sliding_window_size", "sliding_window_min_quality"],
-	      "optional": true,
-	      "allow_multiple": false,
-	      "with_border": true
 	    }
 	],
 
@@ -297,8 +290,12 @@
 					"target_property": "adapter_clip"
 				},
 				{
-					"input_parameter": "sliding_window",
-					"target_property": "sliding_window"
+					"input_parameter": "sliding_window_size",
+					"target_property": "sliding_window_size"
+				},
+				{
+					"input_parameter": "sliding_window_min_quality",
+					"target_property": "sliding_window_min_quality"
 				},
 				{
 					"input_parameter": "leading_min_quality",

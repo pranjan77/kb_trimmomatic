@@ -142,11 +142,6 @@ parameter-groups :
 			Adapter clipping options
 		short-hint : |
 			Configure if you wish to remove standard adapters
-	sliding_window :
-		ui-name : |
-			Sliding window options
-		short-hint : |
-			Linked parameters for sliding window-based quality trimming
 
 #
 # Desc
