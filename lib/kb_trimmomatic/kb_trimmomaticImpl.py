@@ -248,15 +248,16 @@ execTrimmomaticSingleLibrary() runs Trimmomatic on a single library
                 execTrimmomaticParams['simple_clip_threshold'] = None
 
         # sliding window
-        if 'sliding_window_size' in input_params:
-            execTrimmomaticParams['sliding_window_size'] = input_params['sliding_window_size']
-        else:
-            execTrimmomaticParams['sliding_window_size'] = None
+        if 'sliding_window' in input_params:
+            if 'sliding_window_size' in input_params['sliding_window']:
+                execTrimmomaticParams['sliding_window_size'] = input_params['sliding_window']['sliding_window_size']
+            else:
+                execTrimmomaticParams['sliding_window_size'] = None
 
-        if 'sliding_window_min_quality' in input_params:
-            execTrimmomaticParams['sliding_window_min_quality'] = input_params['sliding_window_min_quality']
-        else:
-            execTrimmomaticParams['sliding_window_min_quality'] = None
+            if 'sliding_window_min_quality' in input_params['sliding_window']:
+                execTrimmomaticParams['sliding_window_min_quality'] = input_params['sliding_window']['sliding_window_min_quality']
+            else:
+                execTrimmomaticParams['sliding_window_min_quality'] = None
         
         # remaining params
         if 'leading_min_quality' in input_params:
