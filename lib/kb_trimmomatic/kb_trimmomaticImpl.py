@@ -669,7 +669,7 @@ execTrimmomaticSingleLibrary() runs Trimmomatic on a single library
                 items = []
                 for i,lib_ref in enumerate(unpaired_fwd_readsSet_refs):  # FIX: assumes order maintained
                     if lib_ref == None:
-                        #items.append(None)  # can't have 'None' items in ReadsSet
+                        #item`s.append(None)  # can't have 'None' items in ReadsSet
                         continue
                     else:
                         some_unpaired_rev_output_created = True
@@ -786,6 +786,8 @@ execTrimmomaticSingleLibrary() runs Trimmomatic on a single library
         for arg in defaults.keys():
             if arg not in input_params or input_params[arg] == None or input_params[arg] == '':
                 input_params[arg] = defaults[arg]
+            else:
+                self.log(console,"ARG "+arg+" unchanged")
             
         # conditional arg behavior
         arg = 'adapterFa'
