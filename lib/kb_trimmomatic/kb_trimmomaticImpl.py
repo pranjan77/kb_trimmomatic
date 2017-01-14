@@ -885,6 +885,10 @@ execTrimmomaticSingleLibrary() runs Trimmomatic on a single library
             # Run Trimmomatic
             #
             self.log(console, 'Starting Trimmomatic')
+            input_fwd_file_path = re.sub ("\.fq$", "", input_fwd_file_path)
+            input_fwd_file_path = re.sub ("\.FQ$", "", input_fwd_file_path)
+            input_rev_file_path = re.sub ("\.fq$", "", input_rev_file_path)
+            input_rev_file_path = re.sub ("\.FQ$", "", input_rev_file_path)
             input_fwd_file_path = re.sub ("\.fastq$", "", input_fwd_file_path)
             input_fwd_file_path = re.sub ("\.FASTQ$", "", input_fwd_file_path)
             input_rev_file_path = re.sub ("\.fastq$", "", input_rev_file_path)
@@ -952,6 +956,7 @@ execTrimmomaticSingleLibrary() runs Trimmomatic on a single library
                 retVal['output_filtered_ref'] = readsUtils_Client.upload_reads ({ 'wsname': str(input_params['output_ws']),
                                                                                   'name': output_obj_name,
                                                                                   'sequencing_tech': sequencing_tech,
+                                                                                  'source_reads_ref': input_params['input_reads_ref'],
                                                                                   'fwd_file': output_fwd_paired_file_path,
                                                                                   'rev_file': output_rev_paired_file_path
                                                                                   })['obj_ref']
@@ -968,6 +973,7 @@ execTrimmomaticSingleLibrary() runs Trimmomatic on a single library
                 retVal['output_unpaired_fwd_ref'] = readsUtils_Client.upload_reads ({ 'wsname': str(input_params['output_ws']),
                                                                                       'name': output_obj_name,
                                                                                       'sequencing_tech': sequencing_tech,
+                                                                                      'source_reads_ref': input_params['input_reads_ref'],
                                                                                       'fwd_file': output_fwd_unpaired_file_path
                                                                                       })['obj_ref']
 
@@ -984,6 +990,7 @@ execTrimmomaticSingleLibrary() runs Trimmomatic on a single library
                 retVal['output_unpaired_rev_ref'] = readsUtils_Client.upload_reads ({ 'wsname': str(input_params['output_ws']),
                                                                                       'name': output_obj_name,
                                                                                       'sequencing_tech': sequencing_tech,
+                                                                                      'source_reads_ref': input_params['input_reads_ref'],
                                                                                       'fwd_file': output_rev_unpaired_file_path
                                                                                       })['obj_ref']
 
@@ -1001,6 +1008,8 @@ execTrimmomaticSingleLibrary() runs Trimmomatic on a single library
             # Run Trimmomatic
             #
             self.log(console, 'Starting Trimmomatic')
+            input_fwd_file_path = re.sub ("\.fq$", "", input_fwd_file_path)
+            input_fwd_file_path = re.sub ("\.FQ$", "", input_fwd_file_path)
             input_fwd_file_path = re.sub ("\.fastq$", "", input_fwd_file_path)
             input_fwd_file_path = re.sub ("\.FASTQ$", "", input_fwd_file_path)
             output_fwd_file_path = input_fwd_file_path+"_trimm_fwd.fastq"
@@ -1047,6 +1056,7 @@ execTrimmomaticSingleLibrary() runs Trimmomatic on a single library
                 retVal['output_filtered_ref'] = readsUtils_Client.upload_reads ({ 'wsname': str(input_params['output_ws']),
                                                                                   'name': output_obj_name,
                                                                                   'sequencing_tech': sequencing_tech,
+                                                                                  'source_reads_ref': input_params['input_reads_ref'],
                                                                                   'fwd_file': output_fwd_file_path
                                                                                   })['obj_ref']
 
