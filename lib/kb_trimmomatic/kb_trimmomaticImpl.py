@@ -40,7 +40,7 @@ execTrimmomaticSingleLibrary() runs Trimmomatic on a single library
     ######################################### noqa
     VERSION = "0.0.13"
     GIT_URL = "https://github.com/kbaseapps/kb_trimmomatic"
-    GIT_COMMIT_HASH = "a9cd0138c6b0ecfa289a531ae47a3d1a57c6cc9b"
+    GIT_COMMIT_HASH = "60091a2e394759b74cf8c7b4ae77bcbbd6da5577"
 
     #BEGIN_CLASS_HEADER
     workspaceURL = None
@@ -496,7 +496,7 @@ execTrimmomaticSingleLibrary() runs Trimmomatic on a single library
         input_reads_obj_type = re.sub ('-[0-9]+\.[0-9]+$', "", input_reads_obj_type)  # remove trailing version
         #self.log (console, "AF TYPE: '"+str(input_reads_obj_type)+"' VERSION: '"+str(input_reads_obj_version)+"'")
 
-        acceptable_types = ["KBaseSets.ReadsSet", "KBaseFile.PairedEndLibrary", "KBaseAssembly.PairedEndLibrary", "KBaseAssembly.SingleEndLibrary", "KBaseFile.SingleEndLibrary"]
+        acceptable_types = ["KBaseSets.ReadsSet", "KBaseFile.PairedEndLibrary", "KBaseFile.SingleEndLibrary"]
         if input_reads_obj_type not in acceptable_types:
             raise ValueError ("Input reads of type: '"+input_reads_obj_type+"'.  Must be one of "+", ".join(acceptable_types))
 
@@ -786,8 +786,6 @@ execTrimmomaticSingleLibrary() runs Trimmomatic on a single library
         for arg in defaults.keys():
             if arg not in input_params or input_params[arg] == None or input_params[arg] == '':
                 input_params[arg] = defaults[arg]
-            else:
-                self.log(console,"ARG "+arg+" unchanged")
             
         # conditional arg behavior
         arg = 'adapterFa'
