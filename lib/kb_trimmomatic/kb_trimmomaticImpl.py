@@ -38,9 +38,9 @@ execTrimmomaticSingleLibrary() runs Trimmomatic on a single library
     # state. A method could easily clobber the state set by another while
     # the latter method is running.
     ######################################### noqa
-    VERSION = "0.0.12"
-    GIT_URL = ""
-    GIT_COMMIT_HASH = ""
+    VERSION = "0.0.13"
+    GIT_URL = "https://github.com/kbaseapps/kb_trimmomatic"
+    GIT_COMMIT_HASH = "a9cd0138c6b0ecfa289a531ae47a3d1a57c6cc9b"
 
     #BEGIN_CLASS_HEADER
     workspaceURL = None
@@ -169,10 +169,8 @@ execTrimmomaticSingleLibrary() runs Trimmomatic on a single library
            of type "AdapterClip_Options" -> structure: parameter "adapterFa"
            of String, parameter "seed_mismatches" of Long, parameter
            "palindrome_clip_threshold" of Long, parameter
-           "simple_clip_threshold" of Long, parameter "sliding_window" of
-           type "SlidingWindow_Options" (parameter groups) -> structure:
-           parameter "sliding_window_size" of Long, parameter
-           "sliding_window_min_quality" of Long, parameter
+           "simple_clip_threshold" of Long, parameter "sliding_window_size"
+           of Long, parameter "sliding_window_min_quality" of Long, parameter
            "leading_min_quality" of Long, parameter "trailing_min_quality" of
            Long, parameter "crop_length" of Long, parameter
            "head_crop_length" of Long, parameter "min_length" of Long
@@ -247,17 +245,16 @@ execTrimmomaticSingleLibrary() runs Trimmomatic on a single library
             else:
                 execTrimmomaticParams['simple_clip_threshold'] = None
 
-        # sliding_window grouped params
-        if 'sliding_window' in input_params and input_params['sliding_window'] != None:
-            if 'sliding_window_size' in input_params['sliding_window']:
-                execTrimmomaticParams['sliding_window_size'] = input_params['sliding_window']['sliding_window_size']
-            else:
-                execTrimmomaticParams['sliding_window_size'] = None
+        # sliding window
+        if 'sliding_window_size' in input_params:
+            execTrimmomaticParams['sliding_window_size'] = input_params['sliding_window_size']
+        else:
+            execTrimmomaticParams['sliding_window_size'] = None
 
-            if 'sliding_window_min_quality' in input_params['sliding_window']:
-                execTrimmomaticParams['sliding_window_min_quality'] = input_params['sliding_window']['sliding_window_min_quality']
-            else:
-                execTrimmomaticParams['sliding_window_min_quality'] = None
+        if 'sliding_window_min_quality' in input_params:
+            execTrimmomaticParams['sliding_window_min_quality'] = input_params['sliding_window_min_quality']
+        else:
+            execTrimmomaticParams['sliding_window_min_quality'] = None
         
         # remaining params
         if 'leading_min_quality' in input_params:
