@@ -20,8 +20,6 @@ module kb_trimmomatic {
     /* parameter groups
     */
     typedef structure {
-        int sliding_window_size;
-        int sliding_window_min_quality;
     } SlidingWindow_Options;
 
     typedef structure {
@@ -48,7 +46,8 @@ module kb_trimmomatic {
         string                read_type;
         string                quality_encoding;
 	AdapterClip_Options   adapter_clip;
-	SlidingWindow_Options sliding_window;
+        int sliding_window_size;
+        int sliding_window_min_quality;
         int leading_min_quality;
         int trailing_min_quality;
         int crop_length;
