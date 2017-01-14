@@ -524,7 +524,7 @@ execTrimmomaticSingleLibrary() runs Trimmomatic on a single library
                 readsSet_names_list.append(readsLibrary_obj['info'][NAME_I])
 
 
-        # Iterate through readsLibrary memebers of set
+        # Iterate through readsLibrary members of set
         #
         report = ''
         trimmed_readsSet_ref       = None
@@ -536,21 +536,25 @@ execTrimmomaticSingleLibrary() runs Trimmomatic on a single library
 
         for reads_item_i,input_reads_library_ref in enumerate(readsSet_ref_list):
             execTrimmomaticParams = { 'input_reads_ref': input_reads_library_ref,
-                                      'output_ws': input_params['output_ws'],
-                                      'read_type': input_params['read_type'],
-                                      'adapterFa': input_params['adapterFa'],
-                                      'seed_mismatches': input_params['seed_mismatches'],
-                                      'palindrome_clip_threshold': input_params['palindrome_clip_threshold'],
-                                      'simple_clip_threshold': input_params['simple_clip_threshold'],
-                                      'quality_encoding': input_params['quality_encoding'],
-                                      'sliding_window_size': input_params['sliding_window_size'],
-                                      'sliding_window_min_quality': input_params['sliding_window_min_quality'],
-                                      'leading_min_quality': input_params['leading_min_quality'],
-                                      'trailing_min_quality': input_params['trailing_min_quality'],
-                                      'crop_length': input_params['crop_length'],
-                                      'head_crop_length': input_params['head_crop_length'],
-                                      'min_length': input_params['min_length']
-                                    }
+                                      'output_ws': input_params['output_ws']
+                                      }
+            optional_params = ['read_type',
+                               'adapterFa',
+                               'seed_mismatches',
+                               'palindrome_clip_threshold',
+                               'simple_clip_threshold',
+                               'quality_encoding',
+                               'sliding_window_size',
+                               'sliding_window_min_quality',
+                               'leading_min_quality',
+                               'trailing_min_quality',
+                               'crop_length',
+                               'head_crop_length',
+                               'min_length'
+                               ]
+            for arg in optional_params:
+                if arg in input_params:
+                    execTrimmomaticParams[arg] = input_params[arg]
             
             if input_reads_obj_type != "KBaseSets.ReadsSet":
                 execTrimmomaticParams['output_reads_name'] = input_params['output_reads_name']
