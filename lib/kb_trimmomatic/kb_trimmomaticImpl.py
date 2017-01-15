@@ -325,7 +325,7 @@ execTrimmomaticSingleLibrary() runs Trimmomatic on a single library
 
         # html report
         sp = '&nbsp;'
-        text_color = "#808080"
+        text_color = "#404040"
         bar_color = "lightblue"
         bar_width = 100
         bar_char = "."
