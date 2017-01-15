@@ -325,7 +325,7 @@ execTrimmomaticSingleLibrary() runs Trimmomatic on a single library
 
         # html report
         sp = '&nbsp;'
-        text_color = "darkgray"
+        text_color = "#808080"
         bar_color = "lightblue"
         bar_width = 100
         bar_char = "."
@@ -334,7 +334,7 @@ execTrimmomaticSingleLibrary() runs Trimmomatic on a single library
 
         html_report_lines = []
         html_report_lines += ['<html>']
-        html_report_lines += ['<body bgcolor=white>']
+        html_report_lines += ['<body bgcolor="white">']
 
 #        result_data_order = ['foobarfoo', 'animalcules', 'chicken', 'applesauce']
 #        result_data = { 'foobarfoo': 197,
@@ -344,7 +344,7 @@ execTrimmomaticSingleLibrary() runs Trimmomatic on a single library
 #                        }
 
         for lib_i in range(len(report_data)):
-            html_report_lines += ['<p><b><font color='+text_color+'>TRIMMOMATIC RESULTS FOR '+str(report_lib_names[lib_i])+' (object '+str(report_lib_refs[lib_i])+')</font></b><br>'+"\n"]
+            html_report_lines += ['<p><b><font color="'+text_color+'">TRIMMOMATIC RESULTS FOR '+str(report_lib_names[lib_i])+' (object '+str(report_lib_refs[lib_i])+')</font></b><br>'+"\n"]
 
             html_report_lines += ['<table cellpadding=0 cellspacing=0 border=0>']
             html_report_lines += ['<tr><td></td><td>'+sp+sp+sp+sp+'</td><td></td><td>'+sp+sp+'</td></tr>']
@@ -362,10 +362,10 @@ execTrimmomaticSingleLibrary() runs Trimmomatic on a single library
                     else:
                         this_width = 0
                 html_report_lines += ['<tr>']
-                html_report_lines += ['    <td align=right><font color='+text_color+'>'+str(f_name)+'</font></td><td></td><td align=right><font color='+text_color+'>'+str(report_data[lib_i][f_name])+'</td><td></td>']
+                html_report_lines += ['    <td align=right><font color="'+text_color+'">'+str(f_name)+'</font></td><td></td><td align=right><font color="'+text_color+'">'+str(report_data[lib_i][f_name])+'</td><td></td>']
                 if this_width > 0:
                     for tic in range(this_width):
-                        html_report_lines += ['    <td bgcolor='+bar_color+'><font size='+bar_fontsize+' color='+bar_color+'>'+bar_char+'</font></td>']
+                        html_report_lines += ['    <td bgcolor="'+bar_color+'"><font size='+bar_fontsize+' color="'+bar_color+'">'+bar_char+'</font></td>']
                 html_report_lines += ['</tr>']
                 html_report_lines += ['<tr><td><font size='+row_spacing+'>'+sp+'</font></td></tr>']
 
