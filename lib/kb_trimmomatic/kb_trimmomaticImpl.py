@@ -958,7 +958,7 @@ execTrimmomaticSingleLibrary() runs Trimmomatic on a single library
                 self.log(console, 'Uploading trimmed paired reads: '+output_obj_name)
                 retVal['output_filtered_ref'] = readsUtils_Client.upload_reads ({ 'wsname': str(input_params['output_ws']),
                                                                                   'name': output_obj_name,
-                                                                                  'sequencing_tech': sequencing_tech,
+                                                                                  #'sequencing_tech': sequencing_tech,
                                                                                   'source_reads_ref': input_params['input_reads_ref'],
                                                                                   'fwd_file': output_fwd_paired_file_path,
                                                                                   'rev_file': output_rev_paired_file_path
@@ -975,7 +975,7 @@ execTrimmomaticSingleLibrary() runs Trimmomatic on a single library
                 self.log(console, '\nUploading trimmed unpaired forward reads: '+output_obj_name)
                 retVal['output_unpaired_fwd_ref'] = readsUtils_Client.upload_reads ({ 'wsname': str(input_params['output_ws']),
                                                                                       'name': output_obj_name,
-                                                                                      'sequencing_tech': sequencing_tech,
+                                                                                      #'sequencing_tech': sequencing_tech,
                                                                                       'source_reads_ref': input_params['input_reads_ref'],
                                                                                       'fwd_file': output_fwd_unpaired_file_path
                                                                                       })['obj_ref']
@@ -992,7 +992,7 @@ execTrimmomaticSingleLibrary() runs Trimmomatic on a single library
                 self.log(console, '\nUploading trimmed unpaired reverse reads: '+output_obj_name)
                 retVal['output_unpaired_rev_ref'] = readsUtils_Client.upload_reads ({ 'wsname': str(input_params['output_ws']),
                                                                                       'name': output_obj_name,
-                                                                                      'sequencing_tech': sequencing_tech,
+                                                                                      #'sequencing_tech': sequencing_tech,
                                                                                       'source_reads_ref': input_params['input_reads_ref'],
                                                                                       'fwd_file': output_rev_unpaired_file_path
                                                                                       })['obj_ref']
@@ -1058,7 +1058,7 @@ execTrimmomaticSingleLibrary() runs Trimmomatic on a single library
                 self.log(console, 'Uploading trimmed reads: '+output_obj_name)
                 retVal['output_filtered_ref'] = readsUtils_Client.upload_reads ({ 'wsname': str(input_params['output_ws']),
                                                                                   'name': output_obj_name,
-                                                                                  'sequencing_tech': sequencing_tech,
+                                                                                  #'sequencing_tech': sequencing_tech,
                                                                                   'source_reads_ref': input_params['input_reads_ref'],
                                                                                   'fwd_file': output_fwd_file_path
                                                                                   })['obj_ref']
