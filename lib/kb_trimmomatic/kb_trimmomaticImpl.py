@@ -38,9 +38,9 @@ execTrimmomaticSingleLibrary() runs Trimmomatic on a single library
     # state. A method could easily clobber the state set by another while
     # the latter method is running.
     ######################################### noqa
-    VERSION = "0.0.13"
-    GIT_URL = "https://github.com/kbaseapps/kb_trimmomatic"
-    GIT_COMMIT_HASH = "cb57bc038d0ed5f59640f069d72cfc4e7f76fb3b"
+    VERSION = "0.0.16"
+    GIT_URL = "https://github.com/rsutormin/kb_trimmomatic"
+    GIT_COMMIT_HASH = "644043231484945a705beba412b989344a0d22bd"
 
     #BEGIN_CLASS_HEADER
     workspaceURL = None
@@ -319,9 +319,13 @@ execTrimmomaticSingleLibrary() runs Trimmomatic on a single library
             elif len(line) == 0:
                 continue
             else:
-                [f_name, val] = line.split(': ')
-                report_field_order[lib_i].append(f_name)
-                report_data[lib_i][f_name] = int(val)
+                try:
+                    [f_name, val] = line.split(': ')
+                    int_val = int(val)
+                    report_field_order[lib_i].append(f_name)
+                    report_data[lib_i][f_name] = int_val
+                except ValueError:
+                    print("Can't parse [" + line + "] (lib_i=" + str(lib_i) + ")")
 
         # html report
         sp = '&nbsp;'
