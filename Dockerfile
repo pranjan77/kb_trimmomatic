@@ -2,11 +2,6 @@ FROM kbase/kbase:sdkbase.latest
 MAINTAINER KBase Developer
 # -----------------------------------------
 
-# Temporary trick updating of SDK to latest develop commit inside image
-RUN . /kb/dev_container/user-env.sh && cd /kb/dev_container/modules && \
-  rm -rf kb_sdk && git clone https://github.com/kbase/kb_sdk -b develop && \
-  cd /kb/dev_container/modules/kb_sdk && make && make deploy && echo "3"
-
 # Insert apt-get instructions here to install
 # any required dependencies for your module.
 
