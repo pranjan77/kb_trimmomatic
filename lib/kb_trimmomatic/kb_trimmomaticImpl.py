@@ -506,7 +506,7 @@ execTrimmomaticSingleLibrary() runs Trimmomatic on a single library
         input_reads_obj_type = re.sub ('-[0-9]+\.[0-9]+$', "", input_reads_obj_type)  # remove trailing version
         #self.log (console, "AF TYPE: '"+str(input_reads_obj_type)+"' VERSION: '"+str(input_reads_obj_version)+"'")
 
-        acceptable_types = ["KBaseSets.ReadsSet", "KBaseFile.PairedEndLibrary", "KBaseFile.SingleEndLibrary"]
+        acceptable_types = ["KBaseSets.ReadsSet", "KBaseFile.PairedEndLibrary", "KBaseFile.SingleEndLibrary", "KBaseAssembly.PairedEndLibrary", "KBaseAssembly.SingleEndLibrary"]
         if input_reads_obj_type not in acceptable_types:
             raise ValueError ("Input reads of type: '"+input_reads_obj_type+"'.  Must be one of "+", ".join(acceptable_types))
 
