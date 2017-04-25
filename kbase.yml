@@ -2,14 +2,14 @@ module-name:
     kb_trimmomatic
 
 module-description:
-    A KBase module
+    Quality Filtering and Adapter Removal for Read Librarys and Sets of Read Librarys
 
 service-language:
     python
 
 module-version:
-    0.0.1
+    0.0.16
 
 owners:
-    [psdehal]
+    [psdehal, dylan]
 

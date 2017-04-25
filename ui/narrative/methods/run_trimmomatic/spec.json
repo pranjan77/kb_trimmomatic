@@ -1,15 +1,16 @@
 {
-	"ver": "0.0.1",
+	"ver": "0.0.14",
 	
 	"authors": [
-		"psdehal"
+		"psdehal",
+		"dylan"
 	],
 	"contact": "help@kbase.us",
 	"visible": true,
-	"categories": ["active", "util", "assembly"],
+	"categories": ["active", "reads" ],
 	"widgets": {
 		"input": null,
-		"output": "kbaseReportView"
+		"output": "no-display"
 	},
 	"parameters": [
 		{
@@ -37,23 +38,27 @@
 			}
 		},
 		{
-			"id": "input_read_library",
+			"id": "input_reads_ref",
 			"optional": false,
 			"advanced": false,
 			"allow_multiple": false,
 			"default_values": [ "" ],
 			"field_type": "text",
 			"text_options": {
-				"valid_ws_types": ["KBaseFile.PairedEndLibrary", "KBaseAssembly.PairedEndLibrary", "KBaseAssembly.SingleEndLibrary"]
+				"valid_ws_types": ["KBaseSets.ReadsSet", "KBaseFile.PairedEndLibrary", "KBaseFile.SingleEndLibrary"]
 			}
 		},
 		{
-			"id": "output_read_library",
+			"id": "output_reads_name",
 			"optional": false,
 			"advanced": false,
 			"allow_multiple": false,
 			"default_values": [ "" ],
-			"field_type": "text"
+			"field_type": "text",
+			"text_options": {
+				"valid_ws_types": ["KBaseSets.ReadsSet", "KBaseFile.PairedEndLibrary", "KBaseFile.SingleEndLibrary"],
+				"is_output_name": true
+			}
 		},
 		{
 			"id": "quality_encoding",
@@ -66,23 +71,24 @@
 					"options": [
 						{
 							"value": "phred33",
-							"display": "phred33",
+							"display": "phred33 (Sanger, 454, SRA, Illumina >= 1.8)",
 							"id": "phred33",
 							"ui-name": "phred33"
 						},
 						{
 							"value": "phred64",
-							"display": "phred64",
+							"display": "phred64 (Illumina <= 1.7)",
 							"id": "phred64",
 							"ui-name": "phred64"
 						}
 					]
 				}
 		},
+
 		{
 			"id": "adapterFa",
 			"optional": true,
-			"advanced": false,
+			"advanced": true,
 			"allow_multiple": false,
 			"default_values": [""],
 			"field_type": "dropdown",
@@ -130,9 +136,9 @@
 		{
 			"id": "seed_mismatches",
 			"optional": true,
-			"advanced": false,
+			"advanced": true,
 			"allow_multiple": false,
-			"default_values": [ "" ],
+			"default_values": [ "2" ],
 			"field_type": "text",
 			"text_options": {
 				"validate_as": "int"
@@ -141,9 +147,9 @@
 		{
 			"id": "palindrome_clip_threshold",
 			"optional": true,
-			"advanced": false,
+			"advanced": true,
 			"allow_multiple": false,
-			"default_values": [""],
+			"default_values": ["3"],
 			"field_type": "text",
 			"text_options": {
 				"validate_as": "int"
@@ -152,64 +158,21 @@
 		{
 			"id": "simple_clip_threshold",
 			"optional": true,
-			"advanced": false,
+			"advanced": true,
 			"allow_multiple": false,
-			"default_values": [ "" ],
+			"default_values": [ "10" ],
 			"field_type": "text",
 			"text_options": {
 				"validate_as": "int"
 			}
 		},
-		{
-			"id": "crop_length",
-			"optional": true,
-			"advanced": false,
-			"allow_multiple": false,
-			"default_values": [ "" ],
-			"field_type": "text",
-			"text_options": {
-				"validate_as": "int"
-			}
-		},
-		{
-			"id": "head_crop_length",
-			"optional": true,
-			"advanced": false,
-			"allow_multiple": false,
-			"default_values": [ "" ],
-			"field_type": "text",
-			"text_options": {
-				"validate_as": "int"
-			}
-		},
-		{
-			"id": "leading_min_quality",
-			"optional": true,
-			"advanced": false,
-			"allow_multiple": false,
-			"default_values": [ "" ],
-			"field_type": "text",
-			"text_options": {
-				"validate_as": "int"
-			}
-		},
-		{
-			"id": "trailing_min_quality",
-			"optional": true,
-			"advanced": false,
-			"allow_multiple": false,
-			"default_values": [ "" ],
-			"field_type": "text",
-			"text_options": {
-				"validate_as": "int"
-			}
-		},
+
 		{
 			"id": "sliding_window_size",
 			"optional": true,
-			"advanced": false,
+			"advanced": true,
 			"allow_multiple": false,
-			"default_values": [ "" ],
+			"default_values": [ "4" ],
 			"field_type": "text",
 			"text_options": {
 				"validate_as": "int"
@@ -218,9 +181,54 @@
 		{
 			"id": "sliding_window_min_quality",
 			"optional": true,
-			"advanced": false,
+			"advanced": true,
 			"allow_multiple": false,
-			"default_values": [ "" ],
+			"default_values": [ "15" ],
+			"field_type": "text",
+			"text_options": {
+				"validate_as": "int"
+			}
+		},
+
+		{
+			"id": "crop_length",
+			"optional": true,
+			"advanced": true,
+			"allow_multiple": false,
+			"default_values": [ "0" ],
+			"field_type": "text",
+			"text_options": {
+				"validate_as": "int"
+			}
+		},
+		{
+			"id": "head_crop_length",
+			"optional": true,
+			"advanced": true,
+			"allow_multiple": false,
+			"default_values": [ "0" ],
+			"field_type": "text",
+			"text_options": {
+				"validate_as": "int"
+			}
+		},
+		{
+			"id": "leading_min_quality",
+			"optional": true,
+			"advanced": true,
+			"allow_multiple": false,
+			"default_values": [ "3" ],
+			"field_type": "text",
+			"text_options": {
+				"validate_as": "int"
+			}
+		},
+		{
+			"id": "trailing_min_quality",
+			"optional": true,
+			"advanced": true,
+			"allow_multiple": false,
+			"default_values": [ "3" ],
 			"field_type": "text",
 			"text_options": {
 				"validate_as": "int"
@@ -229,15 +237,32 @@
 		{
 			"id": "min_length",
 			"optional": true,
-			"advanced": false,
+			"advanced": true,
 			"allow_multiple": false,
-			"default_values": [ "" ],
+			"default_values": [ "36" ],
 			"field_type": "text",
 			"text_options": {
 				"validate_as": "int"
 			}
 		}
 	],
+	"parameter-groups": [
+	    {
+	      "id": "adapter_clip",
+	      "parameters": ["adapterFa", "seed_mismatches", "palindrome_clip_threshold", "simple_clip_threshold"],
+	      "optional": true,
+	      "allow_multiple": false,
+	      "with_border": true
+	    },
+	    {
+	      "id": "sliding_window",
+	      "parameters": ["sliding_window_size", "sliding_window_min_quality"],
+	      "optional": false,
+	      "allow_multiple": false,
+	      "with_border": true
+	    }
+	],
+
 	"behavior": {
 		"service-mapping": {
 			"url": "",
@@ -253,36 +278,27 @@
 					"target_property": "read_type"
 				},
 				{
-					"input_parameter": "input_read_library",
-					"target_property": "input_read_library"
+					"input_parameter": "input_reads_ref",
+					"target_property": "input_reads_ref",
+					"target_type_transform": "resolved-ref"
+
+				},
+				{
+					"input_parameter": "output_reads_name",
+					"target_property": "output_reads_name"
+
 				},
 				{
 					"input_parameter": "quality_encoding",
 					"target_property": "quality_encoding"
 				},
 				{
-					"input_parameter": "adapterFa",
-					"target_property": "adapterFa"
+					"input_parameter": "adapter_clip",
+					"target_property": "adapter_clip"
 				},
 				{
-					"input_parameter": "seed_mismatches",
-					"target_property": "seed_mismatches"
-				},
-				{
-					"input_parameter": "palindrome_clip_threshold",
-					"target_property": "palindrome_clip_threshold"
-				},
-				{
-					"input_parameter": "simple_clip_threshold",
-					"target_property": "simple_clip_threshold"
-				},
-				{
-					"input_parameter": "crop_length",
-					"target_property": "crop_length"
-				},
-				{
-					"input_parameter": "head_crop_length",
-					"target_property": "head_crop_length"
+					"input_parameter": "sliding_window",
+					"target_property": "sliding_window"
 				},
 				{
 					"input_parameter": "leading_min_quality",
@@ -293,22 +309,17 @@
 					"target_property": "trailing_min_quality"
 				},
 				{
-					"input_parameter": "sliding_window_size",
-					"target_property": "sliding_window_size"
+					"input_parameter": "crop_length",
+					"target_property": "crop_length"
 				},
 				{
-					"input_parameter": "sliding_window_min_quality",
-					"target_property": "sliding_window_min_quality"
+					"input_parameter": "head_crop_length",
+					"target_property": "head_crop_length"
 				},
 				{
 					"input_parameter": "min_length",
 					"target_property": "min_length"
-				},
-				{
-					"input_parameter": "output_read_library",
-					"target_property": "output_read_library"
 				}
-
 			],
 			"output_mapping": [
 				{
