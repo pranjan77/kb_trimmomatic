@@ -960,6 +960,9 @@ execTrimmomaticSingleLibrary() runs Trimmomatic on a single library
             else:
                 output_obj_name = input_params['output_reads_name']+'_paired'
                 self.log(console, 'Uploading trimmed paired reads: '+output_obj_name)
+                os.remove(input_fwd_file_path)  # free up disk for gzip
+                os.remove(input_rev_file_path)
+
                 retVal['output_filtered_ref'] = readsUtils_Client.upload_reads ({ 'wsname': str(input_params['output_ws']),
                                                                                   'name': output_obj_name,
                                                                                   # remove sequencing_tech arg once ReadsUtils is updated to accept source_reads_ref
@@ -1063,6 +1066,8 @@ execTrimmomaticSingleLibrary() runs Trimmomatic on a single library
             else:
                 output_obj_name = input_params['output_reads_name']
                 self.log(console, 'Uploading trimmed reads: '+output_obj_name)
+                os.remove(input_fwd_file_path)  # free up disk for gzip
+
                 retVal['output_filtered_ref'] = readsUtils_Client.upload_reads ({ 'wsname': str(input_params['output_ws']),
                                                                                   'name': output_obj_name,
                                                                                   # remove sequencing_tech arg once ReadsUtils is updated to accept source_reads_ref
