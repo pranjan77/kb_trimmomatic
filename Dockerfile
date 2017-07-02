@@ -21,10 +21,6 @@ RUN pip install cffi --upgrade \
     && pip install requests --upgrade \
     && pip install 'requests[security]' --upgrade
 
-# Install Trimmomatic
-RUN curl http://www.usadellab.org/cms/uploads/supplementary/Trimmomatic/Trimmomatic-0.36.zip -o Trimmomatic-0.36.zip && \
-    unzip Trimmomatic-0.36.zip
-
 # -----------------------------------------
 
 COPY ./ /kb/module
@@ -34,6 +30,10 @@ RUN chmod -R a+rw /kb/module
 WORKDIR /kb/module
 
 RUN make all
+
+# Install Trimmomatic
+RUN curl http://www.usadellab.org/cms/uploads/supplementary/Trimmomatic/Trimmomatic-0.36.zip -o Trimmomatic-0.36.zip && \
+    unzip Trimmomatic-0.36.zip
 
 ENTRYPOINT [ "./scripts/entrypoint.sh" ]
 
