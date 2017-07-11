@@ -29,28 +29,28 @@ suggestions:
 parameters :
 	input_reads_ref :
 		ui-name : |
-			Read library (or Set) object
+			Read library (or Set) object <font color=red>*</font>
 		short-hint : |
 			The read library or read library set to examine
 		long-hint  : |
 			The read library or read library set for which you want to trim.
 	quality_encoding :
 		ui-name : |
-			Quality encoding
+			Quality encoding <font color=red>*</font>
 		short-hint : |
 			Read quality encoding format.
 		long-hint : |
 			Read quality encoding format.
 	read_type :
 		ui-name : |
-			Read library type
+			Read library type <font color=red>*</font>
 		short-hint : |
 			Library type, paired end or single end sequencing
 		long-hint : |
 			Library type, paired end or single end sequencing
 	output_reads_name :
 		ui-name : |
-			Output library (or Set) name
+			Output library (or Set) name <font color=red>*</font>
 		short-hint : |
 			Base name for output read library or read library set object
 		long-hint : |
@@ -99,16 +99,16 @@ parameters :
 			Perform a sliding window trimming, cutting once the average quality within the window falls below a threshold. By considering multiple bases, a single poor quality base will not cause the removal of high quality data later in the read.
 	crop_length :
 		ui-name : |
-			Crop length
+			Post Tail Crop length
 		short-hint : |
-			The number of bases to keep, from the start of the read.
+			The number of bases to keep, from the start of the read (e.g. tail crop 10 bases from a 150 base read: enter "140").
 		long-hint : |
 			Removes bases regardless of quality from the end of the read, so that the read has maximally the specified length after this step has been performed. Steps performed after CROP might of course further shorten the read.
 	head_crop_length :
 		ui-name : |
 			Head crop length
 		short-hint : |
-			The number of bases to remove from the start of the read.
+			The number of bases to remove from the start of the read (e.g. head crop 10 bases: enter "10").
 		long-hint : |
 			Removes the specified number of bases, regardless of quality, from the beginning of the read.
 	leading_min_quality :
