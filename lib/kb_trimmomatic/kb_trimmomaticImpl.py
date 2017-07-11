@@ -506,7 +506,7 @@ execTrimmomaticSingleLibrary() runs Trimmomatic on a single library
         input_reads_obj_type = re.sub ('-[0-9]+\.[0-9]+$', "", input_reads_obj_type)  # remove trailing version
         #self.log (console, "AF TYPE: '"+str(input_reads_obj_type)+"' VERSION: '"+str(input_reads_obj_version)+"'")
 
-        acceptable_types = ["KBaseSets.ReadsSet", "KBaseFile.PairedEndLibrary", "KBaseFile.SingleEndLibrary"]
+        acceptable_types = ["KBaseSets.ReadsSet", "KBaseFile.PairedEndLibrary", "KBaseFile.SingleEndLibrary", "KBaseAssembly.PairedEndLibrary", "KBaseAssembly.SingleEndLibrary"]
         if input_reads_obj_type not in acceptable_types:
             raise ValueError ("Input reads of type: '"+input_reads_obj_type+"'.  Must be one of "+", ".join(acceptable_types))
 
@@ -936,6 +936,10 @@ execTrimmomaticSingleLibrary() runs Trimmomatic on a single library
             report += "\n".join(outputlines)
             #report += "cmdstring: " + cmdstring + " stdout: " + stdout + " stderr " + stderr
 
+            # free up disk
+            os.remove(input_fwd_file_path)
+            os.remove(input_rev_file_path)
+
             #get read counts
             match = re.search(r'Input Read Pairs: (\d+).*?Both Surviving: (\d+).*?Forward Only Surviving: (\d+).*?Reverse Only Surviving: (\d+).*?Dropped: (\d+)', report)
             input_read_count = match.group(1)
@@ -969,6 +973,10 @@ execTrimmomaticSingleLibrary() runs Trimmomatic on a single library
                                                                                   'rev_file': output_rev_paired_file_path
                                                                                   })['obj_ref']
 
+                # free up disk
+                os.remove(output_fwd_paired_file_path)
+                os.remove(output_rev_paired_file_path)
+
 
             # upload reads forward unpaired
             if not os.path.isfile (output_fwd_unpaired_file_path) \
@@ -986,7 +994,8 @@ execTrimmomaticSingleLibrary() runs Trimmomatic on a single library
                                                                                       'fwd_file': output_fwd_unpaired_file_path
                                                                                       })['obj_ref']
 
-
+                # free up disk
+                os.remove(output_fwd_unpaired_file_path)
 
             # upload reads reverse unpaired
             if not os.path.isfile (output_rev_unpaired_file_path) \
@@ -1003,6 +1012,9 @@ execTrimmomaticSingleLibrary() runs Trimmomatic on a single library
                                                                                       'source_reads_ref': input_params['input_reads_ref'],
                                                                                       'fwd_file': output_rev_unpaired_file_path
                                                                                       })['obj_ref']
+
+                # free up disk
+                os.remove(output_rev_unpaired_file_path)
 
 
         # SingleEndLibrary
@@ -1051,6 +1063,9 @@ execTrimmomaticSingleLibrary() runs Trimmomatic on a single library
 
             report += "\n".join(outputlines)
 
+            # free up disk
+            os.remove(input_fwd_file_path)
+
             # get read count
             match = re.search(r'Surviving: (\d+)', report)
             readcount = match.group(1)
@@ -1063,6 +1078,7 @@ execTrimmomaticSingleLibrary() runs Trimmomatic on a single library
             else:
                 output_obj_name = input_params['output_reads_name']
                 self.log(console, 'Uploading trimmed reads: '+output_obj_name)
+
                 retVal['output_filtered_ref'] = readsUtils_Client.upload_reads ({ 'wsname': str(input_params['output_ws']),
                                                                                   'name': output_obj_name,
                                                                                   # remove sequencing_tech arg once ReadsUtils is updated to accept source_reads_ref
@@ -1070,6 +1086,9 @@ execTrimmomaticSingleLibrary() runs Trimmomatic on a single library
                                                                                   'source_reads_ref': input_params['input_reads_ref'],
                                                                                   'fwd_file': output_fwd_file_path
                                                                                   })['obj_ref']
+
+                # free up disk
+                os.remove(output_fwd_file_path)
 
 
         # return created objects
