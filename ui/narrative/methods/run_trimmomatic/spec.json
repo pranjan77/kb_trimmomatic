@@ -1,6 +1,6 @@
 {
 	"ver": "1.0.0",
-	
+
 	"authors": [
 		"psdehal",
 		"dylan"
@@ -45,7 +45,7 @@
 			"default_values": [ "" ],
 			"field_type": "text",
 			"text_options": {
-				"valid_ws_types": ["KBaseSets.ReadsSet", "KBaseFile.PairedEndLibrary", "KBaseFile.SingleEndLibrary", "KBaseAssembly.PairedEndLibrary", "KBaseAssembly.SingleEndLibrary"]
+				"valid_ws_types": ["KBaseRNASeq.RNASeqSampleSet", "KBaseSets.ReadsSet", "KBaseFile.PairedEndLibrary", "KBaseFile.SingleEndLibrary", "KBaseAssembly.PairedEndLibrary", "KBaseAssembly.SingleEndLibrary"]
 			}
 		},
 		{
