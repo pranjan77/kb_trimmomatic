@@ -53,7 +53,6 @@ execTrimmomaticSingleLibrary() runs Trimmomatic on a single library
         print(message)
         sys.stdout.flush()
 
-
     def parse_trimmomatic_steps(self, input_params):
         # validate input parameters and return string defining trimmomatic steps
 
@@ -69,22 +68,21 @@ execTrimmomaticSingleLibrary() runs Trimmomatic on a single library
         elif input_params['quality_encoding'] not in ('phred33', 'phred64'):
             raise ValueError('quality_encoding must be phred33 or phred64')
 
-
         # set adapter trimming
         if ('adapterFa' in input_params and input_params['adapterFa'] is not None and
             'seed_mismatches' in input_params and input_params['seed_mismatches'] is not None and
             'palindrome_clip_threshold' in input_params and input_params['quality_encoding'] is not None and
             'simple_clip_threshold' in input_params and input_params['simple_clip_threshold'] is not None):
             parameter_string = ("ILLUMINACLIP:" + self.ADAPTER_DIR +
-                                    ":".join( (str(input_params['adapterFa']),
-                                       str(input_params['seed_mismatches']),
-                                       str(input_params['palindrome_clip_threshold']),
-                                       str(input_params['simple_clip_threshold'])) ) + " " )
+                                ":".join((str(input_params['adapterFa']),
+                                          str(input_params['seed_mismatches']),
+                                          str(input_params['palindrome_clip_threshold']),
+                                          str(input_params['simple_clip_threshold']))) + " ")
         elif ( ('adapterFa' in input_params and input_params['adapterFa'] is not None) or
                ('seed_mismatches' in input_params and input_params['seed_mismatches'] is not None) or
                ('palindrome_clip_threshold' in input_params and input_params['palindrome_clip_threshold'] is not None) or
                ('simple_clip_threshold' in input_params and input_params['simple_clip_threshold'] is not None) ):
-            raise ValueError('Adapter Cliping requires Adapter, Seed Mismatches, Palindrome Clip Threshold and Simple Clip Threshold')
+            raise ValueError('Adapter Clipping requires Adapter, Seed Mismatches, Palindrome Clip Threshold and Simple Clip Threshold')
 
         # set Crop
         if 'crop_length' in input_params and input_params['crop_length'] is not None \
@@ -96,18 +94,15 @@ execTrimmomaticSingleLibrary() runs Trimmomatic on a single library
                 and input_params['head_crop_length'] > 0:
             parameter_string += 'HEADCROP:' + str(input_params['head_crop_length']) + ' '
 
-
         # set Leading
         if 'leading_min_quality' in input_params and input_params['leading_min_quality'] is not None \
                 and input_params['leading_min_quality'] > 0:
             parameter_string += 'LEADING:' + str(input_params['leading_min_quality']) + ' '
 
-
         # set Trailing
         if 'trailing_min_quality' in input_params and input_params['trailing_min_quality'] is not None \
                 and input_params['trailing_min_quality'] > 0:
             parameter_string += 'TRAILING:' + str(input_params['trailing_min_quality']) + ' '
-
 
         # set sliding window
         if 'sliding_window_size' in input_params and input_params['sliding_window_size'] is not None \
@@ -120,7 +115,6 @@ execTrimmomaticSingleLibrary() runs Trimmomatic on a single library
              or ('sliding_window_min_quality' in input_params and input_params['sliding_window_min_quality'] is not None \
                 and input_params['sliding_window_size'] > 0):
             raise ValueError('Sliding Window filtering requires both Window Size and Window Minimum Quality to be set')
-
 
         # set min length
         if 'min_length' in input_params and input_params['min_length'] is not None \
@@ -144,17 +138,15 @@ execTrimmomaticSingleLibrary() runs Trimmomatic on a single library
         self.handleURL = config['handle-service-url']
         self.serviceWizardURL = config['service-wizard-url']
 
-        #self.callbackURL = os.environ['SDK_CALLBACK_URL'] if os.environ['SDK_CALLBACK_URL'] != None else 'https://kbase.us/services/njs_wrapper'  # DEBUG
-        self.callbackURL = os.environ.get('SDK_CALLBACK_URL')
-        if self.callbackURL == None:
-            raise ValueError ("SDK_CALLBACK_URL not set in environment")
+        self.callbackURL = os.environ.get('SDK_CALLBACK_URL', None)
+        if self.callbackURL is None:
+            raise ValueError("SDK_CALLBACK_URL not set in environment")
 
         if not os.path.exists(self.scratch):
             os.makedirs(self.scratch)
         os.chdir(self.scratch)
         #END_CONSTRUCTOR
         pass
-
 
     def runTrimmomatic(self, ctx, input_params):
         """
@@ -187,12 +179,9 @@ execTrimmomaticSingleLibrary() runs Trimmomatic on a single library
         self.log(console, "\n"+pformat(input_params))
 
         token = ctx['token']
-        wsClient = workspaceService(self.workspaceURL, token=token)
-        headers = {'Authorization': 'OAuth '+token}
         env = os.environ.copy()
         env['KB_AUTH_TOKEN'] = token
 
-        #SERVICE_VER = 'dev'  # DEBUG
         SERVICE_VER = 'release'
 
         # param checks
@@ -392,7 +381,7 @@ execTrimmomaticSingleLibrary() runs Trimmomatic on a single library
             except:
                 raise ValueError ("failure saving trimmed output")
         else:
-            raise ValueError ("no trimmed output generated by execTrimmomatic()")
+            self.log(console, "No trimmed output generated by execTrimmomatic()")
 
 
         # unpaired fwd
@@ -566,7 +555,7 @@ execTrimmomaticSingleLibrary() runs Trimmomatic on a single library
                 if arg in input_params:
                     execTrimmomaticParams[arg] = input_params[arg]
 
-            if input_reads_obj_type != "KBaseSets.ReadsSet":
+            if input_reads_obj_type not in ["KBaseSets.ReadsSet", "KBaseRNASeq.RNASeqSampleSet"]:
                 execTrimmomaticParams['output_reads_name'] = input_params['output_reads_name']
             else:
                 execTrimmomaticParams['output_reads_name'] = readsSet_names_list[reads_item_i]+'_trimm'
@@ -583,7 +572,7 @@ execTrimmomaticSingleLibrary() runs Trimmomatic on a single library
 
 
         # Just one Library
-        if input_reads_obj_type != "KBaseSets.ReadsSet":
+        if input_reads_obj_type not in ["KBaseSets.ReadsSet", "KBaseRNASeq.RNASeqSampleSet"]:
 
             # create return output object
             output = { 'report': report,
@@ -631,7 +620,8 @@ execTrimmomaticSingleLibrary() runs Trimmomatic on a single library
                                                                          'data': output_readsSet_obj
                                                                          })['set_ref']
             else:
-                raise ValueError ("No trimmed output created")
+                self.log(console, "No trimmed output created")
+                # raise ValueError ("No trimmed output created")
 
 
             # save unpaired forward readsSet
@@ -959,8 +949,8 @@ execTrimmomaticSingleLibrary() runs Trimmomatic on a single library
                 or os.path.getsize (output_fwd_paired_file_path) == 0 \
                 or not os.path.isfile (output_rev_paired_file_path) \
                 or os.path.getsize (output_rev_paired_file_path) == 0:
-
                 retVal['output_filtered_ref'] = None
+                report += "\n\nNo reads were trimmed, so no trimmed reads object was generated."
             else:
                 output_obj_name = input_params['output_reads_name']+'_paired'
                 self.log(console, 'Uploading trimmed paired reads: '+output_obj_name)
