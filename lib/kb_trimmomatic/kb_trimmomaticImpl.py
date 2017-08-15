@@ -325,8 +325,7 @@ execTrimmomaticSingleLibrary() runs Trimmomatic on a single library
         bar_fontsize = "-2"
         row_spacing = "-2"
 
-        html_report_lines = []
-        html_report_lines += ['<html>']
+        html_report_lines = ['<html>']
         html_report_lines += ['<body bgcolor="white">']
 
 #        result_data_order = ['foobarfoo', 'animalcules', 'chicken', 'applesauce']
@@ -338,32 +337,33 @@ execTrimmomaticSingleLibrary() runs Trimmomatic on a single library
 
         for lib_i in range(len(report_data)):
             html_report_lines += ['<p><b><font color="'+text_color+'">TRIMMOMATIC RESULTS FOR '+str(report_lib_names[lib_i])+' (object '+str(report_lib_refs[lib_i])+')</font></b><br>'+"\n"]
-
-            html_report_lines += ['<table cellpadding=0 cellspacing=0 border=0>']
-            html_report_lines += ['<tr><td></td><td>'+sp+sp+sp+sp+'</td><td></td><td>'+sp+sp+'</td></tr>']
-
             high_val = 0
-            for f_name in report_field_order[lib_i]:
-                if report_data[lib_i][f_name] > high_val:
-                    high_val = report_data[lib_i][f_name]
-            for f_name in report_field_order[lib_i]:
-                this_width = int(round(float(bar_width)*float(report_data[lib_i][f_name])/float(high_val), 0))
-                #self.log(console,"this_width: "+str(this_width)+" report_data: "+str(report_data[lib_i][f_name])+" calc: "+str(float(width)*float(report_data[lib_i][f_name])/float(high_val)))  # DEBUG
-                if this_width < 1:
-                    if report_data[lib_i][f_name] > 0:
-                        this_width = 1
-                    else:
-                        this_width = 0
-                html_report_lines += ['<tr>']
-                html_report_lines += ['    <td align=right><font color="'+text_color+'">'+str(f_name)+'</font></td><td></td><td align=right><font color="'+text_color+'">'+str(report_data[lib_i][f_name])+'</td><td></td>']
-                if this_width > 0:
-                    for tic in range(this_width):
-                        html_report_lines += ['    <td bgcolor="'+bar_color+'"><font size='+bar_fontsize+' color="'+bar_color+'">'+bar_char+'</font></td>']
-                html_report_lines += ['</tr>']
-                html_report_lines += ['<tr><td><font size='+row_spacing+'>'+sp+'</font></td></tr>']
+            if not len(report_field_order[lib_i]):
+                html_report_lines += ['All reads were trimmed - no new reads object created.']
+            else:
+                html_report_lines += ['<table cellpadding=0 cellspacing=0 border=0>']
+                html_report_lines += ['<tr><td></td><td>'+sp+sp+sp+sp+'</td><td></td><td>'+sp+sp+'</td></tr>']
+                for f_name in report_field_order[lib_i]:
+                    if report_data[lib_i][f_name] > high_val:
+                        high_val = report_data[lib_i][f_name]
+                for f_name in report_field_order[lib_i]:
+                    this_width = int(round(float(bar_width)*float(report_data[lib_i][f_name])/float(high_val), 0))
+                    #self.log(console,"this_width: "+str(this_width)+" report_data: "+str(report_data[lib_i][f_name])+" calc: "+str(float(width)*float(report_data[lib_i][f_name])/float(high_val)))  # DEBUG
+                    if this_width < 1:
+                        if report_data[lib_i][f_name] > 0:
+                            this_width = 1
+                        else:
+                            this_width = 0
+                    html_report_lines += ['<tr>']
+                    html_report_lines += ['    <td align=right><font color="'+text_color+'">'+str(f_name)+'</font></td><td></td><td align=right><font color="'+text_color+'">'+str(report_data[lib_i][f_name])+'</td><td></td>']
+                    if this_width > 0:
+                        for tic in range(this_width):
+                            html_report_lines += ['    <td bgcolor="'+bar_color+'"><font size='+bar_fontsize+' color="'+bar_color+'">'+bar_char+'</font></td>']
+                    html_report_lines += ['</tr>']
+                    html_report_lines += ['<tr><td><font size='+row_spacing+'>'+sp+'</font></td></tr>']
 
-            html_report_lines += ['</table>']
-            html_report_lines += ['<p>']
+                html_report_lines += ['</table>']
+                html_report_lines += ['<p>']
         html_report_lines += ['</body>']
         html_report_lines += ['</html>']
 
