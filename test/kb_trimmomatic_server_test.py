@@ -752,3 +752,90 @@ class kb_trimmomaticTest(unittest.TestCase):
         trimmed_reads_info = info_list[0]
         self.assertEqual(trimmed_reads_info[1],single_output_name)
         self.assertEqual(trimmed_reads_info[2].split('-')[0],'KBaseSets.ReadsSet')
+
+    ### TEST 6: run Trimmomatic with data that doesn't get trimmed, check report output.
+    def test_runTrimmomatic_SingleEndLibrary_no_trimming(self):
+        print("\n\nRUNNING: test_runTrimmomatic_SingleEndLibrary_no_trimming")
+        print("---------------------------------------------------------\n\n")
+
+        # figure out where the test data lives
+        se_lib_info = self.getSingleEndLibInfo('small_no_trim')
+        pprint(se_lib_info)
+
+        # run method
+        output_name = 'output_no_trim.SElib'
+        params = {
+            'input_ws': se_lib_info[7],
+            'output_ws': se_lib_info[7],
+            'input_reads_ref': str(se_lib_info[6])+'/'+str(se_lib_info[0]),
+            'output_reads_name': output_name,
+            'read_type': 'SE',
+            'quality_encoding': 'phred33',
+            'adapter_clip': {
+                'adapterFa': None,
+                'seed_mismatches': None,
+                'palindrom_clip_threshold': None,
+                'simple_clip_threshold': None
+                },
+            'sliding_window': {
+                'sliding_window_size': 4,
+                'sliding_window_min_size': 15
+                },
+            'leading_min_quality': 3,
+            'trailing_min_quality': 3,
+            'crop_length': 0,
+            'head_crop_length': 0,
+            'min_length': 36
+        }
+
+        result = self.getImpl().runTrimmomatic(self.getContext(),params)
+        # check the output
+        single_output_name = output_name
+        info_list = self.wsClient.get_object_info([{'ref':se_lib_info[7] + '/' + single_output_name}], 1)
+        self.assertEqual(len(info_list),1)
+        trimmed_reads_info = info_list[0]
+        self.assertEqual(trimmed_reads_info[1],single_output_name)
+        self.assertEqual(trimmed_reads_info[2].split('-')[0],'KBaseFile.SingleEndLibrary')
+
+    # TEST 7: run Trimmomatic with data that gets completely trimmed, check report output.
+    def test_runTrimmomatic_SingleEndLibrary_all_trimming(self):
+        print("\n\nRUNNING: test_runTrimmomatic_SingleEndLibrary_all_trimming")
+        print("---------------------------------------------------------\n\n")
+
+        # figure out where the test data lives
+        se_lib_info = self.getSingleEndLibInfo('small_all_trim')
+        pprint(se_lib_info)
+
+        # run method
+        output_name = 'output_all_trim.SElib'
+        params = {
+            'input_ws': se_lib_info[7],
+            'output_ws': se_lib_info[7],
+            'input_reads_ref': str(se_lib_info[6])+'/'+str(se_lib_info[0]),
+            'output_reads_name': output_name,
+            'read_type': 'SE',
+            'quality_encoding': 'phred33',
+            'adapter_clip': {
+                'adapterFa': None,
+                'seed_mismatches': None,
+                'palindrom_clip_threshold': None,
+                'simple_clip_threshold': None
+                },
+            'sliding_window': {
+                'sliding_window_size': 4,
+                'sliding_window_min_size': 15
+                },
+            'leading_min_quality': 3,
+            'trailing_min_quality': 30,
+            'crop_length': 0,
+            'head_crop_length': 0,
+            'min_length': 1000
+        }
+
+        result = self.getImpl().runTrimmomatic(self.getContext(), params)
+
+        # check the output, ensure it ends as a no-op
+        with self.assertRaises(Exception):
+            self.wsClient.get_object_info([{'ref': se_lib_info[7] + '/' + output_name}], 1)
+        report_obj = self.wsClient.get_objects([{'ref': result[0]['report_ref']}])[0]
+        self.assertIn('All reads were trimmed', report_obj['data']['direct_html'])
