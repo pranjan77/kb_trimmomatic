@@ -86,7 +86,7 @@ execTrimmomaticSingleLibrary() runs Trimmomatic on a single library
 
         # set Crop
         if 'crop_length' in input_params and input_params['crop_length'] is not None \
-                and input_params['crop_length'] > 0:
+                and int(input_params['crop_length']) > 0:
             parameter_string += 'CROP:' + str(input_params['crop_length']) + ' '
 
         # set Headcrop
@@ -771,25 +771,26 @@ execTrimmomaticSingleLibrary() runs Trimmomatic on a single library
                 raise ValueError ("Must define required param: '"+required_param+"'")
 
         # and param defaults
-        defaults = { 'quality_encoding':           'phred33',
-                     'seed_mismatches':            '0', # '2',
-                     'palindrom_clip_threshold':   '0', # '3',
-                     'simple_clip_threshold':      '0', # '10',
-                     'crop_length':                '0',
-                     'head_crop_length':           '0',
-                     'leading_min_quality':        '0', # '3',
-                     'trailing_min_quality':       '0', # '3',
-                     'sliding_window_size':        '0', # '4',
-                     'sliding_window_min_quality': '0', # '15',
-                     'min_length':                 '0', # '36'
-                   }
+        defaults = {
+            'quality_encoding':           'phred33',
+            'seed_mismatches':            '0', # '2',
+            'palindrome_clip_threshold':  '0', # '3',
+            'simple_clip_threshold':      '0', # '10',
+            'crop_length':                '0',
+            'head_crop_length':           '0',
+            'leading_min_quality':        '0', # '3',
+            'trailing_min_quality':       '0', # '3',
+            'sliding_window_size':        '0', # '4',
+            'sliding_window_min_quality': '0', # '15',
+            'min_length':                 '0', # '36'
+        }
         for arg in defaults.keys():
-            if arg not in input_params or input_params[arg] == None or input_params[arg] == '':
+            if arg not in input_params or input_params[arg] is None or input_params[arg] == '':
                 input_params[arg] = defaults[arg]
 
         # conditional arg behavior
         arg = 'adapterFa'
-        if arg not in input_params or input_params[arg] == None or input_params[arg] == '':
+        if arg not in input_params or input_params[arg] is None or input_params[arg] == '':
             input_params['adapterFa'] = None
             input_params['seed_mismatches'] = None
             input_params['palindrome_clip_threshold'] = None
