@@ -557,7 +557,6 @@ class kb_trimmomaticTest(unittest.TestCase):
 
     ### TEST 2: run Trimmomatic against just one paired end library
     #
-    @unittest.skip
     def test_runTrimmomatic_PairedEndLibrary(self):
 
         print ("\n\nRUNNING: test_runTrimmomatic_PairedEndLibrary()")
@@ -608,7 +607,6 @@ class kb_trimmomaticTest(unittest.TestCase):
 
     ### TEST 3: run Trimmomatic against a Single End Library reads set
     #
-    @unittest.skip
     def test_runTrimmomatic_SingleEndLibrary_ReadsSet(self):
 
         print ("\n\nRUNNING: test_runTrimmomatic_SingleEndLibrary_ReadsSet()")
@@ -708,7 +706,6 @@ class kb_trimmomaticTest(unittest.TestCase):
 
     ### TEST 5: run Trimmomatic against a Single End Library sample set
     #
-    @unittest.skip
     def test_runTrimmomatic_SingleEndLibrary_SampleSet(self):
 
         print ("\n\nRUNNING: test_runTrimmomatic_SingleEndLibrary_SampleSet()")
@@ -757,7 +754,6 @@ class kb_trimmomaticTest(unittest.TestCase):
         self.assertEqual(trimmed_reads_info[2].split('-')[0],'KBaseSets.ReadsSet')
 
     ### TEST 6: run Trimmomatic with data that doesn't get trimmed, check report output.
-    @unittest.skip
     def test_runTrimmomatic_SingleEndLibrary_no_trimming(self):
         print("\n\nRUNNING: test_runTrimmomatic_SingleEndLibrary_no_trimming")
         print("---------------------------------------------------------\n\n")
@@ -842,4 +838,6 @@ class kb_trimmomaticTest(unittest.TestCase):
         with self.assertRaises(Exception):
             self.wsClient.get_object_info([{'ref': se_lib_info[7] + '/' + output_name}], 1)
         report_obj = self.wsClient.get_objects([{'ref': result[0]['report_ref']}])[0]
-        self.assertIn('All reads were trimmed', report_obj['data']['direct_html'])
+        self.assertIn('Input Reads', report_obj['data']['direct_html'])
+        self.assertIn('Surviving', report_obj['data']['direct_html'])
+        self.assertIn('Dropped', report_obj['data']['direct_html'])
