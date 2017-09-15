@@ -295,8 +295,6 @@ execTrimmomaticSingleLibrary() runs Trimmomatic on a single library
         report_lib_names = []
         lib_i = -1
 
-        pprint(trimmomatic_retVal)
-
         # This is some powerful brute force nonsense, but it should be okay.
         se_report_re = re.compile('^Input Reads:\s*(\d+)\s*Surviving:\s*(\d+)\s*\(\d+\.\d+\%\)\s*Dropped:\s*(\d+)\s*\(\d+\.\d+\%\)')
         for line in trimmomatic_retVal['report'].split("\n"):
@@ -343,9 +341,6 @@ execTrimmomaticSingleLibrary() runs Trimmomatic on a single library
 #                        'chicken': 14,
 #                        'applesauce': 1
 #                        }
-
-        pprint(report_field_order)
-        pprint(report_data)
 
         for lib_i in range(len(report_data)):
             html_report_lines += ['<p><b><font color="'+text_color+'">TRIMMOMATIC RESULTS FOR '+str(report_lib_names[lib_i])+' (object '+str(report_lib_refs[lib_i])+')</font></b><br>'+"\n"]
