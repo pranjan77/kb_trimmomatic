@@ -294,6 +294,9 @@ execTrimmomaticSingleLibrary() runs Trimmomatic on a single library
         report_lib_refs = []
         report_lib_names = []
         lib_i = -1
+
+        # This is some powerful brute force nonsense, but it should be okay.
+        se_report_re = re.compile('^Input Reads:\s*(\d+)\s*Surviving:\s*(\d+)\s*\(\d+\.\d+\%\)\s*Dropped:\s*(\d+)\s*\(\d+\.\d+\%\)')
         for line in trimmomatic_retVal['report'].split("\n"):
             if line.startswith("RUNNING"):
                 lib_i += 1
@@ -308,6 +311,10 @@ execTrimmomaticSingleLibrary() runs Trimmomatic on a single library
             elif len(line) == 0:
                 continue
             else:
+                m = se_report_re.match(line)
+                if m and len(m.groups()) == 3:
+                    report_field_order[lib_i] = ['Input Reads', 'Surviving', 'Dropped']
+                    report_data[lib_i] = dict(zip(report_field_order[lib_i], m.groups()))
                 try:
                     [f_name, val] = line.split(': ')
                     int_val = int(val)

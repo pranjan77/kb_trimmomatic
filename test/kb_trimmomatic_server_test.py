@@ -838,4 +838,6 @@ class kb_trimmomaticTest(unittest.TestCase):
         with self.assertRaises(Exception):
             self.wsClient.get_object_info([{'ref': se_lib_info[7] + '/' + output_name}], 1)
         report_obj = self.wsClient.get_objects([{'ref': result[0]['report_ref']}])[0]
-        self.assertIn('All reads were trimmed', report_obj['data']['direct_html'])
+        self.assertIn('Input Reads', report_obj['data']['direct_html'])
+        self.assertIn('Surviving', report_obj['data']['direct_html'])
+        self.assertIn('Dropped', report_obj['data']['direct_html'])
