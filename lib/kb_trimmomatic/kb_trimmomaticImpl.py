@@ -275,7 +275,7 @@ execTrimmomaticSingleLibrary() runs Trimmomatic on a single library
                      'direct_html_index': 0,
                      'file_links': [],
                      'html_links': [],
-                     'html_window_height': 333,
+                     'html_window_height': 180,
                      'workspace_name': input_params['input_ws'],
                      'report_object_name': reportName
                      }
