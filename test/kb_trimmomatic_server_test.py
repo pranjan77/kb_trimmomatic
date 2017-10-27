@@ -54,7 +54,7 @@ class kb_trimmomaticTest(unittest.TestCase):
         cls.shockURL = cls.cfg['shock-url']
         cls.handleURL = cls.cfg['handle-service-url']
         cls.serviceWizardURL = cls.cfg['service-wizard-url']
-        
+
         cls.wsClient = workspaceService(cls.wsURL, token=token)
         cls.serviceImpl = kb_trimmomatic(cls.cfg)
 
@@ -151,7 +151,7 @@ class kb_trimmomaticTest(unittest.TestCase):
         # 2) create handle
         hs = HandleService(url=self.handleURL, token=token)
         forward_handle = hs.persist_handle({
-                                        'id' : forward_shock_file['id'], 
+                                        'id' : forward_shock_file['id'],
                                         'type' : 'shock',
                                         'url' : self.shockURL,
                                         'file_name': forward_shock_file['file']['name'],
@@ -232,14 +232,14 @@ class kb_trimmomaticTest(unittest.TestCase):
         # 2) create handle
         hs = HandleService(url=self.handleURL, token=token)
         forward_handle = hs.persist_handle({
-                                        'id' : forward_shock_file['id'], 
+                                        'id' : forward_shock_file['id'],
                                         'type' : 'shock',
                                         'url' : self.shockURL,
                                         'file_name': forward_shock_file['file']['name'],
                                         'remote_md5': forward_shock_file['file']['checksum']['md5']})
 
         reverse_handle = hs.persist_handle({
-                                        'id' : reverse_shock_file['id'], 
+                                        'id' : reverse_shock_file['id'],
                                         'type' : 'shock',
                                         'url' : self.shockURL,
                                         'file_name': reverse_shock_file['file']['name'],
@@ -310,6 +310,56 @@ class kb_trimmomaticTest(unittest.TestCase):
         self.__class__.pairedEndLibName_list[lib_i] = read_lib_basename
         return new_obj_info
 
+    def getSingleEndLib_SampleSetInfo(self, read_libs_basename_list, refresh=False):
+        if hasattr(self.__class__, 'singleEndLib_SampleSetInfo'):
+            try:
+                info = self.__class__.singleEndLib_SampleSetInfo
+                if info != None:
+                    if refresh:
+                        self.__class__.singleEndLib_SampleSetInfo = None
+                    else:
+                        return info
+            except:
+                pass
+
+        sample_ids = list()
+        conditions = list()
+        for lib_i, read_lib_basename in enumerate(read_libs_basename_list):
+            label = read_lib_basename
+            lib_info = self.getSingleEndLibInfo(read_lib_basename, lib_i)
+            lib_ref = str(lib_info[6])+'/'+str(lib_info[0])
+            print ("LIB_REF["+str(lib_i)+"]: "+lib_ref+" "+read_lib_basename)  # DEBUG
+            sample_ids.append(lib_ref)
+            conditions.append(label)
+        desc = "test sample set"
+        name = "TEST_SAMPLE_SET"
+        sampleset_obj = {
+            "sample_ids": sample_ids,
+            "condition": conditions,
+            "sampleset_id": "foo",
+            "sampleset_desc": desc,
+            "domain": "prokaryota",
+            "num_samples": len(sample_ids),
+            "Library_type": "SingleEnd"
+        }
+        sample_set_info = self.wsClient.save_objects({
+            "workspace": self.getWsName(),
+            "objects": [{
+                "type": "KBaseRNASeq.RNASeqSampleSet",
+                "data": sampleset_obj,
+                "name": name,
+                "meta": {},
+                "provenance": [
+                    {
+                        "service": "kb_trimmomatic",
+                        "method": "test_runTrimmomatic"
+                    }
+                ]
+            }]
+        })[0]
+        # store it
+        self.__class__.singleEndLib_SampleSetInfo = sample_set_info
+        return sample_set_info
 
     # call this method to get the WS object info of a Single End Library Set (will
     # upload the example data if this is the first time the method is called during tests)
@@ -432,7 +482,7 @@ class kb_trimmomaticTest(unittest.TestCase):
 
     # NOTE: According to Python unittest naming rules test method names should start from 'test'.
     #
-    # Prepare test objects in workspace if needed using 
+    # Prepare test objects in workspace if needed using
     # self.getWsClient().save_objects({'workspace': self.getWsName(), 'objects': []})
     #
     # Run your method by
@@ -653,3 +703,141 @@ class kb_trimmomaticTest(unittest.TestCase):
         trimmed_reads_info = info_list[0]
         self.assertEqual(trimmed_reads_info[1],paired_output_name)
         self.assertEqual(trimmed_reads_info[2].split('-')[0],'KBaseSets.ReadsSet')
+
+    ### TEST 5: run Trimmomatic against a Single End Library sample set
+    #
+    def test_runTrimmomatic_SingleEndLibrary_SampleSet(self):
+
+        print ("\n\nRUNNING: test_runTrimmomatic_SingleEndLibrary_SampleSet()")
+        print ("========================================================\n\n")
+
+        # figure out where the test data lives
+        se_lib_sampleset_info = self.getSingleEndLib_SampleSetInfo(['test_quick', 'small_2'])
+        pprint(se_lib_sampleset_info)
+
+        # run method
+        output_name = 'output_trim.SElib'
+        params = {
+            'input_ws': se_lib_sampleset_info[7],
+            'output_ws': se_lib_sampleset_info[7],
+            'input_reads_ref': str(se_lib_sampleset_info[6])+'/'+str(se_lib_sampleset_info[0]),
+            'output_reads_name': output_name,
+            'read_type': 'SE',
+            'quality_encoding': 'phred33',
+            'adapter_clip': {
+                'adapterFa': None,
+                'seed_mismatches': None,
+                'palindrom_clip_threshold': None,
+                'simple_clip_threshold':  None
+                },
+            'sliding_window': {
+                'sliding_window_size': 4,
+                'sliding_window_min_size': 15
+                },
+            'leading_min_quality': 3,
+            'trailing_min_quality': 3,
+            'crop_length': 0,
+            'head_crop_length': 0,
+            'min_length': 36
+        }
+
+        result = self.getImpl().runTrimmomatic(self.getContext(),params)
+        print('RESULT:')
+        pprint(result)
+
+        # check the output
+        single_output_name = output_name + '_trimm'
+        info_list = self.wsClient.get_object_info([{'ref':se_lib_sampleset_info[7] + '/' + single_output_name}], 1)
+        self.assertEqual(len(info_list),1)
+        trimmed_reads_info = info_list[0]
+        self.assertEqual(trimmed_reads_info[1],single_output_name)
+        self.assertEqual(trimmed_reads_info[2].split('-')[0],'KBaseSets.ReadsSet')
+
+    ### TEST 6: run Trimmomatic with data that doesn't get trimmed, check report output.
+    def test_runTrimmomatic_SingleEndLibrary_no_trimming(self):
+        print("\n\nRUNNING: test_runTrimmomatic_SingleEndLibrary_no_trimming")
+        print("---------------------------------------------------------\n\n")
+
+        # figure out where the test data lives
+        se_lib_info = self.getSingleEndLibInfo('small_no_trim')
+        pprint(se_lib_info)
+
+        # run method
+        output_name = 'output_no_trim.SElib'
+        params = {
+            'input_ws': se_lib_info[7],
+            'output_ws': se_lib_info[7],
+            'input_reads_ref': str(se_lib_info[6])+'/'+str(se_lib_info[0]),
+            'output_reads_name': output_name,
+            'read_type': 'SE',
+            'quality_encoding': 'phred33',
+            'adapter_clip': {
+                'adapterFa': None,
+                'seed_mismatches': None,
+                'palindrom_clip_threshold': None,
+                'simple_clip_threshold': None
+                },
+            'sliding_window': {
+                'sliding_window_size': 4,
+                'sliding_window_min_size': 15
+                },
+            'leading_min_quality': 3,
+            'trailing_min_quality': 3,
+            'crop_length': 0,
+            'head_crop_length': 0,
+            'min_length': 36
+        }
+
+        result = self.getImpl().runTrimmomatic(self.getContext(),params)
+        # check the output
+        single_output_name = output_name
+        info_list = self.wsClient.get_object_info([{'ref':se_lib_info[7] + '/' + single_output_name}], 1)
+        self.assertEqual(len(info_list),1)
+        trimmed_reads_info = info_list[0]
+        self.assertEqual(trimmed_reads_info[1],single_output_name)
+        self.assertEqual(trimmed_reads_info[2].split('-')[0],'KBaseFile.SingleEndLibrary')
+
+    # TEST 7: run Trimmomatic with data that gets completely trimmed, check report output.
+    def test_runTrimmomatic_SingleEndLibrary_all_trimming(self):
+        print("\n\nRUNNING: test_runTrimmomatic_SingleEndLibrary_all_trimming")
+        print("---------------------------------------------------------\n\n")
+
+        # figure out where the test data lives
+        se_lib_info = self.getSingleEndLibInfo('small_all_trim')
+        pprint(se_lib_info)
+
+        # run method
+        output_name = 'output_all_trim.SElib'
+        params = {
+            'input_ws': se_lib_info[7],
+            'output_ws': se_lib_info[7],
+            'input_reads_ref': str(se_lib_info[6])+'/'+str(se_lib_info[0]),
+            'output_reads_name': output_name,
+            'read_type': 'SE',
+            'quality_encoding': 'phred33',
+            'adapter_clip': {
+                'adapterFa': None,
+                'seed_mismatches': None,
+                'palindrom_clip_threshold': None,
+                'simple_clip_threshold': None
+                },
+            'sliding_window': {
+                'sliding_window_size': 4,
+                'sliding_window_min_size': 15
+                },
+            'leading_min_quality': 3,
+            'trailing_min_quality': 30,
+            'crop_length': 0,
+            'head_crop_length': 0,
+            'min_length': 1000
+        }
+
+        result = self.getImpl().runTrimmomatic(self.getContext(), params)
+
+        # check the output, ensure it ends as a no-op
+        with self.assertRaises(Exception):
+            self.wsClient.get_object_info([{'ref': se_lib_info[7] + '/' + output_name}], 1)
+        report_obj = self.wsClient.get_objects([{'ref': result[0]['report_ref']}])[0]
+        self.assertIn('Input Reads', report_obj['data']['direct_html'])
+        self.assertIn('Surviving', report_obj['data']['direct_html'])
+        self.assertIn('Dropped', report_obj['data']['direct_html'])

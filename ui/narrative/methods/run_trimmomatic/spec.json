@@ -1,6 +1,6 @@
 {
-	"ver": "1.0.0",
-	
+	"ver": "1.2.3",
+
 	"authors": [
 		"psdehal",
 		"dylan"
@@ -45,7 +45,7 @@
 			"default_values": [ "" ],
 			"field_type": "text",
 			"text_options": {
-				"valid_ws_types": ["KBaseSets.ReadsSet", "KBaseFile.PairedEndLibrary", "KBaseFile.SingleEndLibrary", "KBaseAssembly.PairedEndLibrary", "KBaseAssembly.SingleEndLibrary"]
+				"valid_ws_types": ["KBaseRNASeq.RNASeqSampleSet", "KBaseSets.ReadsSet", "KBaseFile.PairedEndLibrary", "KBaseFile.SingleEndLibrary", "KBaseAssembly.PairedEndLibrary", "KBaseAssembly.SingleEndLibrary"]
 			}
 		},
 		{
@@ -149,7 +149,7 @@
 			"optional": true,
 			"advanced": true,
 			"allow_multiple": false,
-			"default_values": ["3"],
+			"default_values": ["30"],
 			"field_type": "text",
 			"text_options": {
 				"validate_as": "int"

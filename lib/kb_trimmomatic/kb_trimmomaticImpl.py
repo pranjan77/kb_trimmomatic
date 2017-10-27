@@ -53,7 +53,6 @@ execTrimmomaticSingleLibrary() runs Trimmomatic on a single library
         print(message)
         sys.stdout.flush()
 
-
     def parse_trimmomatic_steps(self, input_params):
         # validate input parameters and return string defining trimmomatic steps
 
@@ -68,7 +67,6 @@ execTrimmomaticSingleLibrary() runs Trimmomatic on a single library
             raise ValueError('quality_encoding not defined')
         elif input_params['quality_encoding'] not in ('phred33', 'phred64'):
             raise ValueError('quality_encoding must be phred33 or phred64')
-            
 
         # set adapter trimming
         if ('adapterFa' in input_params and input_params['adapterFa'] is not None and
@@ -76,19 +74,19 @@ execTrimmomaticSingleLibrary() runs Trimmomatic on a single library
             'palindrome_clip_threshold' in input_params and input_params['quality_encoding'] is not None and
             'simple_clip_threshold' in input_params and input_params['simple_clip_threshold'] is not None):
             parameter_string = ("ILLUMINACLIP:" + self.ADAPTER_DIR +
-                                    ":".join( (str(input_params['adapterFa']),
-                                       str(input_params['seed_mismatches']), 
-                                       str(input_params['palindrome_clip_threshold']),
-                                       str(input_params['simple_clip_threshold'])) ) + " " )
+                                ":".join((str(input_params['adapterFa']),
+                                          str(input_params['seed_mismatches']),
+                                          str(input_params['palindrome_clip_threshold']),
+                                          str(input_params['simple_clip_threshold']))) + " ")
         elif ( ('adapterFa' in input_params and input_params['adapterFa'] is not None) or
                ('seed_mismatches' in input_params and input_params['seed_mismatches'] is not None) or
                ('palindrome_clip_threshold' in input_params and input_params['palindrome_clip_threshold'] is not None) or
                ('simple_clip_threshold' in input_params and input_params['simple_clip_threshold'] is not None) ):
-            raise ValueError('Adapter Cliping requires Adapter, Seed Mismatches, Palindrome Clip Threshold and Simple Clip Threshold')
+            raise ValueError('Adapter Clipping requires Adapter, Seed Mismatches, Palindrome Clip Threshold and Simple Clip Threshold')
 
         # set Crop
         if 'crop_length' in input_params and input_params['crop_length'] is not None \
-                and input_params['crop_length'] > 0:
+                and int(input_params['crop_length']) > 0:
             parameter_string += 'CROP:' + str(input_params['crop_length']) + ' '
 
         # set Headcrop
@@ -96,18 +94,15 @@ execTrimmomaticSingleLibrary() runs Trimmomatic on a single library
                 and input_params['head_crop_length'] > 0:
             parameter_string += 'HEADCROP:' + str(input_params['head_crop_length']) + ' '
 
-
         # set Leading
         if 'leading_min_quality' in input_params and input_params['leading_min_quality'] is not None \
                 and input_params['leading_min_quality'] > 0:
             parameter_string += 'LEADING:' + str(input_params['leading_min_quality']) + ' '
 
-
         # set Trailing
         if 'trailing_min_quality' in input_params and input_params['trailing_min_quality'] is not None \
                 and input_params['trailing_min_quality'] > 0:
             parameter_string += 'TRAILING:' + str(input_params['trailing_min_quality']) + ' '
-
 
         # set sliding window
         if 'sliding_window_size' in input_params and input_params['sliding_window_size'] is not None \
@@ -120,7 +115,6 @@ execTrimmomaticSingleLibrary() runs Trimmomatic on a single library
              or ('sliding_window_min_quality' in input_params and input_params['sliding_window_min_quality'] is not None \
                 and input_params['sliding_window_size'] > 0):
             raise ValueError('Sliding Window filtering requires both Window Size and Window Minimum Quality to be set')
-            
 
         # set min length
         if 'min_length' in input_params and input_params['min_length'] is not None \
@@ -144,17 +138,15 @@ execTrimmomaticSingleLibrary() runs Trimmomatic on a single library
         self.handleURL = config['handle-service-url']
         self.serviceWizardURL = config['service-wizard-url']
 
-        #self.callbackURL = os.environ['SDK_CALLBACK_URL'] if os.environ['SDK_CALLBACK_URL'] != None else 'https://kbase.us/services/njs_wrapper'  # DEBUG
-        self.callbackURL = os.environ.get('SDK_CALLBACK_URL')
-        if self.callbackURL == None:
-            raise ValueError ("SDK_CALLBACK_URL not set in environment")
+        self.callbackURL = os.environ.get('SDK_CALLBACK_URL', None)
+        if self.callbackURL is None:
+            raise ValueError("SDK_CALLBACK_URL not set in environment")
 
         if not os.path.exists(self.scratch):
             os.makedirs(self.scratch)
         os.chdir(self.scratch)
         #END_CONSTRUCTOR
         pass
-
 
     def runTrimmomatic(self, ctx, input_params):
         """
@@ -187,21 +179,18 @@ execTrimmomaticSingleLibrary() runs Trimmomatic on a single library
         self.log(console, "\n"+pformat(input_params))
 
         token = ctx['token']
-        wsClient = workspaceService(self.workspaceURL, token=token)
-        headers = {'Authorization': 'OAuth '+token}
         env = os.environ.copy()
         env['KB_AUTH_TOKEN'] = token
 
-        #SERVICE_VER = 'dev'  # DEBUG
         SERVICE_VER = 'release'
 
         # param checks
         if ('output_ws' not in input_params or input_params['output_ws'] is None):
             input_params['output_ws'] = input_params['input_ws']
 
-        required_params = ['input_reads_ref', 
-                           'output_ws', 
-                           'output_reads_name', 
+        required_params = ['input_reads_ref',
+                           'output_ws',
+                           'output_reads_name',
                            'read_type'
                           ]
         for required_param in required_params:
@@ -258,7 +247,7 @@ execTrimmomaticSingleLibrary() runs Trimmomatic on a single library
                 execTrimmomaticParams['sliding_window_min_quality'] = input_params['sliding_window']['sliding_window_min_quality']
             else:
                 execTrimmomaticParams['sliding_window_min_quality'] = None
-        
+
         # remaining params
         if 'leading_min_quality' in input_params:
             execTrimmomaticParams['leading_min_quality'] = input_params['leading_min_quality']
@@ -279,13 +268,14 @@ execTrimmomaticSingleLibrary() runs Trimmomatic on a single library
         #
         reportName = 'kb_trimmomatic_report_'+str(uuid.uuid4())
 
-        reportObj = {'objects_created': [], 
+        reportObj = {'objects_created': [],
                      #'text_message': '',  # or is it 'message'?
                      'message': '',  # or is it 'text_message'?
                      'direct_html': '',
                      'direct_html_index': 0,
                      'file_links': [],
                      'html_links': [],
+                     'html_window_height': 220,
                      'workspace_name': input_params['input_ws'],
                      'report_object_name': reportName
                      }
@@ -305,6 +295,9 @@ execTrimmomaticSingleLibrary() runs Trimmomatic on a single library
         report_lib_refs = []
         report_lib_names = []
         lib_i = -1
+
+        # This is some powerful brute force nonsense, but it should be okay.
+        se_report_re = re.compile('^Input Reads:\s*(\d+)\s*Surviving:\s*(\d+)\s*\(\d+\.\d+\%\)\s*Dropped:\s*(\d+)\s*\(\d+\.\d+\%\)')
         for line in trimmomatic_retVal['report'].split("\n"):
             if line.startswith("RUNNING"):
                 lib_i += 1
@@ -319,6 +312,10 @@ execTrimmomaticSingleLibrary() runs Trimmomatic on a single library
             elif len(line) == 0:
                 continue
             else:
+                m = se_report_re.match(line)
+                if m and len(m.groups()) == 3:
+                    report_field_order[lib_i] = ['Input Reads', 'Surviving', 'Dropped']
+                    report_data[lib_i] = dict(zip(report_field_order[lib_i], m.groups()))
                 try:
                     [f_name, val] = line.split(': ')
                     int_val = int(val)
@@ -336,8 +333,7 @@ execTrimmomaticSingleLibrary() runs Trimmomatic on a single library
         bar_fontsize = "-2"
         row_spacing = "-2"
 
-        html_report_lines = []
-        html_report_lines += ['<html>']
+        html_report_lines = ['<html>']
         html_report_lines += ['<body bgcolor="white">']
 
 #        result_data_order = ['foobarfoo', 'animalcules', 'chicken', 'applesauce']
@@ -349,37 +345,43 @@ execTrimmomaticSingleLibrary() runs Trimmomatic on a single library
 
         for lib_i in range(len(report_data)):
             html_report_lines += ['<p><b><font color="'+text_color+'">TRIMMOMATIC RESULTS FOR '+str(report_lib_names[lib_i])+' (object '+str(report_lib_refs[lib_i])+')</font></b><br>'+"\n"]
-
-            html_report_lines += ['<table cellpadding=0 cellspacing=0 border=0>']
-            html_report_lines += ['<tr><td></td><td>'+sp+sp+sp+sp+'</td><td></td><td>'+sp+sp+'</td></tr>']
-
             high_val = 0
-            for f_name in report_field_order[lib_i]:
-                if report_data[lib_i][f_name] > high_val:
-                    high_val = report_data[lib_i][f_name]
-            for f_name in report_field_order[lib_i]:
-                this_width = int(round(float(bar_width)*float(report_data[lib_i][f_name])/float(high_val), 0))
-                #self.log(console,"this_width: "+str(this_width)+" report_data: "+str(report_data[lib_i][f_name])+" calc: "+str(float(width)*float(report_data[lib_i][f_name])/float(high_val)))  # DEBUG
-                if this_width < 1:
-                    if report_data[lib_i][f_name] > 0:
-                        this_width = 1
-                    else:
-                        this_width = 0
-                html_report_lines += ['<tr>']
-                html_report_lines += ['    <td align=right><font color="'+text_color+'">'+str(f_name)+'</font></td><td></td><td align=right><font color="'+text_color+'">'+str(report_data[lib_i][f_name])+'</td><td></td>']
-                if this_width > 0:
-                    for tic in range(this_width):
-                        html_report_lines += ['    <td bgcolor="'+bar_color+'"><font size='+bar_fontsize+' color="'+bar_color+'">'+bar_char+'</font></td>']
-                html_report_lines += ['</tr>']
-                html_report_lines += ['<tr><td><font size='+row_spacing+'>'+sp+'</font></td></tr>']
+            if not len(report_field_order[lib_i]):
+                html_report_lines += ['All reads were trimmed - no new reads object created.']
+            else:
+                html_report_lines += ['<table cellpadding=0 cellspacing=0 border=0>']
+                html_report_lines += ['<tr><td></td><td>'+sp+sp+sp+sp+'</td><td></td><td>'+sp+sp+'</td></tr>']
+                for f_name in report_field_order[lib_i]:
+                    if report_data[lib_i][f_name] > high_val:
+                        high_val = report_data[lib_i][f_name]
+                for f_name in report_field_order[lib_i]:
 
-            html_report_lines += ['</table>']
-            html_report_lines += ['<p>']
+                    percent = round(float(report_data[lib_i][f_name])/float(high_val)*100, 1)
+
+                    this_width = int(round(float(bar_width)*float(report_data[lib_i][f_name])/float(high_val), 0))
+                    #self.log(console,"this_width: "+str(this_width)+" report_data: "+str(report_data[lib_i][f_name])+" calc: "+str(float(width)*float(report_data[lib_i][f_name])/float(high_val)))  # DEBUG
+                    if this_width < 1:
+                        if report_data[lib_i][f_name] > 0:
+                            this_width = 1
+                        else:
+                            this_width = 0
+                    html_report_lines += ['<tr>']
+                    html_report_lines += ['    <td align=right><font color="'+text_color+'">'+str(f_name)+'</font></td><td></td>']
+                    html_report_lines += ['    <td align=right><font color="'+text_color+'">'+'{:0,}'.format(report_data[lib_i][f_name])+'</font></td><td></td>']
+                    html_report_lines += ['    <td align=right><font color="'+text_color+'">'+'('+str(percent)+'%)'+sp+sp+'</font></td><td></td>']
+
+                    if this_width > 0:
+                        for tic in range(this_width):
+                            html_report_lines += ['    <td bgcolor="'+bar_color+'"><font size='+bar_fontsize+' color="'+bar_color+'">'+bar_char+'</font></td>']
+                    html_report_lines += ['</tr>']
+                    html_report_lines += ['<tr><td><font size='+row_spacing+'>'+sp+'</font></td></tr>']
+
+                html_report_lines += ['</table>']
+                html_report_lines += ['<p>']
         html_report_lines += ['</body>']
         html_report_lines += ['</html>']
 
         reportObj['direct_html'] = "\n".join(html_report_lines)
-
 
         # trimmed object
         if trimmomatic_retVal['output_filtered_ref'] != None:
@@ -392,7 +394,7 @@ execTrimmomaticSingleLibrary() runs Trimmomatic on a single library
             except:
                 raise ValueError ("failure saving trimmed output")
         else:
-            raise ValueError ("no trimmed output generated by execTrimmomatic()")
+            self.log(console, "No trimmed output generated by execTrimmomatic()")
 
 
         # unpaired fwd
@@ -473,9 +475,9 @@ execTrimmomaticSingleLibrary() runs Trimmomatic on a single library
         env['KB_AUTH_TOKEN'] = token
 
         # param checks
-        required_params = ['input_reads_ref', 
-                           'output_ws', 
-                           'output_reads_name', 
+        required_params = ['input_reads_ref',
+                           'output_ws',
+                           'output_reads_name',
                            'read_type'
                           ]
         for required_param in required_params:
@@ -506,7 +508,7 @@ execTrimmomaticSingleLibrary() runs Trimmomatic on a single library
         input_reads_obj_type = re.sub ('-[0-9]+\.[0-9]+$', "", input_reads_obj_type)  # remove trailing version
         #self.log (console, "AF TYPE: '"+str(input_reads_obj_type)+"' VERSION: '"+str(input_reads_obj_version)+"'")
 
-        acceptable_types = ["KBaseSets.ReadsSet", "KBaseFile.PairedEndLibrary", "KBaseFile.SingleEndLibrary", "KBaseAssembly.PairedEndLibrary", "KBaseAssembly.SingleEndLibrary"]
+        acceptable_types = ["KBaseSets.ReadsSet", "KBaseRNASeq.RNASeqSampleSet", "KBaseFile.PairedEndLibrary", "KBaseFile.SingleEndLibrary", "KBaseAssembly.PairedEndLibrary", "KBaseAssembly.SingleEndLibrary"]
         if input_reads_obj_type not in acceptable_types:
             raise ValueError ("Input reads of type: '"+input_reads_obj_type+"'.  Must be one of "+", ".join(acceptable_types))
 
@@ -515,15 +517,11 @@ execTrimmomaticSingleLibrary() runs Trimmomatic on a single library
         #
         readsSet_ref_list = []
         readsSet_names_list = []
-        if input_reads_obj_type != "KBaseSets.ReadsSet":
-            readsSet_ref_list = [input_params['input_reads_ref']]
-            NAME_I = 1
-            readsSet_names_list = [input_reads_obj_info[NAME_I]]
-        else:
+        if input_reads_obj_type in ["KBaseSets.ReadsSet", "KBaseRNASeq.RNASeqSampleSet"]:
             try:
                 #self.log (console, "INPUT_READS_REF: '"+input_params['input_reads_ref']+"'")  # DEBUG
                 #setAPI_Client = SetAPI (url=self.callbackURL, token=ctx['token'])  # for SDK local.  doesn't work for SetAPI
-                setAPI_Client = SetAPI (url=self.serviceWizardURL, token=ctx['token'])  # for dynamic service
+                setAPI_Client = SetAPI (url=self.serviceWizardURL, token=ctx['token'], service_ver='beta')  # for dynamic service
                 input_readsSet_obj = setAPI_Client.get_reads_set_v1 ({'ref':input_params['input_reads_ref'],'include_item_info':1})
 
             except Exception as e:
@@ -532,6 +530,10 @@ execTrimmomaticSingleLibrary() runs Trimmomatic on a single library
                 readsSet_ref_list.append(readsLibrary_obj['ref'])
                 NAME_I = 1
                 readsSet_names_list.append(readsLibrary_obj['info'][NAME_I])
+        else:
+            readsSet_ref_list = [input_params['input_reads_ref']]
+            NAME_I = 1
+            readsSet_names_list = [input_reads_obj_info[NAME_I]]
 
 
         # Iterate through readsLibrary members of set
@@ -565,8 +567,8 @@ execTrimmomaticSingleLibrary() runs Trimmomatic on a single library
             for arg in optional_params:
                 if arg in input_params:
                     execTrimmomaticParams[arg] = input_params[arg]
-            
-            if input_reads_obj_type != "KBaseSets.ReadsSet":
+
+            if input_reads_obj_type not in ["KBaseSets.ReadsSet", "KBaseRNASeq.RNASeqSampleSet"]:
                 execTrimmomaticParams['output_reads_name'] = input_params['output_reads_name']
             else:
                 execTrimmomaticParams['output_reads_name'] = readsSet_names_list[reads_item_i]+'_trimm'
@@ -581,9 +583,9 @@ execTrimmomaticSingleLibrary() runs Trimmomatic on a single library
             unpaired_fwd_readsSet_refs.append (trimmomaticSingleLibrary_retVal['output_unpaired_fwd_ref'])
             unpaired_rev_readsSet_refs.append (trimmomaticSingleLibrary_retVal['output_unpaired_rev_ref'])
 
-        
+
         # Just one Library
-        if input_reads_obj_type != "KBaseSets.ReadsSet":
+        if input_reads_obj_type not in ["KBaseSets.ReadsSet", "KBaseRNASeq.RNASeqSampleSet"]:
 
             # create return output object
             output = { 'report': report,
@@ -631,9 +633,10 @@ execTrimmomaticSingleLibrary() runs Trimmomatic on a single library
                                                                          'data': output_readsSet_obj
                                                                          })['set_ref']
             else:
-                raise ValueError ("No trimmed output created")
+                self.log(console, "No trimmed output created")
+                # raise ValueError ("No trimmed output created")
 
-                              
+
             # save unpaired forward readsSet
             some_unpaired_fwd_output_created = False
             if len(unpaired_fwd_readsSet_refs) > 0:
@@ -672,7 +675,7 @@ execTrimmomaticSingleLibrary() runs Trimmomatic on a single library
                 else:
                     self.log (console, "no unpaired_fwd readsLibraries created")
                     unpaired_fwd_readsSet_ref = None
-                              
+
             # save unpaired reverse readsSet
             some_unpaired_rev_output_created = False
             if len(unpaired_rev_readsSet_refs) > 0:
@@ -771,9 +774,9 @@ execTrimmomaticSingleLibrary() runs Trimmomatic on a single library
         env['KB_AUTH_TOKEN'] = token
 
         # param checks
-        required_params = ['input_reads_ref', 
-                           'output_ws', 
-                           'output_reads_name', 
+        required_params = ['input_reads_ref',
+                           'output_ws',
+                           'output_reads_name',
                            'read_type'
                           ]
         for required_param in required_params:
@@ -781,30 +784,31 @@ execTrimmomaticSingleLibrary() runs Trimmomatic on a single library
                 raise ValueError ("Must define required param: '"+required_param+"'")
 
         # and param defaults
-        defaults = { 'quality_encoding':           'phred33',
-                     'seed_mismatches':            '0', # '2',
-                     'palindrom_clip_threshold':   '0', # '3',
-                     'simple_clip_threshold':      '0', # '10',
-                     'crop_length':                '0',
-                     'head_crop_length':           '0',
-                     'leading_min_quality':        '0', # '3',
-                     'trailing_min_quality':       '0', # '3',
-                     'sliding_window_size':        '0', # '4',
-                     'sliding_window_min_quality': '0', # '15',
-                     'min_length':                 '0', # '36'
-                   }
+        defaults = {
+            'quality_encoding':           'phred33',
+            'seed_mismatches':            '0', # '2',
+            'palindrome_clip_threshold':  '0', # '3',
+            'simple_clip_threshold':      '0', # '10',
+            'crop_length':                '0',
+            'head_crop_length':           '0',
+            'leading_min_quality':        '0', # '3',
+            'trailing_min_quality':       '0', # '3',
+            'sliding_window_size':        '0', # '4',
+            'sliding_window_min_quality': '0', # '15',
+            'min_length':                 '0', # '36'
+        }
         for arg in defaults.keys():
-            if arg not in input_params or input_params[arg] == None or input_params[arg] == '':
+            if arg not in input_params or input_params[arg] is None or input_params[arg] == '':
                 input_params[arg] = defaults[arg]
-            
+
         # conditional arg behavior
         arg = 'adapterFa'
-        if arg not in input_params or input_params[arg] == None or input_params[arg] == '':
+        if arg not in input_params or input_params[arg] is None or input_params[arg] == '':
             input_params['adapterFa'] = None
             input_params['seed_mismatches'] = None
             input_params['palindrome_clip_threshold'] = None
             input_params['simple_clip_threshold'] = None
-            
+
 
         #load provenance
         provenance = [{}]
@@ -845,7 +849,7 @@ execTrimmomaticSingleLibrary() runs Trimmomatic on a single library
                 and (input_reads_obj_type == 'KBaseAssembly.PairedEndLibrary' \
                      or input_reads_obj_type == 'KBaseFile.PairedEndLibrary'):
             raise ValueError ("read_type set to 'Single End' but object is PairedEndLibrary")
-            
+
 
         # Let's rock!
         #
@@ -860,7 +864,7 @@ execTrimmomaticSingleLibrary() runs Trimmomatic on a single library
         #
         try:
             readsUtils_Client = ReadsUtils (url=self.callbackURL, token=ctx['token'])  # SDK local
-            
+
             readsLibrary = readsUtils_Client.download_reads ({'read_libraries': [input_params['input_reads_ref']],
                                                              'interleaved': 'false'
                                                              })
@@ -906,9 +910,9 @@ execTrimmomaticSingleLibrary() runs Trimmomatic on a single library
             output_rev_unpaired_file_path = input_rev_file_path+"_trimm_rev_unpaired.fastq"
             input_fwd_file_path           = input_fwd_file_path+".fastq"
             input_rev_file_path           = input_rev_file_path+".fastq"
-            
-            cmdstring = " ".join( (self.TRIMMOMATIC, trimmomatic_options, 
-                            input_fwd_file_path, 
+
+            cmdstring = " ".join( (self.TRIMMOMATIC, trimmomatic_options,
+                            input_fwd_file_path,
                             input_rev_file_path,
                             output_fwd_paired_file_path,
                             output_fwd_unpaired_file_path,
@@ -948,8 +952,8 @@ execTrimmomaticSingleLibrary() runs Trimmomatic on a single library
             read_count_reverse_only = match.group(4)
             read_count_dropped = match.group(5)
 
-            report = "\n".join( ('Input Read Pairs: '+ input_read_count, 
-                'Both Surviving: '+ read_count_paired, 
+            report = "\n".join( ('Input Read Pairs: '+ input_read_count,
+                'Both Surviving: '+ read_count_paired,
                 'Forward Only Surviving: '+ read_count_forward_only,
                 'Reverse Only Surviving: '+ read_count_reverse_only,
                 'Dropped: '+ read_count_dropped) )
@@ -959,8 +963,8 @@ execTrimmomaticSingleLibrary() runs Trimmomatic on a single library
                 or os.path.getsize (output_fwd_paired_file_path) == 0 \
                 or not os.path.isfile (output_rev_paired_file_path) \
                 or os.path.getsize (output_rev_paired_file_path) == 0:
-
                 retVal['output_filtered_ref'] = None
+                report += "\n\nNo reads were trimmed, so no trimmed reads object was generated."
             else:
                 output_obj_name = input_params['output_reads_name']+'_paired'
                 self.log(console, 'Uploading trimmed paired reads: '+output_obj_name)
@@ -1108,7 +1112,7 @@ execTrimmomaticSingleLibrary() runs Trimmomatic on a single library
         return [output]
     def status(self, ctx):
         #BEGIN_STATUS
-        returnVal = {'state': "OK", 'message': "", 'version': self.VERSION, 
+        returnVal = {'state': "OK", 'message': "", 'version': self.VERSION,
                      'git_url': self.GIT_URL, 'git_commit_hash': self.GIT_COMMIT_HASH}
         #END_STATUS
         return [returnVal]
