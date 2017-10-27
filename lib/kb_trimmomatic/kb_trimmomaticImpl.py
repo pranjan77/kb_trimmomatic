@@ -367,7 +367,8 @@ execTrimmomaticSingleLibrary() runs Trimmomatic on a single library
                             this_width = 0
                     html_report_lines += ['<tr>']
                     html_report_lines += ['    <td align=right><font color="'+text_color+'">'+str(f_name)+'</font></td><td></td>']
-                    html_report_lines += ['    <td align=right><font color="'+text_color+'">'+'{:0,}'.format(report_data[lib_i][f_name])+'</font></td><td></td>']
+                    #html_report_lines += ['    <td align=right><font color="'+text_color+'">'+'{:0,}'.format(report_data[lib_i][f_name])+'</font></td><td></td>']
+                    html_report_lines += ['    <td align=right><font color="'+text_color+'">'+str(report_data[lib_i][f_name])+'</font></td><td></td>']
                     html_report_lines += ['    <td align=right><font color="'+text_color+'">'+'('+str(percent)+'%)'+sp+sp+'</font></td><td></td>']
 
                     if this_width > 0:
