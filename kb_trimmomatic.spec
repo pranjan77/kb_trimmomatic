@@ -15,6 +15,7 @@ module kb_trimmomatic {
     typedef string workspace_name;
     typedef string data_obj_ref;
     typedef string data_obj_name;
+    typedef int    bool;
 
 
     /* parameter groups
@@ -45,8 +46,9 @@ module kb_trimmomatic {
         /*string output_read_library;*/
 	data_obj_name output_reads_name;
 
-        string                read_type;
-        string                quality_encoding;
+        /*string                read_type;*/  /* auto-detect instead */
+        /*string                quality_encoding;*/  /* auto-detect instead */
+        bool                  translate_to_phred33;
 	AdapterClip_Options   adapter_clip;
 	SlidingWindow_Options sliding_window;
         int leading_min_quality;
@@ -75,12 +77,13 @@ module kb_trimmomatic {
         workspace_name output_ws;
         data_obj_name output_reads_name;
 
-        string read_type;
+        string read_type;  /* auto-detected and passed to exec*SingleLib */
         string adapterFa;
         int seed_mismatches;
         int palindrome_clip_threshold;
         int simple_clip_threshold;
-        string quality_encoding;
+        /*string quality_encoding;*/  /* auto-detect instead */
+	bool translate_to_phred33;
         int sliding_window_size;
         int sliding_window_min_quality;
         int leading_min_quality;

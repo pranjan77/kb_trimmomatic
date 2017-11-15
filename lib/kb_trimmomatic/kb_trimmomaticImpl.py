@@ -59,26 +59,32 @@ execTrimmomaticSingleLibrary() runs Trimmomatic on a single library
     def is_fastq_phred64 (self, this_input_path):
         read_buf_size  = 65536
         input_is_phred33 = False
-        input_is_phred64 = False
+        data_seen = False
         with open (this_input_path, 'r', read_buf_size) as this_input_handle:
-            line = this_input_handle.readline()
-            if not line:
-                raise ValueError ("Badly formatted FASTQ file: "+this_input_path)
-            if line.startswith('@'):
+            while True:
+                line = this_input_handle.readline()
+                if not line:
+                    break
+                if not line.startswith('@'):
+                    raise ValueError ("Badly formatted FASTQ file: "+this_input_path+"\n"+"BAD LINE: '"+line+"'")
                 # skip two more lines
                 this_input_handle.readline()  # seq
-                this_input_handle.readline()  # '+'
+                this_input_handle.readline()  # '+' qual header
+
                 qual_line = this_input_handle.readline().rstrip()
+                data_seen = True
                 #def qual33(qual64): return chr(ord(qual64)-31)
-                q64_ascii = ord(qual_line[0])
-                if q64_ascii < 64:
-                    input_is_phred33 = True
-                else:
-                    input_is_phred64 = True
+                for qual_val in qual_line:
+                    q64_ascii = ord(qual_val)
+                    if q64_ascii < 64:
+                        input_is_phred33 = True
+                        break
+                if input_is_phred33:
+                    break
+        if not data_seen:
+            raise ValueError ("no qual score line found in FASTQ file: "+this_input_path)
 
-        if not input_is_phred33 and not input_is_phred64:
-            raise ValueError ("Failure to assign quality encoding to FASTQ file: "+this_input_path)
-
+        input_is_phred64 = not input_is_phred33
         return input_is_phred64
 
 
@@ -386,13 +392,14 @@ execTrimmomaticSingleLibrary() runs Trimmomatic on a single library
                 if m and len(m.groups()) == 3:
                     report_field_order[lib_i] = ['Input Reads', 'Surviving', 'Dropped']
                     report_data[lib_i] = dict(zip(report_field_order[lib_i], m.groups()))
-                try:
-                    [f_name, val] = line.split(': ')
-                    int_val = int(val)
-                    report_field_order[lib_i].append(f_name)
-                    report_data[lib_i][f_name] = int_val
-                except ValueError:
-                    print("Can't parse [" + line + "] (lib_i=" + str(lib_i) + ")")
+                else:  # shouldn't this else be here?
+                    try:
+                        [f_name, val] = line.split(': ')
+                        int_val = int(val)
+                        report_field_order[lib_i].append(f_name)
+                        report_data[lib_i][f_name] = int_val
+                    except ValueError:
+                        print("Can't parse [" + line + "] (lib_i=" + str(lib_i) + ")")
 
         # html report
         sp = '&nbsp;'
@@ -1061,7 +1068,8 @@ execTrimmomaticSingleLibrary() runs Trimmomatic on a single library
             else:
 
                 # standardize quality encoding
-                if 'translate_to_phred33' in input_params and input_params['translate_to_phred33'] == 1:
+                if 'translate_to_phred33' in input_params and input_params['translate_to_phred33'] == 1 and quality_encoding == 'phred64':
+                #if False:  # DEBUG
                     self.log (console, "TRANSLATING OUTPUT FWD PAIRED FASTQ FILE...")
                     output_fwd_paired_file_path = self.translate_fastq_from_phred64_to_phred33 \
                                                   (output_fwd_paired_file_path, \
@@ -1092,10 +1100,13 @@ execTrimmomaticSingleLibrary() runs Trimmomatic on a single library
 
                 retVal['output_unpaired_fwd_ref'] = None
             else:
-                self.log (console, "TRANSLATING OUTPUT FWD UNPAIRED FASTQ FILE...")
-                output_fwd_unpaired_file_path = self.translate_fastq_from_phred64_to_phred33 \
-                                                (output_fwd_unpaired_file_path, \
-                                                 re.sub ("\.fastq$", ".q33.fastq", output_fwd_unpaired_file_path))
+                # standardize quality encoding
+                if 'translate_to_phred33' in input_params and input_params['translate_to_phred33'] == 1 and quality_encoding == 'phred64':
+                #if False:  # DEBUG
+                    self.log (console, "TRANSLATING OUTPUT FWD UNPAIRED FASTQ FILE...")
+                    output_fwd_unpaired_file_path = self.translate_fastq_from_phred64_to_phred33 \
+                                                    (output_fwd_unpaired_file_path, \
+                                                     re.sub ("\.fastq$", ".q33.fastq", output_fwd_unpaired_file_path))
 
                 output_obj_name = input_params['output_reads_name']+'_unpaired_fwd'
                 self.log(console, '\nUploading trimmed unpaired forward reads: '+output_obj_name)
@@ -1116,10 +1127,13 @@ execTrimmomaticSingleLibrary() runs Trimmomatic on a single library
 
                 retVal['output_unpaired_rev_ref'] = None
             else:
-                self.log (console, "TRANSLATING OUTPUT REV UNPAIRED FASTQ FILE...")
-                output_rev_unpaired_file_path = self.translate_fastq_from_phred64_to_phred33 \
-                                                (output_rev_unpaired_file_path, \
-                                                 re.sub ("\.fastq$", ".q33.fastq", output_rev_unpaired_file_path))
+                # standardize quality encoding
+                if 'translate_to_phred33' in input_params and input_params['translate_to_phred33'] == 1 and quality_encoding == 'phred64':
+                #if False:  # DEBUG
+                    self.log (console, "TRANSLATING OUTPUT REV UNPAIRED FASTQ FILE...")
+                    output_rev_unpaired_file_path = self.translate_fastq_from_phred64_to_phred33 \
+                                                    (output_rev_unpaired_file_path, \
+                                                     re.sub ("\.fastq$", ".q33.fastq", output_rev_unpaired_file_path))
 
                 output_obj_name = input_params['output_reads_name']+'_unpaired_rev'
                 self.log(console, '\nUploading trimmed unpaired reverse reads: '+output_obj_name)
@@ -1208,7 +1222,8 @@ execTrimmomaticSingleLibrary() runs Trimmomatic on a single library
                 retVal['output_filtered_ref'] = None
             else:
                 # standardize quality encoding
-                if 'translate_to_phred33' in input_params and input_params['translate_to_phred33'] == 1:
+                if 'translate_to_phred33' in input_params and input_params['translate_to_phred33'] == 1 and quality_encoding == 'phred64':
+                #if False:  # DEBUG
                     self.log (console, "TRANSLATING OUTPUT FASTQ FILE...")
                     output_fwd_file_path = self.translate_fastq_from_phred64_to_phred33 \
                                            (output_fwd_file_path, \

@@ -27,8 +27,7 @@ import com.fasterxml.jackson.annotation.JsonPropertyOrder;
     "input_reads_ref",
     "output_ws",
     "output_reads_name",
-    "read_type",
-    "quality_encoding",
+    "translate_to_phred33",
     "adapter_clip",
     "sliding_window",
     "leading_min_quality",
@@ -47,10 +46,8 @@ public class RunTrimmomaticInput {
     private String outputWs;
     @JsonProperty("output_reads_name")
     private String outputReadsName;
-    @JsonProperty("read_type")
-    private String readType;
-    @JsonProperty("quality_encoding")
-    private String qualityEncoding;
+    @JsonProperty("translate_to_phred33")
+    private Long translateToPhred33;
     /**
      * <p>Original spec-file type: AdapterClip_Options</p>
      * 
@@ -139,33 +136,18 @@ public class RunTrimmomaticInput {
         return this;
     }
 
-    @JsonProperty("read_type")
-    public String getReadType() {
-        return readType;
+    @JsonProperty("translate_to_phred33")
+    public Long getTranslateToPhred33() {
+        return translateToPhred33;
     }
 
-    @JsonProperty("read_type")
-    public void setReadType(String readType) {
-        this.readType = readType;
+    @JsonProperty("translate_to_phred33")
+    public void setTranslateToPhred33(Long translateToPhred33) {
+        this.translateToPhred33 = translateToPhred33;
     }
 
-    public RunTrimmomaticInput withReadType(String readType) {
-        this.readType = readType;
-        return this;
-    }
-
-    @JsonProperty("quality_encoding")
-    public String getQualityEncoding() {
-        return qualityEncoding;
-    }
-
-    @JsonProperty("quality_encoding")
-    public void setQualityEncoding(String qualityEncoding) {
-        this.qualityEncoding = qualityEncoding;
-    }
-
-    public RunTrimmomaticInput withQualityEncoding(String qualityEncoding) {
-        this.qualityEncoding = qualityEncoding;
+    public RunTrimmomaticInput withTranslateToPhred33(Long translateToPhred33) {
+        this.translateToPhred33 = translateToPhred33;
         return this;
     }
 
@@ -310,7 +292,7 @@ public class RunTrimmomaticInput {
 
     @Override
     public String toString() {
-        return ((((((((((((((((((((((((((((("RunTrimmomaticInput"+" [inputWs=")+ inputWs)+", inputReadsRef=")+ inputReadsRef)+", outputWs=")+ outputWs)+", outputReadsName=")+ outputReadsName)+", readType=")+ readType)+", qualityEncoding=")+ qualityEncoding)+", adapterClip=")+ adapterClip)+", slidingWindow=")+ slidingWindow)+", leadingMinQuality=")+ leadingMinQuality)+", trailingMinQuality=")+ trailingMinQuality)+", cropLength=")+ cropLength)+", headCropLength=")+ headCropLength)+", minLength=")+ minLength)+", additionalProperties=")+ additionalProperties)+"]");
+        return ((((((((((((((((((((((((((("RunTrimmomaticInput"+" [inputWs=")+ inputWs)+", inputReadsRef=")+ inputReadsRef)+", outputWs=")+ outputWs)+", outputReadsName=")+ outputReadsName)+", translateToPhred33=")+ translateToPhred33)+", adapterClip=")+ adapterClip)+", slidingWindow=")+ slidingWindow)+", leadingMinQuality=")+ leadingMinQuality)+", trailingMinQuality=")+ trailingMinQuality)+", cropLength=")+ cropLength)+", headCropLength=")+ headCropLength)+", minLength=")+ minLength)+", additionalProperties=")+ additionalProperties)+"]");
     }
 
 }
