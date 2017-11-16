@@ -523,8 +523,9 @@ class kb_trimmomaticTest(unittest.TestCase):
             'output_ws': se_lib_info[7],
             'input_reads_ref': str(se_lib_info[6])+'/'+str(se_lib_info[0]),
             'output_reads_name': output_name,
-            'read_type': 'SE',
-            'quality_encoding': 'phred33',
+            #'read_type': 'SE',
+            #'quality_encoding': 'phred33',
+            'translate_to_phred33': 1,
             'adapter_clip': {
                 'adapterFa': None,
                 'seed_mismatches': None,
@@ -573,8 +574,9 @@ class kb_trimmomaticTest(unittest.TestCase):
             'output_ws': pe_lib_info[7],
             'input_reads_ref': str(pe_lib_info[6])+'/'+str(pe_lib_info[0]),
             'output_reads_name': output_name,
-            'read_type': 'PE',
-            'quality_encoding': 'phred33',
+            #'read_type': 'PE',
+            #'quality_encoding': 'phred33',
+            'translate_to_phred33': 1,
             'adapter_clip': {
                 'adapterFa': None,
                 'seed_mismatches': None,
@@ -623,8 +625,9 @@ class kb_trimmomaticTest(unittest.TestCase):
             'output_ws': se_lib_set_info[7],
             'input_reads_ref': str(se_lib_set_info[6])+'/'+str(se_lib_set_info[0]),
             'output_reads_name': output_name,
-            'read_type': 'SE',
-            'quality_encoding': 'phred33',
+            #'read_type': 'SE',
+            #'quality_encoding': 'phred33',
+            'translate_to_phred33': 1,
             'adapter_clip': {
                 'adapterFa': None,
                 'seed_mismatches': None,
@@ -673,8 +676,9 @@ class kb_trimmomaticTest(unittest.TestCase):
             'output_ws': pe_lib_set_info[7],
             'input_reads_ref': str(pe_lib_set_info[6])+'/'+str(pe_lib_set_info[0]),
             'output_reads_name': output_name,
-            'read_type': 'PE',
-            'quality_encoding': 'phred33',
+            #'read_type': 'PE',
+            #'quality_encoding': 'phred33',
+            'translate_to_phred33': 1,
             'adapter_clip': {
                 'adapterFa': None,
                 'seed_mismatches': None,
@@ -722,8 +726,9 @@ class kb_trimmomaticTest(unittest.TestCase):
             'output_ws': se_lib_sampleset_info[7],
             'input_reads_ref': str(se_lib_sampleset_info[6])+'/'+str(se_lib_sampleset_info[0]),
             'output_reads_name': output_name,
-            'read_type': 'SE',
-            'quality_encoding': 'phred33',
+            #'read_type': 'SE',
+            #'quality_encoding': 'phred33',
+            'translate_to_phred33': 1,
             'adapter_clip': {
                 'adapterFa': None,
                 'seed_mismatches': None,
@@ -760,6 +765,7 @@ class kb_trimmomaticTest(unittest.TestCase):
 
         # figure out where the test data lives
         se_lib_info = self.getSingleEndLibInfo('small_no_trim')
+        #se_lib_info = self.getSingleEndLibInfo('test_quick')
         pprint(se_lib_info)
 
         # run method
@@ -769,8 +775,9 @@ class kb_trimmomaticTest(unittest.TestCase):
             'output_ws': se_lib_info[7],
             'input_reads_ref': str(se_lib_info[6])+'/'+str(se_lib_info[0]),
             'output_reads_name': output_name,
-            'read_type': 'SE',
-            'quality_encoding': 'phred33',
+            #'read_type': 'SE',
+            #'quality_encoding': 'phred33',
+            'translate_to_phred33': 1,
             'adapter_clip': {
                 'adapterFa': None,
                 'seed_mismatches': None,
@@ -804,6 +811,7 @@ class kb_trimmomaticTest(unittest.TestCase):
 
         # figure out where the test data lives
         se_lib_info = self.getSingleEndLibInfo('small_all_trim')
+        #se_lib_info = self.getSingleEndLibInfo('test_quick')
         pprint(se_lib_info)
 
         # run method
@@ -813,8 +821,9 @@ class kb_trimmomaticTest(unittest.TestCase):
             'output_ws': se_lib_info[7],
             'input_reads_ref': str(se_lib_info[6])+'/'+str(se_lib_info[0]),
             'output_reads_name': output_name,
-            'read_type': 'SE',
-            'quality_encoding': 'phred33',
+            #'read_type': 'SE',
+            #'quality_encoding': 'phred33',
+            'translate_to_phred33': 1,
             'adapter_clip': {
                 'adapterFa': None,
                 'seed_mismatches': None,
@@ -841,3 +850,52 @@ class kb_trimmomaticTest(unittest.TestCase):
         self.assertIn('Input Reads', report_obj['data']['direct_html'])
         self.assertIn('Surviving', report_obj['data']['direct_html'])
         self.assertIn('Dropped', report_obj['data']['direct_html'])
+
+
+    # TEST 8: run Trimmomatic with q64 data that gets translated to q33
+    def test_runTrimmomatic_SingleEndLibrary_translate_q64_t0_q33(self):
+        print("\n\nRUNNING: test_runTrimmomatic_SingleEndLibrary_translate_q64_to_q33")
+        print("------------------------------------------------------------------\n\n")
+
+        # figure out where the test data lives
+        se_lib_info = self.getSingleEndLibInfo('small_all_trim')  # q64
+        pprint(se_lib_info)
+
+        # run method
+        output_name = 'output_trim_q64_to_q33.SElib'
+        params = {
+            'input_ws': se_lib_info[7],
+            'output_ws': se_lib_info[7],
+            'input_reads_ref': str(se_lib_info[6])+'/'+str(se_lib_info[0]),
+            'output_reads_name': output_name,
+            #'read_type': 'SE',
+            #'quality_encoding': 'phred33',
+            'translate_to_phred33': 1,
+            'adapter_clip': {
+                'adapterFa': None,
+                'seed_mismatches': None,
+                'palindrom_clip_threshold': None,
+                'simple_clip_threshold': None
+                },
+            'sliding_window': {
+                'sliding_window_size': 4,
+                'sliding_window_min_size': 15
+                },
+            'leading_min_quality': 3,
+            'trailing_min_quality': 3,
+            'crop_length': 0,
+            'head_crop_length': 0,
+            'min_length': 20
+        }
+
+        result = self.getImpl().runTrimmomatic(self.getContext(),params)
+        print('RESULT:')
+        pprint(result)
+
+        # check the output
+        single_output_name = output_name
+        info_list = self.wsClient.get_object_info([{'ref':se_lib_info[7] + '/' + single_output_name}], 1)
+        self.assertEqual(len(info_list),1)
+        trimmed_reads_info = info_list[0]
+        self.assertEqual(trimmed_reads_info[1],single_output_name)
+        self.assertEqual(trimmed_reads_info[2].split('-')[0],'KBaseFile.SingleEndLibrary')

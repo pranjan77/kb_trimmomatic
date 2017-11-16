@@ -34,20 +34,6 @@ parameters :
 			The read library or read library set to examine
 		long-hint  : |
 			The read library or read library set for which you want to trim.
-	quality_encoding :
-		ui-name : |
-			Quality encoding <font color=red>*</font>
-		short-hint : |
-			Read quality encoding format.
-		long-hint : |
-			Read quality encoding format.
-	read_type :
-		ui-name : |
-			Read library type <font color=red>*</font>
-		short-hint : |
-			Library type, paired end or single end sequencing
-		long-hint : |
-			Library type, paired end or single end sequencing
 	output_reads_name :
 		ui-name : |
 			Output library (or Set) name <font color=red>*</font>
@@ -132,6 +118,13 @@ parameters :
 			Specifies the minimum length of reads to be kept.
 		long-hint : |
 			This module removes reads that fall below the specified minimal length. Reads removed by this step will be counted and included in the "dropped reads" count presented in the trimmomatic summary.
+	translate_to_phred33 :
+		ui-name : |
+			Translate quality encoding from phred64 to phred33 
+		short-hint : |
+			Modernize and standardize phred64 (Illumina <= 1.7) read quality encoding format to phred33 (Sanger, 454, SRA, Illumina >= 1.8).
+		long-hint : |
+			Modernize and standardize phred64 (Illumina <= 1.7) read quality encoding format to phred33 (Sanger, 454, SRA, Illumina >= 1.8).  Does nothing if already phred33.
 
 #
 # Configure the display and description of parameters

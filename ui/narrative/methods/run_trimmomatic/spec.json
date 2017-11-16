@@ -1,11 +1,11 @@
 {
-	"ver": "1.2.3",
+	"ver": "1.2.5",
 
 	"authors": [
 		"psdehal",
 		"dylan"
 	],
-	"contact": "help@kbase.us",
+	"contact": "http://kbase.us/contact-us/",
 	"visible": true,
 	"categories": ["active", "reads" ],
 	"widgets": {
@@ -13,30 +13,6 @@
 		"output": "no-display"
 	},
 	"parameters": [
-		{
-			"id": "read_type",
-			"optional": false,
-			"advanced": false,
-			"allow_multiple": false,
-			"default_values": [ "PE" ],
-			"field_type": "dropdown",
-			"dropdown_options": {
-				"options": [
-					{
-						"value": "PE",
-						"display": "Paired End",
-						"id": "PE",
-						"ui-name": "PE"
-					},
-					{
-						"value": "SE",
-						"display": "Single End",
-						"id": "SE",
-						"ui-name": "SE"
-					}
-				]
-			}
-		},
 		{
 			"id": "input_reads_ref",
 			"optional": false,
@@ -61,25 +37,25 @@
 			}
 		},
 		{
-			"id": "quality_encoding",
-			"optional": false,
-			"advanced": false,
+			"id": "translate_to_phred33",
+			"optional": true,
+			"advanced": true,
 			"allow_multiple": false,
-			"default_values": [ "phred33" ],
+			"default_values": [ 1 ],
 			"field_type": "dropdown",
 				"dropdown_options": {
 					"options": [
 						{
-							"value": "phred33",
-							"display": "phred33 (Sanger, 454, SRA, Illumina >= 1.8)",
-							"id": "phred33",
-							"ui-name": "phred33"
+							"value": 0,
+							"display": "no",
+							"id": "phred33_no",
+							"ui-name": "phred33_no"
 						},
 						{
-							"value": "phred64",
-							"display": "phred64 (Illumina <= 1.7)",
-							"id": "phred64",
-							"ui-name": "phred64"
+							"value": 1,
+							"display": "yes",
+							"id": "phred33_yes",
+							"ui-name": "phred33_yes"
 						}
 					]
 				}
@@ -107,10 +83,10 @@
 							"ui-name": "TruSeq2-PE"
 						},
 						{
-							"value": "TruSeq2-PE-2.fa",
-							"display": "TruSeq2-PE-2",
-							"id": "TruSeq2-PE-2",
-							"ui-name": "TruSeq2-PE-2"
+							"value": "TruSeq3-PE-2.fa",
+							"display": "TruSeq3-PE-2",
+							"id": "TruSeq3-PE-2",
+							"ui-name": "TruSeq3-PE-2"
 						},
 						{
 							"value": "TruSeq3-SE.fa",
@@ -274,10 +250,6 @@
 					"target_property": "input_ws"
 				},
 				{
-					"input_parameter": "read_type",
-					"target_property": "read_type"
-				},
-				{
 					"input_parameter": "input_reads_ref",
 					"target_property": "input_reads_ref",
 					"target_type_transform": "resolved-ref"
@@ -289,8 +261,8 @@
 
 				},
 				{
-					"input_parameter": "quality_encoding",
-					"target_property": "quality_encoding"
+					"input_parameter": "translate_to_phred33",
+					"target_property": "translate_to_phred33"
 				},
 				{
 					"input_parameter": "adapter_clip",

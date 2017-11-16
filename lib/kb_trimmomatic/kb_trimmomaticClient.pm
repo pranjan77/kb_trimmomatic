@@ -131,8 +131,7 @@ runTrimmomaticInput is a reference to a hash where the following keys are define
 	input_reads_ref has a value which is a kb_trimmomatic.data_obj_ref
 	output_ws has a value which is a kb_trimmomatic.workspace_name
 	output_reads_name has a value which is a kb_trimmomatic.data_obj_name
-	read_type has a value which is a string
-	quality_encoding has a value which is a string
+	translate_to_phred33 has a value which is a kb_trimmomatic.bool
 	adapter_clip has a value which is a kb_trimmomatic.AdapterClip_Options
 	sliding_window has a value which is a kb_trimmomatic.SlidingWindow_Options
 	leading_min_quality has a value which is an int
@@ -143,6 +142,7 @@ runTrimmomaticInput is a reference to a hash where the following keys are define
 workspace_name is a string
 data_obj_ref is a string
 data_obj_name is a string
+bool is an int
 AdapterClip_Options is a reference to a hash where the following keys are defined:
 	adapterFa has a value which is a string
 	seed_mismatches has a value which is an int
@@ -168,8 +168,7 @@ runTrimmomaticInput is a reference to a hash where the following keys are define
 	input_reads_ref has a value which is a kb_trimmomatic.data_obj_ref
 	output_ws has a value which is a kb_trimmomatic.workspace_name
 	output_reads_name has a value which is a kb_trimmomatic.data_obj_name
-	read_type has a value which is a string
-	quality_encoding has a value which is a string
+	translate_to_phred33 has a value which is a kb_trimmomatic.bool
 	adapter_clip has a value which is a kb_trimmomatic.AdapterClip_Options
 	sliding_window has a value which is a kb_trimmomatic.SlidingWindow_Options
 	leading_min_quality has a value which is an int
@@ -180,6 +179,7 @@ runTrimmomaticInput is a reference to a hash where the following keys are define
 workspace_name is a string
 data_obj_ref is a string
 data_obj_name is a string
+bool is an int
 AdapterClip_Options is a reference to a hash where the following keys are defined:
 	adapterFa has a value which is a string
 	seed_mismatches has a value which is an int
@@ -273,7 +273,7 @@ execTrimmomaticInput is a reference to a hash where the following keys are defin
 	seed_mismatches has a value which is an int
 	palindrome_clip_threshold has a value which is an int
 	simple_clip_threshold has a value which is an int
-	quality_encoding has a value which is a string
+	translate_to_phred33 has a value which is a kb_trimmomatic.bool
 	sliding_window_size has a value which is an int
 	sliding_window_min_quality has a value which is an int
 	leading_min_quality has a value which is an int
@@ -284,6 +284,7 @@ execTrimmomaticInput is a reference to a hash where the following keys are defin
 data_obj_ref is a string
 workspace_name is a string
 data_obj_name is a string
+bool is an int
 execTrimmomaticOutput is a reference to a hash where the following keys are defined:
 	output_filtered_ref has a value which is a kb_trimmomatic.data_obj_ref
 	output_unpaired_fwd_ref has a value which is a kb_trimmomatic.data_obj_ref
@@ -307,7 +308,7 @@ execTrimmomaticInput is a reference to a hash where the following keys are defin
 	seed_mismatches has a value which is an int
 	palindrome_clip_threshold has a value which is an int
 	simple_clip_threshold has a value which is an int
-	quality_encoding has a value which is a string
+	translate_to_phred33 has a value which is a kb_trimmomatic.bool
 	sliding_window_size has a value which is an int
 	sliding_window_min_quality has a value which is an int
 	leading_min_quality has a value which is an int
@@ -318,6 +319,7 @@ execTrimmomaticInput is a reference to a hash where the following keys are defin
 data_obj_ref is a string
 workspace_name is a string
 data_obj_name is a string
+bool is an int
 execTrimmomaticOutput is a reference to a hash where the following keys are defined:
 	output_filtered_ref has a value which is a kb_trimmomatic.data_obj_ref
 	output_unpaired_fwd_ref has a value which is a kb_trimmomatic.data_obj_ref
@@ -405,7 +407,7 @@ execTrimmomaticInput is a reference to a hash where the following keys are defin
 	seed_mismatches has a value which is an int
 	palindrome_clip_threshold has a value which is an int
 	simple_clip_threshold has a value which is an int
-	quality_encoding has a value which is a string
+	translate_to_phred33 has a value which is a kb_trimmomatic.bool
 	sliding_window_size has a value which is an int
 	sliding_window_min_quality has a value which is an int
 	leading_min_quality has a value which is an int
@@ -416,6 +418,7 @@ execTrimmomaticInput is a reference to a hash where the following keys are defin
 data_obj_ref is a string
 workspace_name is a string
 data_obj_name is a string
+bool is an int
 execTrimmomaticOutput is a reference to a hash where the following keys are defined:
 	output_filtered_ref has a value which is a kb_trimmomatic.data_obj_ref
 	output_unpaired_fwd_ref has a value which is a kb_trimmomatic.data_obj_ref
@@ -439,7 +442,7 @@ execTrimmomaticInput is a reference to a hash where the following keys are defin
 	seed_mismatches has a value which is an int
 	palindrome_clip_threshold has a value which is an int
 	simple_clip_threshold has a value which is an int
-	quality_encoding has a value which is a string
+	translate_to_phred33 has a value which is a kb_trimmomatic.bool
 	sliding_window_size has a value which is an int
 	sliding_window_min_quality has a value which is an int
 	leading_min_quality has a value which is an int
@@ -450,6 +453,7 @@ execTrimmomaticInput is a reference to a hash where the following keys are defin
 data_obj_ref is a string
 workspace_name is a string
 data_obj_name is a string
+bool is an int
 execTrimmomaticOutput is a reference to a hash where the following keys are defined:
 	output_filtered_ref has a value which is a kb_trimmomatic.data_obj_ref
 	output_unpaired_fwd_ref has a value which is a kb_trimmomatic.data_obj_ref
@@ -685,6 +689,32 @@ a string
 
 
 
+=head2 bool
+
+=over 4
+
+
+
+=item Definition
+
+=begin html
+
+<pre>
+an int
+</pre>
+
+=end html
+
+=begin text
+
+an int
+
+=end text
+
+=back
+
+
+
 =head2 SlidingWindow_Options
 
 =over 4
@@ -781,8 +811,7 @@ input_ws has a value which is a kb_trimmomatic.workspace_name
 input_reads_ref has a value which is a kb_trimmomatic.data_obj_ref
 output_ws has a value which is a kb_trimmomatic.workspace_name
 output_reads_name has a value which is a kb_trimmomatic.data_obj_name
-read_type has a value which is a string
-quality_encoding has a value which is a string
+translate_to_phred33 has a value which is a kb_trimmomatic.bool
 adapter_clip has a value which is a kb_trimmomatic.AdapterClip_Options
 sliding_window has a value which is a kb_trimmomatic.SlidingWindow_Options
 leading_min_quality has a value which is an int
@@ -802,8 +831,7 @@ input_ws has a value which is a kb_trimmomatic.workspace_name
 input_reads_ref has a value which is a kb_trimmomatic.data_obj_ref
 output_ws has a value which is a kb_trimmomatic.workspace_name
 output_reads_name has a value which is a kb_trimmomatic.data_obj_name
-read_type has a value which is a string
-quality_encoding has a value which is a string
+translate_to_phred33 has a value which is a kb_trimmomatic.bool
 adapter_clip has a value which is a kb_trimmomatic.AdapterClip_Options
 sliding_window has a value which is a kb_trimmomatic.SlidingWindow_Options
 leading_min_quality has a value which is an int
@@ -878,7 +906,7 @@ adapterFa has a value which is a string
 seed_mismatches has a value which is an int
 palindrome_clip_threshold has a value which is an int
 simple_clip_threshold has a value which is an int
-quality_encoding has a value which is a string
+translate_to_phred33 has a value which is a kb_trimmomatic.bool
 sliding_window_size has a value which is an int
 sliding_window_min_quality has a value which is an int
 leading_min_quality has a value which is an int
@@ -902,7 +930,7 @@ adapterFa has a value which is a string
 seed_mismatches has a value which is an int
 palindrome_clip_threshold has a value which is an int
 simple_clip_threshold has a value which is an int
-quality_encoding has a value which is a string
+translate_to_phred33 has a value which is a kb_trimmomatic.bool
 sliding_window_size has a value which is an int
 sliding_window_min_quality has a value which is an int
 leading_min_quality has a value which is an int

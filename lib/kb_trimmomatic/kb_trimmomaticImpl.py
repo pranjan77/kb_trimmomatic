@@ -38,9 +38,9 @@ execTrimmomaticSingleLibrary() runs Trimmomatic on a single library
     # state. A method could easily clobber the state set by another while
     # the latter method is running.
     ######################################### noqa
-    VERSION = "1.0.0"
+    VERSION = "1.2.5"
     GIT_URL = "https://github.com/kbaseapps/kb_trimmomatic"
-    GIT_COMMIT_HASH = "4d3f9d3293eb02d21d2e6891b1c113bd64ad60f2"
+    GIT_COMMIT_HASH = "4d5ff3b25e05b921425a6c00fbc11cac6886b5bc"
 
     #BEGIN_CLASS_HEADER
     workspaceURL = None
@@ -53,25 +53,99 @@ execTrimmomaticSingleLibrary() runs Trimmomatic on a single library
         print(message)
         sys.stdout.flush()
 
+
+    # Determine if phred64
+    #
+    def is_fastq_phred64 (self, this_input_path):
+        read_buf_size  = 65536
+        input_is_phred33 = False
+        data_seen = False
+        with open (this_input_path, 'r', read_buf_size) as this_input_handle:
+            while True:
+                line = this_input_handle.readline()
+                if not line:
+                    break
+                if not line.startswith('@'):
+                    raise ValueError ("Badly formatted FASTQ file: "+this_input_path+"\n"+"BAD LINE: '"+line+"'")
+                # skip two more lines
+                this_input_handle.readline()  # seq
+                this_input_handle.readline()  # '+' qual header
+
+                qual_line = this_input_handle.readline().rstrip()
+                data_seen = True
+                #def qual33(qual64): return chr(ord(qual64)-31)
+                for qual_val in qual_line:
+                    q64_ascii = ord(qual_val)
+                    if q64_ascii < 64:
+                        input_is_phred33 = True
+                        break
+                if input_is_phred33:
+                    break
+        if not data_seen:
+            raise ValueError ("no qual score line found in FASTQ file: "+this_input_path)
+
+        input_is_phred64 = not input_is_phred33
+        return input_is_phred64
+
+
+    # Translate phred64 to phred33
+    #
+    def translate_fastq_from_phred64_to_phred33 (self, this_input_path, this_output_path):
+
+        if not self.is_fastq_phred64 (this_input_path):
+            return this_input_path
+
+        # internal Method
+        def qual33(qual64): return chr(ord(qual64)-31)
+
+        # read through and translate qual scores
+        read_buf_size  = 65536
+        write_buf_size = 65536
+
+        qual33_handle = open (this_output_path, 'w', write_buf_size)
+        with open (this_input_path, 'r', read_buf_size) as this_input_handle:
+            while True:
+                buf = []
+                line = this_input_handle.readline()
+                if not line:
+                    break
+                if line.startswith('@'):
+                    buf.append(line)  # header
+                    buf.append(this_input_handle.readline())  # seq
+                    buf.append(this_input_handle.readline())  # '+'
+
+                    qual_line = this_input_handle.readline().rstrip()
+                    q33_line = ''
+                    for q64 in qual_line:
+                        q33_line += qual33(q64)
+                    buf.append(q33_line+"\n")
+                    qual33_handle.write(''.join(buf))
+        qual33_handle.close()
+
+        return this_output_path
+
+
+    # Set up Trimmomatic params
+    #
     def parse_trimmomatic_steps(self, input_params):
         # validate input parameters and return string defining trimmomatic steps
 
         parameter_string = ''
 
-        if 'read_type' not in input_params and input_params['read_type'] is not None:
-            raise ValueError('read_type not defined')
-        elif input_params['read_type'] not in ('PE', 'SE'):
-            raise ValueError('read_type must be PE or SE')
+#        if 'read_type' not in input_params and input_params['read_type'] is not None:
+#            raise ValueError('read_type not defined')
+#        elif input_params['read_type'] not in ('PE', 'SE'):
+#            raise ValueError('read_type must be PE or SE')
 
-        if 'quality_encoding' not in input_params and input_params['quality_encoding'] is not None:
-            raise ValueError('quality_encoding not defined')
-        elif input_params['quality_encoding'] not in ('phred33', 'phred64'):
-            raise ValueError('quality_encoding must be phred33 or phred64')
+#        if 'quality_encoding' not in input_params and input_params['quality_encoding'] is not None:
+#            raise ValueError('quality_encoding not defined')
+#        elif input_params['quality_encoding'] not in ('phred33', 'phred64'):
+#            raise ValueError('quality_encoding must be phred33 or phred64')
 
         # set adapter trimming
         if ('adapterFa' in input_params and input_params['adapterFa'] is not None and
             'seed_mismatches' in input_params and input_params['seed_mismatches'] is not None and
-            'palindrome_clip_threshold' in input_params and input_params['quality_encoding'] is not None and
+            'palindrome_clip_threshold' in input_params and input_params['palindrome_clip_threshold'] is not None and
             'simple_clip_threshold' in input_params and input_params['simple_clip_threshold'] is not None):
             parameter_string = ("ILLUMINACLIP:" + self.ADAPTER_DIR +
                                 ":".join((str(input_params['adapterFa']),
@@ -148,6 +222,7 @@ execTrimmomaticSingleLibrary() runs Trimmomatic on a single library
         #END_CONSTRUCTOR
         pass
 
+
     def runTrimmomatic(self, ctx, input_params):
         """
         :param input_params: instance of type "runTrimmomaticInput"
@@ -156,15 +231,14 @@ execTrimmomaticSingleLibrary() runs Trimmomatic on a single library
            "workspace_name" (** Common types), parameter "input_reads_ref" of
            type "data_obj_ref", parameter "output_ws" of type
            "workspace_name" (** Common types), parameter "output_reads_name"
-           of type "data_obj_name", parameter "read_type" of String,
-           parameter "quality_encoding" of String, parameter "adapter_clip"
-           of type "AdapterClip_Options" -> structure: parameter "adapterFa"
-           of String, parameter "seed_mismatches" of Long, parameter
-           "palindrome_clip_threshold" of Long, parameter
-           "simple_clip_threshold" of Long, parameter "sliding_window" of
-           type "SlidingWindow_Options" (parameter groups) -> structure:
-           parameter "sliding_window_size" of Long, parameter
-           "sliding_window_min_quality" of Long, parameter
+           of type "data_obj_name", parameter "translate_to_phred33" of type
+           "bool", parameter "adapter_clip" of type "AdapterClip_Options" ->
+           structure: parameter "adapterFa" of String, parameter
+           "seed_mismatches" of Long, parameter "palindrome_clip_threshold"
+           of Long, parameter "simple_clip_threshold" of Long, parameter
+           "sliding_window" of type "SlidingWindow_Options" (parameter
+           groups) -> structure: parameter "sliding_window_size" of Long,
+           parameter "sliding_window_min_quality" of Long, parameter
            "leading_min_quality" of Long, parameter "trailing_min_quality" of
            Long, parameter "crop_length" of Long, parameter
            "head_crop_length" of Long, parameter "min_length" of Long
@@ -190,8 +264,8 @@ execTrimmomaticSingleLibrary() runs Trimmomatic on a single library
 
         required_params = ['input_reads_ref',
                            'output_ws',
-                           'output_reads_name',
-                           'read_type'
+                           'output_reads_name'
+#                           'read_type'
                           ]
         for required_param in required_params:
             if required_param not in input_params or input_params[required_param] == None:
@@ -207,12 +281,14 @@ execTrimmomaticSingleLibrary() runs Trimmomatic on a single library
         #
         execTrimmomaticParams = { 'input_reads_ref': str(input_params['input_reads_ref']),
                                   'output_ws': input_params['output_ws'],
-                                  'output_reads_name': input_params['output_reads_name'],
-                                  'read_type': input_params['read_type'],
+                                  'output_reads_name': input_params['output_reads_name']
+#                                  'read_type': input_params['read_type'],
                                  }
 
-        if 'quality_encoding' in input_params:
-            execTrimmomaticParams['quality_encoding'] = input_params['quality_encoding']
+        #if 'quality_encoding' in input_params:
+        #    execTrimmomaticParams['quality_encoding'] = input_params['quality_encoding']
+        if 'translate_to_phred33' in input_params:
+            execTrimmomaticParams['translate_to_phred33'] = input_params['translate_to_phred33']
 
         # adapter_clip grouped params
         if 'adapter_clip' in input_params and input_params['adapter_clip'] != None:
@@ -316,13 +392,14 @@ execTrimmomaticSingleLibrary() runs Trimmomatic on a single library
                 if m and len(m.groups()) == 3:
                     report_field_order[lib_i] = ['Input Reads', 'Surviving', 'Dropped']
                     report_data[lib_i] = dict(zip(report_field_order[lib_i], m.groups()))
-                try:
-                    [f_name, val] = line.split(': ')
-                    int_val = int(val)
-                    report_field_order[lib_i].append(f_name)
-                    report_data[lib_i][f_name] = int_val
-                except ValueError:
-                    print("Can't parse [" + line + "] (lib_i=" + str(lib_i) + ")")
+                else:  # shouldn't this else be here?
+                    try:
+                        [f_name, val] = line.split(': ')
+                        int_val = int(val)
+                        report_field_order[lib_i].append(f_name)
+                        report_data[lib_i][f_name] = int_val
+                    except ValueError:
+                        print("Can't parse [" + line + "] (lib_i=" + str(lib_i) + ")")
 
         # html report
         sp = '&nbsp;'
@@ -445,8 +522,8 @@ execTrimmomaticSingleLibrary() runs Trimmomatic on a single library
            of type "data_obj_name", parameter "read_type" of String,
            parameter "adapterFa" of String, parameter "seed_mismatches" of
            Long, parameter "palindrome_clip_threshold" of Long, parameter
-           "simple_clip_threshold" of Long, parameter "quality_encoding" of
-           String, parameter "sliding_window_size" of Long, parameter
+           "simple_clip_threshold" of Long, parameter "translate_to_phred33"
+           of type "bool", parameter "sliding_window_size" of Long, parameter
            "sliding_window_min_quality" of Long, parameter
            "leading_min_quality" of Long, parameter "trailing_min_quality" of
            Long, parameter "crop_length" of Long, parameter
@@ -475,11 +552,19 @@ execTrimmomaticSingleLibrary() runs Trimmomatic on a single library
         env = os.environ.copy()
         env['KB_AUTH_TOKEN'] = token
 
+        # object info
+        [OBJID_I, NAME_I, TYPE_I, SAVE_DATE_I, VERSION_I, SAVED_BY_I, WSID_I, WORKSPACE_I, CHSUM_I, SIZE_I, META_I] = range(11)  # object_info tuple
+
+        Set_types = ["KBaseSets.ReadsSet", "KBaseRNASeq.RNASeqSampleSet"]
+        PE_types  = ["KBaseFile.PairedEndLibrary", "KBaseAssembly.PairedEndLibrary"]
+        SE_types  = ["KBaseFile.SingleEndLibrary", "KBaseAssembly.SingleEndLibrary"]
+        acceptable_types = Set_types + PE_types + SE_types
+
         # param checks
         required_params = ['input_reads_ref',
                            'output_ws',
-                           'output_reads_name',
-                           'read_type'
+                           'output_reads_name'
+#                           'read_type'
                           ]
         for required_param in required_params:
             if required_param not in input_params or input_params[required_param] == None:
@@ -495,30 +580,28 @@ execTrimmomaticSingleLibrary() runs Trimmomatic on a single library
         # Determine whether read library or read set is input object
         #
         try:
-            # object_info tuple
-            [OBJID_I, NAME_I, TYPE_I, SAVE_DATE_I, VERSION_I, SAVED_BY_I, WSID_I, WORKSPACE_I, CHSUM_I, SIZE_I, META_I] = range(11)
-
             input_reads_obj_info = wsClient.get_object_info_new ({'objects':[{'ref':input_params['input_reads_ref']}]})[0]
             input_reads_obj_type = input_reads_obj_info[TYPE_I]
+            input_reads_obj_type = re.sub ('-[0-9]+\.[0-9]+$', "", input_reads_obj_type)  # remove trailing version
             #input_reads_obj_version = input_reads_obj_info[VERSION_I]  # this is object version, not type version
-
         except Exception as e:
             raise ValueError('Unable to get read library object from workspace: (' + str(input_params['input_reads_ref']) +')' + str(e))
 
-        #self.log (console, "B4 TYPE: '"+str(input_reads_obj_type)+"' VERSION: '"+str(input_reads_obj_version)+"'")
-        input_reads_obj_type = re.sub ('-[0-9]+\.[0-9]+$', "", input_reads_obj_type)  # remove trailing version
-        #self.log (console, "AF TYPE: '"+str(input_reads_obj_type)+"' VERSION: '"+str(input_reads_obj_version)+"'")
-
-        acceptable_types = ["KBaseSets.ReadsSet", "KBaseRNASeq.RNASeqSampleSet", "KBaseFile.PairedEndLibrary", "KBaseFile.SingleEndLibrary", "KBaseAssembly.PairedEndLibrary", "KBaseAssembly.SingleEndLibrary"]
         if input_reads_obj_type not in acceptable_types:
             raise ValueError ("Input reads of type: '"+input_reads_obj_type+"'.  Must be one of "+", ".join(acceptable_types))
 
+        # auto-detect reads type
+        read_type = None
+        if input_reads_obj_type in PE_types:
+            read_type = 'PE'
+        elif input_reads_obj_type in SE_types:
+            read_type = 'SE'
 
         # get set
         #
         readsSet_ref_list = []
         readsSet_names_list = []
-        if input_reads_obj_type in ["KBaseSets.ReadsSet", "KBaseRNASeq.RNASeqSampleSet"]:
+        if input_reads_obj_type in Set_types:
             try:
                 #self.log (console, "INPUT_READS_REF: '"+input_params['input_reads_ref']+"'")  # DEBUG
                 #setAPI_Client = SetAPI (url=self.callbackURL, token=ctx['token'])  # for SDK local.  doesn't work for SetAPI
@@ -529,11 +612,21 @@ execTrimmomaticSingleLibrary() runs Trimmomatic on a single library
                 raise ValueError('SetAPI FAILURE: Unable to get read library set object from workspace: (' + str(input_params['input_reads_ref'])+")\n" + str(e))
             for readsLibrary_obj in input_readsSet_obj['data']['items']:
                 readsSet_ref_list.append(readsLibrary_obj['ref'])
-                NAME_I = 1
                 readsSet_names_list.append(readsLibrary_obj['info'][NAME_I])
+                reads_item_type = readsLibrary_obj['info'][TYPE_I]
+                reads_item_type = re.sub ('-[0-9]+\.[0-9]+$', "", reads_item_type)  # remove trailing version
+                if reads_item_type in PE_types:
+                    this_read_type = 'PE'
+                elif reads_item_type in SE_types:
+                    this_read_type = 'SE'
+                else:
+                    raise ValueError ("Can't handle read item type '"+reads_item_type+"' obj_name: '"+readsLibrary_obj['info'][NAME_I]+" in Set: '"+str(input_params['input_reads_ref'])+"'")
+                if read_type != None and this_read_type != read_type:
+                    raise ValueError ("Can't handle read Set: '"+str(input_params['input_reads_ref'])+"'.  Unable to process mixed PairedEndLibrary and SingleEndLibrary.  Please split into separate ReadSets")
+                elif read_type == None:
+                    read_type = this_read_type
         else:
             readsSet_ref_list = [input_params['input_reads_ref']]
-            NAME_I = 1
             readsSet_names_list = [input_reads_obj_info[NAME_I]]
 
 
@@ -551,12 +644,13 @@ execTrimmomaticSingleLibrary() runs Trimmomatic on a single library
             execTrimmomaticParams = { 'input_reads_ref': input_reads_library_ref,
                                       'output_ws': input_params['output_ws']
                                       }
-            optional_params = ['read_type',
+            optional_params = [ #'read_type',
                                'adapterFa',
                                'seed_mismatches',
                                'palindrome_clip_threshold',
                                'simple_clip_threshold',
-                               'quality_encoding',
+                               #'quality_encoding',
+                               'translate_to_phred33',
                                'sliding_window_size',
                                'sliding_window_min_quality',
                                'leading_min_quality',
@@ -569,7 +663,11 @@ execTrimmomaticSingleLibrary() runs Trimmomatic on a single library
                 if arg in input_params:
                     execTrimmomaticParams[arg] = input_params[arg]
 
-            if input_reads_obj_type not in ["KBaseSets.ReadsSet", "KBaseRNASeq.RNASeqSampleSet"]:
+            # add auto-detected read_type
+            execTrimmomaticParams['read_type'] = read_type
+
+            # set output name
+            if input_reads_obj_type not in Set_types:
                 execTrimmomaticParams['output_reads_name'] = input_params['output_reads_name']
             else:
                 execTrimmomaticParams['output_reads_name'] = readsSet_names_list[reads_item_i]+'_trimm'
@@ -577,8 +675,10 @@ execTrimmomaticSingleLibrary() runs Trimmomatic on a single library
             report += "RUNNING TRIMMOMATIC ON LIBRARY: "+str(input_reads_library_ref)+" "+str(readsSet_names_list[reads_item_i])+"\n"
             report += "-----------------------------------------------------------------------------------\n\n"
 
+            # run Trimmomatic App for One Library at a Time
             trimmomaticSingleLibrary_retVal = self.execTrimmomaticSingleLibrary (ctx, execTrimmomaticParams)[0]
-
+            
+            # add to report
             report += trimmomaticSingleLibrary_retVal['report']+"\n\n"
             trimmed_readsSet_refs.append (trimmomaticSingleLibrary_retVal['output_filtered_ref'])
             unpaired_fwd_readsSet_refs.append (trimmomaticSingleLibrary_retVal['output_unpaired_fwd_ref'])
@@ -609,7 +709,6 @@ execTrimmomaticSingleLibrary() runs Trimmomatic on a single library
                     try:
                         label = input_readsSet_obj['data']['items'][i]['label']
                     except:
-                        NAME_I = 1
                         label = wsClient.get_object_info_new ({'objects':[{'ref':lib_ref}]})[0][NAME_I]
                     label = label + "_Trimm_paired"
 
@@ -619,7 +718,7 @@ execTrimmomaticSingleLibrary() runs Trimmomatic on a single library
                                   #'info':
                                       })
             if some_trimmed_output_created:
-                if input_params['read_type'] == 'SE':
+                if read_type == 'SE':
                     reads_desc_ext = " Trimmomatic trimmed SingleEndLibrary"
                     reads_name_ext = "_trimm"
                 else:
@@ -652,10 +751,8 @@ execTrimmomaticSingleLibrary() runs Trimmomatic on a single library
                             if len(unpaired_fwd_readsSet_refs) == len(input_readsSet_obj['data']['items']):
                                 label = input_readsSet_obj['data']['items'][i]['label']
                             else:
-                                NAME_I = 1
                                 label = wsClient.get_object_info_new ({'objects':[{'ref':lib_ref}]})[0][NAME_I]
                         except:
-                            NAME_I = 1
                             label = wsClient.get_object_info_new ({'objects':[{'ref':lib_ref}]})[0][NAME_I]
                         label = label + "_Trimm_unpaired_fwd"
 
@@ -691,11 +788,9 @@ execTrimmomaticSingleLibrary() runs Trimmomatic on a single library
                             if len(unpaired_rev_readsSet_refs) == len(input_readsSet_obj['data']['items']):
                                 label = input_readsSet_obj['data']['items'][i]['label']
                             else:
-                                NAME_I = 1
                                 label = wsClient.get_object_info_new ({'objects':[{'ref':lib_ref}]})[0][NAME_I]
 
                         except:
-                            NAME_I = 1
                             label = wsClient.get_object_info_new ({'objects':[{'ref':lib_ref}]})[0][NAME_I]
                         label = label + "_Trimm_unpaired_rev"
 
@@ -744,8 +839,8 @@ execTrimmomaticSingleLibrary() runs Trimmomatic on a single library
            of type "data_obj_name", parameter "read_type" of String,
            parameter "adapterFa" of String, parameter "seed_mismatches" of
            Long, parameter "palindrome_clip_threshold" of Long, parameter
-           "simple_clip_threshold" of Long, parameter "quality_encoding" of
-           String, parameter "sliding_window_size" of Long, parameter
+           "simple_clip_threshold" of Long, parameter "translate_to_phred33"
+           of type "bool", parameter "sliding_window_size" of Long, parameter
            "sliding_window_min_quality" of Long, parameter
            "leading_min_quality" of Long, parameter "trailing_min_quality" of
            Long, parameter "crop_length" of Long, parameter
@@ -774,6 +869,14 @@ execTrimmomaticSingleLibrary() runs Trimmomatic on a single library
         env = os.environ.copy()
         env['KB_AUTH_TOKEN'] = token
 
+        # object info
+        [OBJID_I, NAME_I, TYPE_I, SAVE_DATE_I, VERSION_I, SAVED_BY_I, WSID_I, WORKSPACE_I, CHSUM_I, SIZE_I, META_I] = range(11)  # object_info tuple
+
+        #Set_types = ["KBaseSets.ReadsSet", "KBaseRNASeq.RNASeqSampleSet"]
+        PE_types = ["KBaseFile.PairedEndLibrary", "KBaseAssembly.PairedEndLibrary"]
+        SE_types = ["KBaseFile.SingleEndLibrary", "KBaseAssembly.SingleEndLibrary"]
+        acceptable_types = PE_types + SE_types
+
         # param checks
         required_params = ['input_reads_ref',
                            'output_ws',
@@ -786,7 +889,7 @@ execTrimmomaticSingleLibrary() runs Trimmomatic on a single library
 
         # and param defaults
         defaults = {
-            'quality_encoding':           'phred33',
+            #'quality_encoding':           'phred33',
             'seed_mismatches':            '0', # '2',
             'palindrome_clip_threshold':  '0', # '3',
             'simple_clip_threshold':      '0', # '10',
@@ -821,9 +924,6 @@ execTrimmomaticSingleLibrary() runs Trimmomatic on a single library
         # Determine whether read library is of correct type
         #
         try:
-            # object_info tuple
-            [OBJID_I, NAME_I, TYPE_I, SAVE_DATE_I, VERSION_I, SAVED_BY_I, WSID_I, WORKSPACE_I, CHSUM_I, SIZE_I, META_I] = range(11)
-
             input_reads_obj_info = wsClient.get_object_info_new ({'objects':[{'ref':input_params['input_reads_ref']}]})[0]
             input_reads_obj_type = input_reads_obj_info[TYPE_I]
             #input_reads_obj_version = input_reads_obj_info[VERSION_I]  # this is object version, not type version
@@ -831,34 +931,18 @@ execTrimmomaticSingleLibrary() runs Trimmomatic on a single library
         except Exception as e:
             raise ValueError('Unable to get read library object from workspace: (' + str(input_params['input_reads_ref']) +')' + str(e))
 
-        #self.log (console, "B4 TYPE: '"+str(input_reads_obj_type)+"' VERSION: '"+str(input_reads_obj_version)+"'")
         input_reads_obj_type = re.sub ('-[0-9]+\.[0-9]+$', "", input_reads_obj_type)  # remove trailing version
-        #self.log (console, "AF TYPE: '"+str(input_reads_obj_type)+"' VERSION: '"+str(input_reads_obj_version)+"'")
-
-        acceptable_types = ["KBaseFile.PairedEndLibrary", "KBaseAssembly.PairedEndLibrary", "KBaseAssembly.SingleEndLibrary", "KBaseFile.SingleEndLibrary"]
+        acceptable_types = PE_types + SE_types
         if input_reads_obj_type not in acceptable_types:
             raise ValueError ("Input reads of type: '"+input_reads_obj_type+"'.  Must be one of "+", ".join(acceptable_types))
 
 
         # Confirm user is paying attention (matters because Trimmomatic params are very different for PairedEndLibary and SingleEndLibrary
         #
-        if input_params['read_type'] == 'PE' \
-                and (input_reads_obj_type == 'KBaseAssembly.SingleEndLibrary' \
-                     or input_reads_obj_type == 'KBaseFile.SingleEndLibrary'):
+        if input_params['read_type'] == 'PE' and not input_reads_obj_type in PE_types:
             raise ValueError ("read_type set to 'Paired End' but object is SingleEndLibrary")
-        if input_params['read_type'] == 'SE' \
-                and (input_reads_obj_type == 'KBaseAssembly.PairedEndLibrary' \
-                     or input_reads_obj_type == 'KBaseFile.PairedEndLibrary'):
+        if input_params['read_type'] == 'SE' and not input_reads_obj_type in SE_types:
             raise ValueError ("read_type set to 'Single End' but object is PairedEndLibrary")
-
-
-        # Let's rock!
-        #
-        trimmomatic_params  = self.parse_trimmomatic_steps(input_params)
-        trimmomatic_options = str(input_params['read_type']) + ' -' + str(input_params['quality_encoding'])
-
-        self.log(console, pformat(trimmomatic_params))
-        self.log(console, pformat(trimmomatic_options))
 
 
         # Instatiate ReadsUtils
@@ -892,6 +976,21 @@ execTrimmomaticSingleLibrary() runs Trimmomatic on a single library
 #            for line_i in range(20):
 #                self.log (console, rev_reads_handle.readline())
 #            rev_reads_handle.close ()
+
+
+            # Set Params
+            #
+            trimmomatic_params  = self.parse_trimmomatic_steps(input_params)
+
+            # add auto-detected quality_encoding
+            if self.is_fastq_phred64 (input_fwd_file_path):
+                quality_encoding = 'phred64'
+            else:
+                quality_encoding = 'phred33'
+
+            trimmomatic_options = str(input_params['read_type']) + ' -' + quality_encoding
+            self.log(console, pformat(trimmomatic_params))
+            self.log(console, pformat(trimmomatic_options))
 
 
             # Run Trimmomatic
@@ -937,7 +1036,6 @@ execTrimmomaticSingleLibrary() runs Trimmomatic on a single library
                 raise ValueError('Error running kb_trimmomatic, return code: ' +
                                  str(cmdProcess.returncode) + '\n')
 
-
             report += "\n".join(outputlines)
             #report += "cmdstring: " + cmdstring + " stdout: " + stdout + " stderr " + stderr
 
@@ -959,6 +1057,7 @@ execTrimmomaticSingleLibrary() runs Trimmomatic on a single library
                 'Reverse Only Surviving: '+ read_count_reverse_only,
                 'Dropped: '+ read_count_dropped) )
 
+
             # upload paired reads
             if not os.path.isfile (output_fwd_paired_file_path) \
                 or os.path.getsize (output_fwd_paired_file_path) == 0 \
@@ -967,6 +1066,18 @@ execTrimmomaticSingleLibrary() runs Trimmomatic on a single library
                 retVal['output_filtered_ref'] = None
                 report += "\n\nNo reads were trimmed, so no trimmed reads object was generated."
             else:
+
+                # standardize quality encoding
+                if 'translate_to_phred33' in input_params and input_params['translate_to_phred33'] == 1 and quality_encoding == 'phred64':
+                #if False:  # DEBUG
+                    self.log (console, "TRANSLATING OUTPUT FWD PAIRED FASTQ FILE...")
+                    output_fwd_paired_file_path = self.translate_fastq_from_phred64_to_phred33 \
+                                                  (output_fwd_paired_file_path, \
+                                                   re.sub ("\.fastq$", ".q33.fastq", output_fwd_paired_file_path))
+                    output_rev_paired_file_path = self.translate_fastq_from_phred64_to_phred33 \
+                                                  (output_rev_paired_file_path, \
+                                                   re.sub ("\.fastq$", ".q33.fastq", output_rev_paired_file_path))
+
                 output_obj_name = input_params['output_reads_name']+'_paired'
                 self.log(console, 'Uploading trimmed paired reads: '+output_obj_name)
                 retVal['output_filtered_ref'] = readsUtils_Client.upload_reads ({ 'wsname': str(input_params['output_ws']),
@@ -989,6 +1100,14 @@ execTrimmomaticSingleLibrary() runs Trimmomatic on a single library
 
                 retVal['output_unpaired_fwd_ref'] = None
             else:
+                # standardize quality encoding
+                if 'translate_to_phred33' in input_params and input_params['translate_to_phred33'] == 1 and quality_encoding == 'phred64':
+                #if False:  # DEBUG
+                    self.log (console, "TRANSLATING OUTPUT FWD UNPAIRED FASTQ FILE...")
+                    output_fwd_unpaired_file_path = self.translate_fastq_from_phred64_to_phred33 \
+                                                    (output_fwd_unpaired_file_path, \
+                                                     re.sub ("\.fastq$", ".q33.fastq", output_fwd_unpaired_file_path))
+
                 output_obj_name = input_params['output_reads_name']+'_unpaired_fwd'
                 self.log(console, '\nUploading trimmed unpaired forward reads: '+output_obj_name)
                 retVal['output_unpaired_fwd_ref'] = readsUtils_Client.upload_reads ({ 'wsname': str(input_params['output_ws']),
@@ -1008,6 +1127,14 @@ execTrimmomaticSingleLibrary() runs Trimmomatic on a single library
 
                 retVal['output_unpaired_rev_ref'] = None
             else:
+                # standardize quality encoding
+                if 'translate_to_phred33' in input_params and input_params['translate_to_phred33'] == 1 and quality_encoding == 'phred64':
+                #if False:  # DEBUG
+                    self.log (console, "TRANSLATING OUTPUT REV UNPAIRED FASTQ FILE...")
+                    output_rev_unpaired_file_path = self.translate_fastq_from_phred64_to_phred33 \
+                                                    (output_rev_unpaired_file_path, \
+                                                     re.sub ("\.fastq$", ".q33.fastq", output_rev_unpaired_file_path))
+
                 output_obj_name = input_params['output_reads_name']+'_unpaired_rev'
                 self.log(console, '\nUploading trimmed unpaired reverse reads: '+output_obj_name)
                 retVal['output_unpaired_rev_ref'] = readsUtils_Client.upload_reads ({ 'wsname': str(input_params['output_ws']),
@@ -1030,6 +1157,20 @@ execTrimmomaticSingleLibrary() runs Trimmomatic on a single library
             # Download reads Libs to FASTQ files
             input_fwd_file_path = readsLibrary['files'][input_params['input_reads_ref']]['files']['fwd']
             sequencing_tech     = readsLibrary['files'][input_params['input_reads_ref']]['sequencing_tech']
+
+            # Set Params
+            #
+            trimmomatic_params  = self.parse_trimmomatic_steps(input_params)
+
+            # add auto-detected quality_encoding
+            if self.is_fastq_phred64 (input_fwd_file_path):
+                quality_encoding = 'phred64'
+            else:
+                quality_encoding = 'phred33'
+
+            trimmomatic_options = str(input_params['read_type']) + ' -' + quality_encoding
+            self.log(console, pformat(trimmomatic_params))
+            self.log(console, pformat(trimmomatic_options))
 
 
             # Run Trimmomatic
@@ -1065,7 +1206,6 @@ execTrimmomaticSingleLibrary() runs Trimmomatic on a single library
                 raise ValueError('Error running kb_trimmomatic, return code: ' +
                                  str(cmdProcess.returncode) + '\n')
 
-
             report += "\n".join(outputlines)
 
             # free up disk
@@ -1081,6 +1221,14 @@ execTrimmomaticSingleLibrary() runs Trimmomatic on a single library
 
                 retVal['output_filtered_ref'] = None
             else:
+                # standardize quality encoding
+                if 'translate_to_phred33' in input_params and input_params['translate_to_phred33'] == 1 and quality_encoding == 'phred64':
+                #if False:  # DEBUG
+                    self.log (console, "TRANSLATING OUTPUT FASTQ FILE...")
+                    output_fwd_file_path = self.translate_fastq_from_phred64_to_phred33 \
+                                           (output_fwd_file_path, \
+                                            re.sub ("\.fastq$", ".q33.fastq", output_fwd_file_path))
+
                 output_obj_name = input_params['output_reads_name']
                 self.log(console, 'Uploading trimmed reads: '+output_obj_name)
 

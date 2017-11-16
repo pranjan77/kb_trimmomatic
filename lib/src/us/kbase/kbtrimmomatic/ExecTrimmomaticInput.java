@@ -31,7 +31,7 @@ import com.fasterxml.jackson.annotation.JsonPropertyOrder;
     "seed_mismatches",
     "palindrome_clip_threshold",
     "simple_clip_threshold",
-    "quality_encoding",
+    "translate_to_phred33",
     "sliding_window_size",
     "sliding_window_min_quality",
     "leading_min_quality",
@@ -58,8 +58,8 @@ public class ExecTrimmomaticInput {
     private Long palindromeClipThreshold;
     @JsonProperty("simple_clip_threshold")
     private Long simpleClipThreshold;
-    @JsonProperty("quality_encoding")
-    private String qualityEncoding;
+    @JsonProperty("translate_to_phred33")
+    private Long translateToPhred33;
     @JsonProperty("sliding_window_size")
     private Long slidingWindowSize;
     @JsonProperty("sliding_window_min_quality")
@@ -196,18 +196,18 @@ public class ExecTrimmomaticInput {
         return this;
     }
 
-    @JsonProperty("quality_encoding")
-    public String getQualityEncoding() {
-        return qualityEncoding;
+    @JsonProperty("translate_to_phred33")
+    public Long getTranslateToPhred33() {
+        return translateToPhred33;
     }
 
-    @JsonProperty("quality_encoding")
-    public void setQualityEncoding(String qualityEncoding) {
-        this.qualityEncoding = qualityEncoding;
+    @JsonProperty("translate_to_phred33")
+    public void setTranslateToPhred33(Long translateToPhred33) {
+        this.translateToPhred33 = translateToPhred33;
     }
 
-    public ExecTrimmomaticInput withQualityEncoding(String qualityEncoding) {
-        this.qualityEncoding = qualityEncoding;
+    public ExecTrimmomaticInput withTranslateToPhred33(Long translateToPhred33) {
+        this.translateToPhred33 = translateToPhred33;
         return this;
     }
 
@@ -328,7 +328,7 @@ public class ExecTrimmomaticInput {
 
     @Override
     public String toString() {
-        return ((((((((((((((((((((((((((((((((((("ExecTrimmomaticInput"+" [inputReadsRef=")+ inputReadsRef)+", outputWs=")+ outputWs)+", outputReadsName=")+ outputReadsName)+", readType=")+ readType)+", adapterFa=")+ adapterFa)+", seedMismatches=")+ seedMismatches)+", palindromeClipThreshold=")+ palindromeClipThreshold)+", simpleClipThreshold=")+ simpleClipThreshold)+", qualityEncoding=")+ qualityEncoding)+", slidingWindowSize=")+ slidingWindowSize)+", slidingWindowMinQuality=")+ slidingWindowMinQuality)+", leadingMinQuality=")+ leadingMinQuality)+", trailingMinQuality=")+ trailingMinQuality)+", cropLength=")+ cropLength)+", headCropLength=")+ headCropLength)+", minLength=")+ minLength)+", additionalProperties=")+ additionalProperties)+"]");
+        return ((((((((((((((((((((((((((((((((((("ExecTrimmomaticInput"+" [inputReadsRef=")+ inputReadsRef)+", outputWs=")+ outputWs)+", outputReadsName=")+ outputReadsName)+", readType=")+ readType)+", adapterFa=")+ adapterFa)+", seedMismatches=")+ seedMismatches)+", palindromeClipThreshold=")+ palindromeClipThreshold)+", simpleClipThreshold=")+ simpleClipThreshold)+", translateToPhred33=")+ translateToPhred33)+", slidingWindowSize=")+ slidingWindowSize)+", slidingWindowMinQuality=")+ slidingWindowMinQuality)+", leadingMinQuality=")+ leadingMinQuality)+", trailingMinQuality=")+ trailingMinQuality)+", cropLength=")+ cropLength)+", headCropLength=")+ headCropLength)+", minLength=")+ minLength)+", additionalProperties=")+ additionalProperties)+"]");
     }
 
 }

@@ -41,15 +41,14 @@ class kb_trimmomatic(object):
            "workspace_name" (** Common types), parameter "input_reads_ref" of
            type "data_obj_ref", parameter "output_ws" of type
            "workspace_name" (** Common types), parameter "output_reads_name"
-           of type "data_obj_name", parameter "read_type" of String,
-           parameter "quality_encoding" of String, parameter "adapter_clip"
-           of type "AdapterClip_Options" -> structure: parameter "adapterFa"
-           of String, parameter "seed_mismatches" of Long, parameter
-           "palindrome_clip_threshold" of Long, parameter
-           "simple_clip_threshold" of Long, parameter "sliding_window" of
-           type "SlidingWindow_Options" (parameter groups) -> structure:
-           parameter "sliding_window_size" of Long, parameter
-           "sliding_window_min_quality" of Long, parameter
+           of type "data_obj_name", parameter "translate_to_phred33" of type
+           "bool", parameter "adapter_clip" of type "AdapterClip_Options" ->
+           structure: parameter "adapterFa" of String, parameter
+           "seed_mismatches" of Long, parameter "palindrome_clip_threshold"
+           of Long, parameter "simple_clip_threshold" of Long, parameter
+           "sliding_window" of type "SlidingWindow_Options" (parameter
+           groups) -> structure: parameter "sliding_window_size" of Long,
+           parameter "sliding_window_min_quality" of Long, parameter
            "leading_min_quality" of Long, parameter "trailing_min_quality" of
            Long, parameter "crop_length" of Long, parameter
            "head_crop_length" of Long, parameter "min_length" of Long
@@ -70,8 +69,8 @@ class kb_trimmomatic(object):
            of type "data_obj_name", parameter "read_type" of String,
            parameter "adapterFa" of String, parameter "seed_mismatches" of
            Long, parameter "palindrome_clip_threshold" of Long, parameter
-           "simple_clip_threshold" of Long, parameter "quality_encoding" of
-           String, parameter "sliding_window_size" of Long, parameter
+           "simple_clip_threshold" of Long, parameter "translate_to_phred33"
+           of type "bool", parameter "sliding_window_size" of Long, parameter
            "sliding_window_min_quality" of Long, parameter
            "leading_min_quality" of Long, parameter "trailing_min_quality" of
            Long, parameter "crop_length" of Long, parameter
@@ -96,8 +95,8 @@ class kb_trimmomatic(object):
            of type "data_obj_name", parameter "read_type" of String,
            parameter "adapterFa" of String, parameter "seed_mismatches" of
            Long, parameter "palindrome_clip_threshold" of Long, parameter
-           "simple_clip_threshold" of Long, parameter "quality_encoding" of
-           String, parameter "sliding_window_size" of Long, parameter
+           "simple_clip_threshold" of Long, parameter "translate_to_phred33"
+           of type "bool", parameter "sliding_window_size" of Long, parameter
            "sliding_window_min_quality" of Long, parameter
            "leading_min_quality" of Long, parameter "trailing_min_quality" of
            Long, parameter "crop_length" of Long, parameter
