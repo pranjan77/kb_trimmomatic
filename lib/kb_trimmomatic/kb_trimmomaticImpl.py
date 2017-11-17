@@ -411,7 +411,7 @@ execTrimmomaticSingleLibrary() runs Trimmomatic on a single library
         html_output_dir = os.path.join(self.scratch,'output_html.'+str(timestamp))
         if not os.path.exists(html_output_dir):
             os.makedirs(html_output_dir)
-        html_file = params['output_reads_name']+'.html'
+        html_file = input_params['output_reads_name']+'.html'
         output_html_file_path = os.path.join(html_output_dir, html_file);
 
         # html config
@@ -489,7 +489,7 @@ execTrimmomaticSingleLibrary() runs Trimmomatic on a single library
         reportObj['direct_html_link_index'] = 0
         reportObj['html_links'] = [{'shock_id': html_upload_ret['shock_id'],
                                     'name': html_file,
-                                    'label': params['output_reads_name']+' HTML'
+                                    'label': input_params['output_reads_name']+' HTML'
                                     }
                                    ]
 
