@@ -1,3 +1,7 @@
+### Version 1.2.6
+__Changes__
+- made HTML report a separate entity rather than embedding in Report object
+
 ### Version 1.2.5
 __Changes__
 - removed manual configuration of phred33/phred64 quality encoding to make auto-detect
