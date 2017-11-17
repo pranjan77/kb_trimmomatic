@@ -9,11 +9,13 @@ import subprocess
 import os
 import re
 from pprint import pprint, pformat
+from datetime import datetime
 import uuid
 
 ## SDK Utils
 from ReadsUtils.ReadsUtilsClient import ReadsUtils
 from SetAPI.SetAPIServiceClient import SetAPI
+from DataFileUtil.DataFileUtilClient import DataFileUtil as DFUClient
 from KBaseReport.KBaseReportClient import KBaseReport
 #END_HEADER
 
@@ -38,9 +40,9 @@ execTrimmomaticSingleLibrary() runs Trimmomatic on a single library
     # state. A method could easily clobber the state set by another while
     # the latter method is running.
     ######################################### noqa
-    VERSION = "1.2.5"
+    VERSION = "1.2.6"
     GIT_URL = "https://github.com/kbaseapps/kb_trimmomatic"
-    GIT_COMMIT_HASH = "4d5ff3b25e05b921425a6c00fbc11cac6886b5bc"
+    GIT_COMMIT_HASH = "c607c0561646272799e36d267608858e7e131754"
 
     #BEGIN_CLASS_HEADER
     workspaceURL = None
@@ -248,6 +250,7 @@ execTrimmomaticSingleLibrary() runs Trimmomatic on a single library
         # ctx is the context object
         # return variables are: output
         #BEGIN runTrimmomatic
+        dfu = DFUClient(self.callbackURL)
         console = []
         self.log(console, 'Running runTrimmomatic with parameters: ')
         self.log(console, "\n"+pformat(input_params))
@@ -347,7 +350,7 @@ execTrimmomaticSingleLibrary() runs Trimmomatic on a single library
         reportObj = {'objects_created': [],
                      #'text_message': '',  # or is it 'message'?
                      'message': '',  # or is it 'text_message'?
-                     'direct_html': '',
+                     'direct_html': None,
                      'direct_html_index': 0,
                      'file_links': [],
                      'html_links': [],
@@ -401,7 +404,17 @@ execTrimmomaticSingleLibrary() runs Trimmomatic on a single library
                     except ValueError:
                         print("Can't parse [" + line + "] (lib_i=" + str(lib_i) + ")")
 
-        # html report
+
+        #### HTML report
+        ##
+        timestamp = int((datetime.utcnow() - datetime.utcfromtimestamp(0)).total_seconds()*1000)
+        html_output_dir = os.path.join(self.scratch,'output_html.'+str(timestamp))
+        if not os.path.exists(html_output_dir):
+            os.makedirs(html_output_dir)
+        html_file = input_params['output_reads_name']+'.html'
+        output_html_file_path = os.path.join(html_output_dir, html_file);
+
+        # html config
         sp = '&nbsp;'
         text_color = "#606060"
         bar_color = "lightblue"
@@ -459,7 +472,26 @@ execTrimmomaticSingleLibrary() runs Trimmomatic on a single library
         html_report_lines += ['</body>']
         html_report_lines += ['</html>']
 
-        reportObj['direct_html'] = "\n".join(html_report_lines)
+        # write html to file and upload
+        html_report_str = "\n".join(html_report_lines)
+        #reportObj['direct_html'] = "\n".join(html_report_lines)   # doesn't always fit in buf
+        with open (output_html_file_path, 'w', 0) as html_handle:
+            html_handle.write(html_report_str)
+        try:
+            html_upload_ret = dfu.file_to_shock({'file_path': html_output_dir,
+                                                 'make_handle': 0,
+                                                 'pack': 'zip'})
+        except:
+            raise ValueError ('error uploading HTML file to shock')
+
+        # attach to report obj
+        reportObj['direct_html'] = None
+        reportObj['direct_html_link_index'] = 0
+        reportObj['html_links'] = [{'shock_id': html_upload_ret['shock_id'],
+                                    'name': html_file,
+                                    'label': input_params['output_reads_name']+' HTML'
+                                    }
+                                   ]
 
         # trimmed object
         if trimmomatic_retVal['output_filtered_ref'] != None:
