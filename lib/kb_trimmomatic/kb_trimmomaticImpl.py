@@ -40,9 +40,9 @@ execTrimmomaticSingleLibrary() runs Trimmomatic on a single library
     # state. A method could easily clobber the state set by another while
     # the latter method is running.
     ######################################### noqa
-    VERSION = "1.2.6"
+    VERSION = "1.2.7"
     GIT_URL = "https://github.com/kbaseapps/kb_trimmomatic"
-    GIT_COMMIT_HASH = "c607c0561646272799e36d267608858e7e131754"
+    GIT_COMMIT_HASH = "ce5f52a1efe71e8a2803e5c0d843988f40bcec17"
 
     #BEGIN_CLASS_HEADER
     workspaceURL = None
@@ -477,15 +477,19 @@ execTrimmomaticSingleLibrary() runs Trimmomatic on a single library
         #reportObj['direct_html'] = "\n".join(html_report_lines)   # doesn't always fit in buf
         with open (output_html_file_path, 'w', 0) as html_handle:
             html_handle.write(html_report_str)
+
         try:
-            html_upload_ret = dfu.file_to_shock({'file_path': html_output_dir,
-                                                 'make_handle': 0,
-                                                 'pack': 'zip'})
+            #html_upload_ret = dfu.file_to_shock({'file_path': html_output_dir,
+            html_upload_ret = dfu.file_to_shock({'file_path': output_html_file_path,
+                                                 'make_handle': 0})
+                                                 #'make_handle': 0,
+                                                 #'pack': 'zip'})
         except:
             raise ValueError ('error uploading HTML file to shock')
 
         # attach to report obj
-        reportObj['direct_html'] = None
+        #reportObj['direct_html'] = None
+        reportObj['direct_html'] = ''
         reportObj['direct_html_link_index'] = 0
         reportObj['html_links'] = [{'shock_id': html_upload_ret['shock_id'],
                                     'name': html_file,

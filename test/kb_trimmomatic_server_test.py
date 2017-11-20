@@ -99,6 +99,8 @@ class kb_trimmomaticTest(unittest.TestCase):
 
         if file_path is None:
             raise Exception("No file given for upload to SHOCK!")
+        if not file_path.startswith(os.sep):
+            file_path = os.path.join(os.sep, 'kb','module','test',file_path)
 
         with open(os.path.abspath(file_path), 'rb') as dataFile:
             files = {'upload': dataFile}
@@ -507,6 +509,8 @@ class kb_trimmomaticTest(unittest.TestCase):
 
     ### TEST 1: run Trimmomatic against just one single end library
     #
+    # Uncomment to skip this test
+    #HIDE @unittest.skip("skipped test_runTrimmomatic_SingleEndLibrary()")
     def test_runTrimmomatic_SingleEndLibrary(self):
 
         print ("\n\nRUNNING: test_runTrimmomatic_SingleEndLibrary()")
@@ -558,6 +562,8 @@ class kb_trimmomaticTest(unittest.TestCase):
 
     ### TEST 2: run Trimmomatic against just one paired end library
     #
+    # Uncomment to skip this test
+    #HIDE @unittest.skip("skipped test_runTrimmomatic_PairedEndLibrary()")
     def test_runTrimmomatic_PairedEndLibrary(self):
 
         print ("\n\nRUNNING: test_runTrimmomatic_PairedEndLibrary()")
@@ -609,6 +615,8 @@ class kb_trimmomaticTest(unittest.TestCase):
 
     ### TEST 3: run Trimmomatic against a Single End Library reads set
     #
+    # Uncomment to skip this test
+    #HIDE @unittest.skip("skipped test_runTrimmomatic_SingleEndLibrary_ReadsSet()")
     def test_runTrimmomatic_SingleEndLibrary_ReadsSet(self):
 
         print ("\n\nRUNNING: test_runTrimmomatic_SingleEndLibrary_ReadsSet()")
@@ -660,6 +668,8 @@ class kb_trimmomaticTest(unittest.TestCase):
 
     ### TEST 4: run Trimmomatic against a Paired End Library reads set
     #
+    # Uncomment to skip this test
+    #HIDE @unittest.skip("skipped test_runTrimmomatic_PairedEndLibrary_ReadsSet()")
     def test_runTrimmomatic_PairedEndLibrary_ReadsSet(self):
 
         print ("\n\nRUNNING: test_runTrimmomatic_PairedEndLibrary_ReadsSet()")
@@ -708,8 +718,11 @@ class kb_trimmomaticTest(unittest.TestCase):
         self.assertEqual(trimmed_reads_info[1],paired_output_name)
         self.assertEqual(trimmed_reads_info[2].split('-')[0],'KBaseSets.ReadsSet')
 
+
     ### TEST 5: run Trimmomatic against a Single End Library sample set
     #
+    # Uncomment to skip this test
+    #HIDE @unittest.skip("skipped test_runTrimmomatic_SingleEndLibrary_SampleSet()")
     def test_runTrimmomatic_SingleEndLibrary_SampleSet(self):
 
         print ("\n\nRUNNING: test_runTrimmomatic_SingleEndLibrary_SampleSet()")
@@ -758,7 +771,11 @@ class kb_trimmomaticTest(unittest.TestCase):
         self.assertEqual(trimmed_reads_info[1],single_output_name)
         self.assertEqual(trimmed_reads_info[2].split('-')[0],'KBaseSets.ReadsSet')
 
+
     ### TEST 6: run Trimmomatic with data that doesn't get trimmed, check report output.
+    #
+    # Uncomment to skip this test
+    #HIDE @unittest.skip("skipped test_runTrimmomatic_SingleEndLibrary_no_trimming()")
     def test_runTrimmomatic_SingleEndLibrary_no_trimming(self):
         print("\n\nRUNNING: test_runTrimmomatic_SingleEndLibrary_no_trimming")
         print("---------------------------------------------------------\n\n")
@@ -804,7 +821,11 @@ class kb_trimmomaticTest(unittest.TestCase):
         self.assertEqual(trimmed_reads_info[1],single_output_name)
         self.assertEqual(trimmed_reads_info[2].split('-')[0],'KBaseFile.SingleEndLibrary')
 
-    # TEST 7: run Trimmomatic with data that gets completely trimmed, check report output.
+
+    ### TEST 7: run Trimmomatic with data that gets completely trimmed, check report output.
+    #
+    # Uncomment to skip this test
+    #HIDE @unittest.skip("skipped test_runTrimmomatic_SingleEndLibrary_all_trimming()")
     def test_runTrimmomatic_SingleEndLibrary_all_trimming(self):
         print("\n\nRUNNING: test_runTrimmomatic_SingleEndLibrary_all_trimming")
         print("---------------------------------------------------------\n\n")
@@ -853,8 +874,11 @@ class kb_trimmomaticTest(unittest.TestCase):
         #self.assertIn('Dropped', report_obj['data']['direct_html'])
 
 
-    # TEST 8: run Trimmomatic with q64 data that gets translated to q33
-    def test_runTrimmomatic_SingleEndLibrary_translate_q64_t0_q33(self):
+    ### TEST 8: run Trimmomatic with q64 data that gets translated to q33
+    #
+    # Uncomment to skip this test
+    #HIDE @unittest.skip("skipped test_runTrimmomatic_SingleEndLibrary_q64_to_q33()")
+    def test_runTrimmomatic_SingleEndLibrary_translate_q64_to_q33(self):
         print("\n\nRUNNING: test_runTrimmomatic_SingleEndLibrary_translate_q64_to_q33")
         print("------------------------------------------------------------------\n\n")
 
