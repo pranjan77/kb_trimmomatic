@@ -100,7 +100,7 @@ class kb_trimmomaticTest(unittest.TestCase):
         if file_path is None:
             raise Exception("No file given for upload to SHOCK!")
         if not file_path.startswith(os.sep):
-            file_path = os.path.join(os.sep, 'kb','module','test',file_path)
+            file_path = os.path.join('kb','module','test',file_path)
 
         with open(os.path.abspath(file_path), 'rb') as dataFile:
             files = {'upload': dataFile}
