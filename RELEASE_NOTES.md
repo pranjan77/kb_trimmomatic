@@ -1,3 +1,7 @@
+### Version 1.2.7
+__Changes__
+- changed scratch dir in deploy.cfg to match DataFileUtil's expectation
+
 ### Version 1.2.6
 __Changes__
 - made HTML report a separate entity rather than embedding in Report object
