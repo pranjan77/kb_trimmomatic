@@ -479,11 +479,11 @@ execTrimmomaticSingleLibrary() runs Trimmomatic on a single library
             html_handle.write(html_report_str)
 
         try:
-            #html_upload_ret = dfu.file_to_shock({'file_path': html_output_dir,
-            html_upload_ret = dfu.file_to_shock({'file_path': output_html_file_path,
-                                                 'make_handle': 0})
-                                                 #'make_handle': 0,
-                                                 #'pack': 'zip'})
+            html_upload_ret = dfu.file_to_shock({'file_path': html_output_dir,
+            #html_upload_ret = dfu.file_to_shock({'file_path': output_html_file_path,
+                                                 #'make_handle': 0})
+                                                 'make_handle': 0,
+                                                 'pack': 'zip'})
         except:
             raise ValueError ('error uploading HTML file to shock')
 
