@@ -454,7 +454,9 @@ execTrimmomaticSingleLibrary() runs Trimmomatic on a single library
                 html_report_lines += ['<table cellpadding=0 cellspacing=0 border=0>']
                 html_report_lines += ['<tr><td></td><td>'+sp+sp+sp+sp+'</td><td></td><td>'+sp+sp+'</td></tr>']
                 for f_name in report_field_order[lib_i]:
+                    print ("DEBUG: f_name: "+f_name+" val: '"+str(report_data[lib_i][f_name]))
                     if report_data[lib_i][f_name] > high_val:
+                        print ("DEBUG: ACCEPTED")
                         high_val = report_data[lib_i][f_name]
                 for f_name in report_field_order[lib_i]:
 
@@ -466,7 +468,7 @@ execTrimmomaticSingleLibrary() runs Trimmomatic on a single library
                     # DEBUG
                     print ("HIGH_VAL:"+str(high_val))
                     print ("F_NAME: "+str(f_name)+"\t"+str(report_data[lib_i][f_name]))
-                    print ("PERCENTAGE: "+str(percentage))
+                    print ("PERCENT: "+str(percent))
                     print ("THIS_WIDTH: "+str(this_width))
 
 
