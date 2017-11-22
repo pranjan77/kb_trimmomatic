@@ -40,9 +40,9 @@ execTrimmomaticSingleLibrary() runs Trimmomatic on a single library
     # state. A method could easily clobber the state set by another while
     # the latter method is running.
     ######################################### noqa
-    VERSION = "1.2.7"
+    VERSION = "1.2.8"
     GIT_URL = "https://github.com/kbaseapps/kb_trimmomatic"
-    GIT_COMMIT_HASH = "ce5f52a1efe71e8a2803e5c0d843988f40bcec17"
+    GIT_COMMIT_HASH = "9ff31d23f62491d7a47c004f6cf8f800535b47f1"
 
     #BEGIN_CLASS_HEADER
     workspaceURL = None
@@ -397,9 +397,9 @@ execTrimmomaticSingleLibrary() runs Trimmomatic on a single library
                     report_data[lib_i] = dict(zip(report_field_order[lib_i], m.groups()))
 
                     # DEBUG
-                    self.log(console,"CASE A: LIB_I: "+str(lib_i))
-                    for k in report_field_order[lib_i]:
-                        self.log(console,"\t"+str(k)+": "+str(report_data[lib_i][k]))
+                    #self.log(console,"CASE A: LIB_I: "+str(lib_i))
+                    #for k in report_field_order[lib_i]:
+                    #    self.log(console,"\t"+str(k)+": "+str(report_data[lib_i][k]))
 
                 else:  # shouldn't this else be here?
                     try:
@@ -409,9 +409,9 @@ execTrimmomaticSingleLibrary() runs Trimmomatic on a single library
                         report_data[lib_i][f_name] = int_val
 
                         # DEBUG
-                        self.log(console,"CASE B: LIB_I: "+str(lib_i))
-                        for k in report_field_order[lib_i]:
-                            self.log(console,"\t"+str(k)+": "+str(report_data[lib_i][k]))
+                        #self.log(console,"CASE B: LIB_I: "+str(lib_i))
+                        #for k in report_field_order[lib_i]:
+                        #    self.log(console,"\t"+str(k)+": "+str(report_data[lib_i][k]))
 
                     except ValueError:
                         print("Can't parse [" + line + "] (lib_i=" + str(lib_i) + ")")
@@ -454,9 +454,9 @@ execTrimmomaticSingleLibrary() runs Trimmomatic on a single library
                 html_report_lines += ['<table cellpadding=0 cellspacing=0 border=0>']
                 html_report_lines += ['<tr><td></td><td>'+sp+sp+sp+sp+'</td><td></td><td>'+sp+sp+'</td></tr>']
                 for f_name in report_field_order[lib_i]:
-                    print ("DEBUG: f_name: "+f_name+" val: '"+str(report_data[lib_i][f_name]))
+                    #print ("DEBUG: f_name: "+f_name+" val: '"+str(report_data[lib_i][f_name]))
                     if int(report_data[lib_i][f_name]) > high_val:
-                        print ("DEBUG: ACCEPTED")
+                        #print ("DEBUG: ACCEPTED")
                         high_val = int(report_data[lib_i][f_name])
                 for f_name in report_field_order[lib_i]:
 
@@ -464,13 +464,11 @@ execTrimmomaticSingleLibrary() runs Trimmomatic on a single library
 
                     this_width = int(round(float(bar_width)*float(report_data[lib_i][f_name])/float(high_val), 0))
 
-
                     # DEBUG
-                    print ("HIGH_VAL:"+str(high_val))
-                    print ("F_NAME: "+str(f_name)+"\t"+str(report_data[lib_i][f_name]))
-                    print ("PERCENT: "+str(percent))
-                    print ("THIS_WIDTH: "+str(this_width))
-
+                    #print ("HIGH_VAL:"+str(high_val))
+                    #print ("F_NAME: "+str(f_name)+"\t"+str(report_data[lib_i][f_name]))
+                    #print ("PERCENT: "+str(percent))
+                    #print ("THIS_WIDTH: "+str(this_width))
 
                     #self.log(console,"this_width: "+str(this_width)+" report_data: "+str(report_data[lib_i][f_name])+" calc: "+str(float(width)*float(report_data[lib_i][f_name])/float(high_val)))  # DEBUG
                     if this_width < 1:
