@@ -563,7 +563,7 @@ class kb_trimmomaticTest(unittest.TestCase):
     ### TEST 2: run Trimmomatic against just one paired end library
     #
     # Uncomment to skip this test
-    #HIDE @unittest.skip("skipped test_runTrimmomatic_PairedEndLibrary()")
+    @unittest.skip("skipped test_runTrimmomatic_PairedEndLibrary()")
     def test_runTrimmomatic_PairedEndLibrary(self):
 
         print ("\n\nRUNNING: test_runTrimmomatic_PairedEndLibrary()")
@@ -616,7 +616,7 @@ class kb_trimmomaticTest(unittest.TestCase):
     ### TEST 3: run Trimmomatic against a Single End Library reads set
     #
     # Uncomment to skip this test
-    #HIDE @unittest.skip("skipped test_runTrimmomatic_SingleEndLibrary_ReadsSet()")
+    @unittest.skip("skipped test_runTrimmomatic_SingleEndLibrary_ReadsSet()")
     def test_runTrimmomatic_SingleEndLibrary_ReadsSet(self):
 
         print ("\n\nRUNNING: test_runTrimmomatic_SingleEndLibrary_ReadsSet()")
@@ -669,7 +669,7 @@ class kb_trimmomaticTest(unittest.TestCase):
     ### TEST 4: run Trimmomatic against a Paired End Library reads set
     #
     # Uncomment to skip this test
-    #HIDE @unittest.skip("skipped test_runTrimmomatic_PairedEndLibrary_ReadsSet()")
+    @unittest.skip("skipped test_runTrimmomatic_PairedEndLibrary_ReadsSet()")
     def test_runTrimmomatic_PairedEndLibrary_ReadsSet(self):
 
         print ("\n\nRUNNING: test_runTrimmomatic_PairedEndLibrary_ReadsSet()")
@@ -722,7 +722,7 @@ class kb_trimmomaticTest(unittest.TestCase):
     ### TEST 5: run Trimmomatic against a Single End Library sample set
     #
     # Uncomment to skip this test
-    #HIDE @unittest.skip("skipped test_runTrimmomatic_SingleEndLibrary_SampleSet()")
+    @unittest.skip("skipped test_runTrimmomatic_SingleEndLibrary_SampleSet()")
     def test_runTrimmomatic_SingleEndLibrary_SampleSet(self):
 
         print ("\n\nRUNNING: test_runTrimmomatic_SingleEndLibrary_SampleSet()")
@@ -775,7 +775,7 @@ class kb_trimmomaticTest(unittest.TestCase):
     ### TEST 6: run Trimmomatic with data that doesn't get trimmed, check report output.
     #
     # Uncomment to skip this test
-    #HIDE @unittest.skip("skipped test_runTrimmomatic_SingleEndLibrary_no_trimming()")
+    @unittest.skip("skipped test_runTrimmomatic_SingleEndLibrary_no_trimming()")
     def test_runTrimmomatic_SingleEndLibrary_no_trimming(self):
         print("\n\nRUNNING: test_runTrimmomatic_SingleEndLibrary_no_trimming")
         print("---------------------------------------------------------\n\n")
@@ -825,7 +825,7 @@ class kb_trimmomaticTest(unittest.TestCase):
     ### TEST 7: run Trimmomatic with data that gets completely trimmed, check report output.
     #
     # Uncomment to skip this test
-    #HIDE @unittest.skip("skipped test_runTrimmomatic_SingleEndLibrary_all_trimming()")
+    @unittest.skip("skipped test_runTrimmomatic_SingleEndLibrary_all_trimming()")
     def test_runTrimmomatic_SingleEndLibrary_all_trimming(self):
         print("\n\nRUNNING: test_runTrimmomatic_SingleEndLibrary_all_trimming")
         print("---------------------------------------------------------\n\n")
@@ -877,7 +877,7 @@ class kb_trimmomaticTest(unittest.TestCase):
     ### TEST 8: run Trimmomatic with q64 data that gets translated to q33
     #
     # Uncomment to skip this test
-    #HIDE @unittest.skip("skipped test_runTrimmomatic_SingleEndLibrary_q64_to_q33()")
+    @unittest.skip("skipped test_runTrimmomatic_SingleEndLibrary_q64_to_q33()")
     def test_runTrimmomatic_SingleEndLibrary_translate_q64_to_q33(self):
         print("\n\nRUNNING: test_runTrimmomatic_SingleEndLibrary_translate_q64_to_q33")
         print("------------------------------------------------------------------\n\n")
