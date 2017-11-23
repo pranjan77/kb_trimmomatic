@@ -375,9 +375,19 @@ execTrimmomaticSingleLibrary() runs Trimmomatic on a single library
         report_lib_names = []
         lib_i = -1
 
-        # This is some powerful brute force nonsense, but it should be okay. (Note: it was not OK.  Now it is)
-        expected_field_order = ['Input Reads', 'Surviving', 'Dropped']
+        # This is some powerful brute force nonsense, but it should be okay.
+        #   (Note: it was not OK.  Now it is)
+        se_expected_field_order = ['Input Reads', 
+                                   'Surviving', 
+                                   'Dropped']
         se_report_re = re.compile('^Input Reads:\s*(\d+)\s*Surviving:\s*(\d+)\s*\(\d+\.\d+\%\)\s*Dropped:\s*(\d+)\s*\(\d+\.\d+\%\)')
+        pe_expected_field_order = ['Input Read Pairs', 
+                                   'Both Surviving', 
+                                   'Forward Only Surviving',
+                                   'Reverse Only Surviving',
+                                   'Dropped']
+        pe_report_re = re.compile('^Input Read Pairs:\s*(\d+)\s*Both Surviving:\s*(\d+)\s*\(\d+\.\d+\%\)\s*Forward Only Surviving:\s*(\d+)\s*\(\d+\.\d+\%\)\s*Reverse Only Surviving:\s*(\d+)\s*\(\d+\.\d+\%\)\s*Dropped:\s*(\d+)\s*\(\d+\.\d+\%\)')
+
         for line in trimmomatic_retVal['report'].split("\n"):
             if line.startswith("RUNNING"):
                 lib_i += 1
@@ -392,27 +402,26 @@ execTrimmomaticSingleLibrary() runs Trimmomatic on a single library
             elif len(line) == 0:
                 continue
             else:
-                m = se_report_re.match(line)
-
-                # single line stats
-                if m and len(m.groups()) == 3:
-                    report_field_order[lib_i] = expected_field_order
-                    report_data[lib_i] = dict(zip(report_field_order[lib_i], m.groups()))
+                # single end stats
+                m_se = se_report_re.match(line)
+                if m_se and len(m_se.groups()) == len(se_expected_field_order):
+                    report_field_order[lib_i] = se_expected_field_order
+                    report_data[lib_i] = dict(zip(report_field_order[lib_i], m_se.groups()))
                     for f_name in report_field_order[lib_i]:
                         report_data[lib_i][f_name] = int(report_data[lib_i][f_name])
-                    break  # we have all the stats
+                    break
 
-                # multi-line stats
+                # paired end stats
+                m_pe = pe_report_re.match(line)
+                if m_pe and len(m_pe.groups()) == len(pe_expected_field_order):
+                    report_field_order[lib_i] = pe_expected_field_order
+                    report_data[lib_i] = dict(zip(report_field_order[lib_i], m_pe.groups()))
+                    for f_name in report_field_order[lib_i]:
+                        report_data[lib_i][f_name] = int(report_data[lib_i][f_name])
+                    break
+
                 else:
-                    try:
-                        [f_name, val] = line.split(': ')
-                        if f_name not in expected_field_order:
-                            continue
-                        report_field_order[lib_i].append(f_name)
-                        report_data[lib_i][f_name] = int(val)
-                        #print ("F_NAME: '"+str(f_name)+"' VAL: '"+str(val)+"' LINE: '"+str(line)+"'")  # DEBUG
-                    except ValueError:
-                        print("Can't parse [" + line + "] (lib_i=" + str(lib_i) + ")")
+                    self.log(console, "SKIPPING OUTPUT.  Can't parse [" + line + "] (lib_i=" + str(lib_i) + ")")
 
 
         #### HTML report
