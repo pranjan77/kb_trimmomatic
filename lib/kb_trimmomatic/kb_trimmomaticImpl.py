@@ -392,27 +392,19 @@ execTrimmomaticSingleLibrary() runs Trimmomatic on a single library
                 continue
             else:
                 m = se_report_re.match(line)
+
+                # single line stats
                 if m and len(m.groups()) == 3:
                     report_field_order[lib_i] = ['Input Reads', 'Surviving', 'Dropped']
                     report_data[lib_i] = dict(zip(report_field_order[lib_i], m.groups()))
-
-                    # DEBUG
-                    #self.log(console,"CASE A: LIB_I: "+str(lib_i))
-                    #for k in report_field_order[lib_i]:
-                    #    self.log(console,"\t"+str(k)+": "+str(report_data[lib_i][k]))
-
-                else:  # shouldn't this else be here?
+                    for f_name in report_field_order[lib_i]:
+                        report_data[lib_i][f_name] = int(report_data[lib_i][f_name])
+                # multi-line stats
+                else:
                     try:
                         [f_name, val] = line.split(': ')
-                        int_val = int(val)
                         report_field_order[lib_i].append(f_name)
-                        report_data[lib_i][f_name] = int_val
-
-                        # DEBUG
-                        #self.log(console,"CASE B: LIB_I: "+str(lib_i))
-                        #for k in report_field_order[lib_i]:
-                        #    self.log(console,"\t"+str(k)+": "+str(report_data[lib_i][k]))
-
+                        report_data[lib_i][f_name] = int(val)
                     except ValueError:
                         print("Can't parse [" + line + "] (lib_i=" + str(lib_i) + ")")
 
@@ -438,13 +430,6 @@ execTrimmomaticSingleLibrary() runs Trimmomatic on a single library
         html_report_lines = ['<html>']
         html_report_lines += ['<body bgcolor="white">']
 
-#        result_data_order = ['foobarfoo', 'animalcules', 'chicken', 'applesauce']
-#        result_data = { 'foobarfoo': 197,
-#                        'animalcules': 234,
-#                        'chicken': 14,
-#                        'applesauce': 1
-#                        }
-
         for lib_i in range(len(report_data)):
             html_report_lines += ['<p><b><font color="'+text_color+'">TRIMMOMATIC RESULTS FOR '+str(report_lib_names[lib_i])+' (object '+str(report_lib_refs[lib_i])+')</font></b><br>'+"\n"]
             high_val = 0
@@ -454,19 +439,12 @@ execTrimmomaticSingleLibrary() runs Trimmomatic on a single library
                 html_report_lines += ['<table cellpadding=0 cellspacing=0 border=0>']
                 html_report_lines += ['<tr><td></td><td>'+sp+sp+sp+sp+'</td><td></td><td>'+sp+sp+'</td></tr>']
                 for f_name in report_field_order[lib_i]:
-                    if report_data[lib_i][f_name] > high_val:
-                        high_val = report_data[lib_i][f_name]
+                    if int(report_data[lib_i][f_name]) > high_val:
+                        high_val = int(report_data[lib_i][f_name])
+
                 for f_name in report_field_order[lib_i]:
-
                     percent = round(float(report_data[lib_i][f_name])/float(high_val)*100, 1)
-
                     this_width = int(round(float(bar_width)*float(report_data[lib_i][f_name])/float(high_val), 0))
-
-                    # DEBUG
-                    #print ("HIGH_VAL:"+str(high_val))
-                    #print ("F_NAME: "+str(f_name)+"\t"+str(report_data[lib_i][f_name]))
-                    #print ("PERCENT: "+str(percent))
-                    #print ("THIS_WIDTH: "+str(this_width))
 
                     #self.log(console,"this_width: "+str(this_width)+" report_data: "+str(report_data[lib_i][f_name])+" calc: "+str(float(width)*float(report_data[lib_i][f_name])/float(high_val)))  # DEBUG
                     if this_width < 1:
