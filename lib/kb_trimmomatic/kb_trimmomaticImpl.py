@@ -375,7 +375,8 @@ execTrimmomaticSingleLibrary() runs Trimmomatic on a single library
         report_lib_names = []
         lib_i = -1
 
-        # This is some powerful brute force nonsense, but it should be okay.
+        # This is some powerful brute force nonsense, but it should be okay. (Note: it was not OK.  Now it is)
+        expected_field_order = ['Input Reads', 'Surviving', 'Dropped']
         se_report_re = re.compile('^Input Reads:\s*(\d+)\s*Surviving:\s*(\d+)\s*\(\d+\.\d+\%\)\s*Dropped:\s*(\d+)\s*\(\d+\.\d+\%\)')
         for line in trimmomatic_retVal['report'].split("\n"):
             if line.startswith("RUNNING"):
@@ -395,16 +396,21 @@ execTrimmomaticSingleLibrary() runs Trimmomatic on a single library
 
                 # single line stats
                 if m and len(m.groups()) == 3:
-                    report_field_order[lib_i] = ['Input Reads', 'Surviving', 'Dropped']
+                    report_field_order[lib_i] = expected_field_order
                     report_data[lib_i] = dict(zip(report_field_order[lib_i], m.groups()))
                     for f_name in report_field_order[lib_i]:
                         report_data[lib_i][f_name] = int(report_data[lib_i][f_name])
+                    break  # we have all the stats
+
                 # multi-line stats
                 else:
                     try:
                         [f_name, val] = line.split(': ')
+                        if f_name not in expected_field_order:
+                            continue
                         report_field_order[lib_i].append(f_name)
                         report_data[lib_i][f_name] = int(val)
+                        #print ("F_NAME: '"+str(f_name)+"' VAL: '"+str(val)+"' LINE: '"+str(line)+"'")  # DEBUG
                     except ValueError:
                         print("Can't parse [" + line + "] (lib_i=" + str(lib_i) + ")")
 
