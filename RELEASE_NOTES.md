@@ -1,3 +1,7 @@
+### Version 1.2.8
+__Changes__
+- fixed bug in read lib size comparison
+
 ### Version 1.2.7
 __Changes__
 - changed scratch dir in deploy.cfg to match DataFileUtil's expectation
