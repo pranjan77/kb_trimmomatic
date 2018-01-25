@@ -409,7 +409,7 @@ execTrimmomaticSingleLibrary() runs Trimmomatic on a single library
                     report_data[lib_i] = dict(zip(report_field_order[lib_i], m_se.groups()))
                     for f_name in report_field_order[lib_i]:
                         report_data[lib_i][f_name] = int(report_data[lib_i][f_name])
-                    break
+                    
 
                 # paired end stats
                 m_pe = pe_report_re.match(line)
@@ -418,7 +418,7 @@ execTrimmomaticSingleLibrary() runs Trimmomatic on a single library
                     report_data[lib_i] = dict(zip(report_field_order[lib_i], m_pe.groups()))
                     for f_name in report_field_order[lib_i]:
                         report_data[lib_i][f_name] = int(report_data[lib_i][f_name])
-                    break
+                   
 
                 else:
                     self.log(console, "SKIPPING OUTPUT.  Can't parse [" + line + "] (lib_i=" + str(lib_i) + ")")
@@ -1084,27 +1084,17 @@ execTrimmomaticSingleLibrary() runs Trimmomatic on a single library
                 raise ValueError('Error running kb_trimmomatic, return code: ' +
                                  str(cmdProcess.returncode) + '\n')
 
-            report += "\n".join(outputlines)
             #report += "cmdstring: " + cmdstring + " stdout: " + stdout + " stderr " + stderr
 
             # free up disk
             os.remove(input_fwd_file_path)
             os.remove(input_rev_file_path)
 
-            #get read counts
-            match = re.search(r'Input Read Pairs: (\d+).*?Both Surviving: (\d+).*?Forward Only Surviving: (\d+).*?Reverse Only Surviving: (\d+).*?Dropped: (\d+)', report)
-            input_read_count = match.group(1)
-            read_count_paired = match.group(2)
-            read_count_forward_only = match.group(3)
-            read_count_reverse_only = match.group(4)
-            read_count_dropped = match.group(5)
-
-            report = "\n".join( ('Input Read Pairs: '+ input_read_count,
-                'Both Surviving: '+ read_count_paired,
-                'Forward Only Surviving: '+ read_count_forward_only,
-                'Reverse Only Surviving: '+ read_count_reverse_only,
-                'Dropped: '+ read_count_dropped) )
-
+            # Only keep line that starts with Input and that
+            # needs to be parsed for HTML report
+            for line in outputlines:
+                if line.startswith('Input'):
+                    report += line
 
             # upload paired reads
             if not os.path.isfile (output_fwd_paired_file_path) \
@@ -1254,7 +1244,12 @@ execTrimmomaticSingleLibrary() runs Trimmomatic on a single library
                 raise ValueError('Error running kb_trimmomatic, return code: ' +
                                  str(cmdProcess.returncode) + '\n')
 
-            report += "\n".join(outputlines)
+            # Only keep line that starts with Input and that
+            # needs to be parsed for HTML report
+
+            for line in outputlines:
+                if line.startswith('Input'):
+                    report += line
 
             # free up disk
             os.remove(input_fwd_file_path)
