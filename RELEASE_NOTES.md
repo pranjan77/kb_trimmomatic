@@ -1,3 +1,7 @@
+### Version 1.2.9
+__Changes__
+- fixed bug in code for HTML report
+
 ### Version 1.2.8
 __Changes__
 - fixed bug in read lib size comparison
