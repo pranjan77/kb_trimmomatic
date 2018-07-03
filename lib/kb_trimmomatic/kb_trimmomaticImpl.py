@@ -715,6 +715,7 @@ execTrimmomaticSingleLibrary() runs Trimmomatic on a single library
         unpaired_fwd_SampleSet_ref = None
         unpaired_rev_SampleSet_ref = None
 
+        trimmed_readsSet_refs      = []
         unpaired_fwd_readsSet_refs = []
         unpaired_rev_readsSet_refs = []
 
