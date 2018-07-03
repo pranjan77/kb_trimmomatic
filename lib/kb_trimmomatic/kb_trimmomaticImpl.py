@@ -207,7 +207,7 @@ execTrimmomaticSingleLibrary() runs Trimmomatic on a single library
 
         print ('Start saving RNASeqSampleSet object')
         workspace_id = self.dfu.ws_name_to_id(wsName)
-        Library_type = 'SingleEnd' if single_reads else ''
+        Library_type = 'SingleEnd' if single_reads else 'PairedEnd'
         sample_set_data = {'sampleset_id': output_SampleSet_name,
                            'sampleset_desc': reads_desc_ext,
                            'Library_type': Library_type,
@@ -708,10 +708,13 @@ execTrimmomaticSingleLibrary() runs Trimmomatic on a single library
         # Iterate through readsLibrary members of set
         #
         report = ''
-        trimmed_readsSet_ref       = None
-        unpaired_fwd_readsSet_ref  = None
-        unpaired_rev_readsSet_ref  = None
-        trimmed_readsSet_refs      = []
+        trimmed_readsSet_ref = None
+        unpaired_fwd_readsSet_ref = None
+        unpaired_rev_readsSet_ref = None
+        trimmed_RNASeqSampleSet_ref = None
+        unpaired_fwd_SampleSet_ref = None
+        unpaired_rev_SampleSet_ref = None
+
         unpaired_fwd_readsSet_refs = []
         unpaired_rev_readsSet_refs = []
 
@@ -913,7 +916,10 @@ execTrimmomaticSingleLibrary() runs Trimmomatic on a single library
             output = {'report': report,
                       'output_filtered_ref': trimmed_readsSet_ref,
                       'output_unpaired_fwd_ref': unpaired_fwd_readsSet_ref,
-                      'output_unpaired_rev_ref': unpaired_rev_readsSet_ref
+                      'output_unpaired_rev_ref': unpaired_rev_readsSet_ref,
+                      'output_filtered_sampleset_ref': trimmed_RNASeqSampleSet_ref,
+                      'output_unpaired_sampleset_fwd_ref': unpaired_fwd_SampleSet_ref,
+                      'output_unpaired_sampleset_rev_ref': unpaired_rev_SampleSet_ref
                     }
 
         #END execTrimmomatic
