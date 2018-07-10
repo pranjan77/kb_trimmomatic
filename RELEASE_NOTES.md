@@ -1,3 +1,7 @@
+### Version 1.2.10
+__Changes__
+- add RNASeqSampleSet output object
+
 ### Version 1.2.9
 __Changes__
 - fixed bug in code for HTML report

@@ -202,6 +202,32 @@ execTrimmomaticSingleLibrary() runs Trimmomatic on a single library
 
         return parameter_string
 
+    def _save_RNASeqSampleSet(self, items, wsName, output_SampleSet_name, reads_desc_ext,
+                              single_reads):
+
+        print ('Start saving RNASeqSampleSet object')
+        workspace_id = self.dfu.ws_name_to_id(wsName)
+        Library_type = 'SingleEnd' if single_reads else 'PairedEnd'
+        sample_set_data = {'sampleset_id': output_SampleSet_name,
+                           'sampleset_desc': reads_desc_ext,
+                           'Library_type': Library_type,
+                           'sample_ids': [item.get('ref') for item in items],
+                           'condition': [item.get('label') for item in items],
+                           'domain': 'Unknown',
+                           'num_samples': len(items),
+                           'platform': 'Unknown'}
+        save_object_params = {
+            'id': workspace_id,
+            'objects': [{'type': 'KBaseRNASeq.RNASeqSampleSet',
+                         'data': sample_set_data,
+                         'name': output_SampleSet_name}]
+        }
+
+        dfu_oi = self.dfu.save_objects(save_object_params)[0]
+        sample_set_ref = str(dfu_oi[6]) + '/' + str(dfu_oi[0]) + '/' + str(dfu_oi[4])
+
+        return sample_set_ref
+
     #END_CLASS_HEADER
 
     # config contains contents of config file in a hash or None if it couldn't
@@ -221,6 +247,8 @@ execTrimmomaticSingleLibrary() runs Trimmomatic on a single library
         if not os.path.exists(self.scratch):
             os.makedirs(self.scratch)
         os.chdir(self.scratch)
+
+        self.dfu = DFUClient(self.callbackURL)
         #END_CONSTRUCTOR
         pass
 
@@ -250,7 +278,6 @@ execTrimmomaticSingleLibrary() runs Trimmomatic on a single library
         # ctx is the context object
         # return variables are: output
         #BEGIN runTrimmomatic
-        dfu = DFUClient(self.callbackURL)
         console = []
         self.log(console, 'Running runTrimmomatic with parameters: ')
         self.log(console, "\n"+pformat(input_params))
@@ -491,7 +518,7 @@ execTrimmomaticSingleLibrary() runs Trimmomatic on a single library
             html_handle.write(html_report_str)
 
         try:
-            html_upload_ret = dfu.file_to_shock({'file_path': html_output_dir,
+            html_upload_ret = self.dfu.file_to_shock({'file_path': html_output_dir,
             #html_upload_ret = dfu.file_to_shock({'file_path': output_html_file_path,
                                                  #'make_handle': 0})
                                                  'make_handle': 0,
@@ -681,9 +708,13 @@ execTrimmomaticSingleLibrary() runs Trimmomatic on a single library
         # Iterate through readsLibrary members of set
         #
         report = ''
-        trimmed_readsSet_ref       = None
-        unpaired_fwd_readsSet_ref  = None
-        unpaired_rev_readsSet_ref  = None
+        trimmed_readsSet_ref = None
+        unpaired_fwd_readsSet_ref = None
+        unpaired_rev_readsSet_ref = None
+        trimmed_RNASeqSampleSet_ref = None
+        unpaired_fwd_SampleSet_ref = None
+        unpaired_rev_SampleSet_ref = None
+
         trimmed_readsSet_refs      = []
         unpaired_fwd_readsSet_refs = []
         unpaired_rev_readsSet_refs = []
@@ -766,13 +797,15 @@ execTrimmomaticSingleLibrary() runs Trimmomatic on a single library
                                   #'info':
                                       })
             if some_trimmed_output_created:
+                single_reads = False
                 if read_type == 'SE':
                     reads_desc_ext = " Trimmomatic trimmed SingleEndLibrary"
                     reads_name_ext = "_trimm"
+                    single_reads = True
                 else:
                     reads_desc_ext = " Trimmomatic trimmed paired reads"
                     reads_name_ext = "_trimm_paired"
-                output_readsSet_obj = { 'description': input_readsSet_obj['data']['description']+reads_desc_ext,
+                output_readsSet_obj = { 'description': str(input_readsSet_obj['data']['description'])+reads_desc_ext,
                                         'items': items
                                         }
                 output_readsSet_name = str(input_params['output_reads_name'])+reads_name_ext
@@ -780,6 +813,12 @@ execTrimmomaticSingleLibrary() runs Trimmomatic on a single library
                                                                          'output_object_name': output_readsSet_name,
                                                                          'data': output_readsSet_obj
                                                                          })['set_ref']
+                trimmed_RNASeqSampleSet_ref = self._save_RNASeqSampleSet(
+                                                            items,
+                                                            input_params['output_ws'],
+                                                            output_readsSet_name + '_SampleSet',
+                                                            reads_desc_ext,
+                                                            single_reads)
             else:
                 self.log(console, "No trimmed output created")
                 # raise ValueError ("No trimmed output created")
@@ -810,7 +849,7 @@ execTrimmomaticSingleLibrary() runs Trimmomatic on a single library
                                       #'info':
                                           })
                 if some_unpaired_fwd_output_created:
-                    output_readsSet_obj = { 'description': input_readsSet_obj['data']['description']+" Trimmomatic unpaired fwd reads",
+                    output_readsSet_obj = { 'description': str(input_readsSet_obj['data']['description'])+" Trimmomatic unpaired fwd reads",
                                             'items': items
                                             }
                     output_readsSet_name = str(input_params['output_reads_name'])+'_trimm_unpaired_fwd'
@@ -818,6 +857,12 @@ execTrimmomaticSingleLibrary() runs Trimmomatic on a single library
                                                                                   'output_object_name': output_readsSet_name,
                                                                                   'data': output_readsSet_obj
                                                                                   })['set_ref']
+                    unpaired_fwd_SampleSet_ref = self._save_RNASeqSampleSet(
+                                                            items,
+                                                            input_params['output_ws'],
+                                                            output_readsSet_name + '_SampleSet',
+                                                            reads_desc_ext,
+                                                            single_reads)
                 else:
                     self.log (console, "no unpaired_fwd readsLibraries created")
                     unpaired_fwd_readsSet_ref = None
@@ -848,7 +893,7 @@ execTrimmomaticSingleLibrary() runs Trimmomatic on a single library
                                       #'info':
                                           })
                 if some_unpaired_rev_output_created:
-                    output_readsSet_obj = { 'description': input_readsSet_obj['data']['description']+" Trimmomatic unpaired rev reads",
+                    output_readsSet_obj = { 'description': str(input_readsSet_obj['data']['description'])+" Trimmomatic unpaired rev reads",
                                             'items': items
                                             }
                     output_readsSet_name = str(input_params['output_reads_name'])+'_trimm_unpaired_rev'
@@ -856,17 +901,27 @@ execTrimmomaticSingleLibrary() runs Trimmomatic on a single library
                                                                                   'output_object_name': output_readsSet_name,
                                                                                   'data': output_readsSet_obj
                                                                                   })['set_ref']
+
+                    unpaired_rev_SampleSet_ref = self._save_RNASeqSampleSet(
+                                                            items,
+                                                            input_params['output_ws'],
+                                                            output_readsSet_name + '_SampleSet',
+                                                            reads_desc_ext,
+                                                            single_reads)
                 else:
                     self.log (console, "no unpaired_rev readsLibraries created")
                     unpaired_rev_readsSet_ref = None
 
 
             # create return output object
-            output = { 'report': report,
-                       'output_filtered_ref': trimmed_readsSet_ref,
-                       'output_unpaired_fwd_ref': unpaired_fwd_readsSet_ref,
-                       'output_unpaired_rev_ref': unpaired_rev_readsSet_ref
-                     }
+            output = {'report': report,
+                      'output_filtered_ref': trimmed_readsSet_ref,
+                      'output_unpaired_fwd_ref': unpaired_fwd_readsSet_ref,
+                      'output_unpaired_rev_ref': unpaired_rev_readsSet_ref,
+                      'output_filtered_sampleset_ref': trimmed_RNASeqSampleSet_ref,
+                      'output_unpaired_sampleset_fwd_ref': unpaired_fwd_SampleSet_ref,
+                      'output_unpaired_sampleset_rev_ref': unpaired_rev_SampleSet_ref
+                    }
 
         #END execTrimmomatic
 

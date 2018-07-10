@@ -1,7 +1,7 @@
 #
 #  define display information
 #
-name: Trimmomatic - Read Trimming - v0.36
+name: Trim Reads with Trimmomatic - v0.36
 tooltip: |
 	Trim paired- or single-end Illumina reads with Trimmomatic.
 screenshots: []
