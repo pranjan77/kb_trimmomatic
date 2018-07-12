@@ -544,6 +544,9 @@ execTrimmomaticSingleLibrary() runs Trimmomatic on a single library
 
                 reportObj['objects_created'].append({'ref':trimmomatic_retVal['output_filtered_ref'],
                                                      'description':'Trimmed Reads'})
+
+                reportObj['objects_created'].append({'ref':trimmomatic_retVal['output_filtered_sampleset_ref'],
+                                                     'description':'Trimmed Reads'})
             except:
                 raise ValueError ("failure saving trimmed output")
         else:
@@ -555,6 +558,8 @@ execTrimmomaticSingleLibrary() runs Trimmomatic on a single library
             try:
                 reportObj['objects_created'].append({'ref':trimmomatic_retVal['output_unpaired_fwd_ref'],
                                                      'description':'Trimmed Unpaired Forward Reads'})
+                reportObj['objects_created'].append({'ref':trimmomatic_retVal['output_unpaired_sampleset_fwd_ref'],
+                                                     'description':'Trimmed Unpaired Forward Reads'})
             except:
                 raise ValueError ("failure saving unpaired fwd output")
         else:
@@ -565,11 +570,12 @@ execTrimmomaticSingleLibrary() runs Trimmomatic on a single library
             try:
                 reportObj['objects_created'].append({'ref':trimmomatic_retVal['output_unpaired_rev_ref'],
                                                      'description':'Trimmed Unpaired Reverse Reads'})
+                reportObj['objects_created'].append({'ref':trimmomatic_retVal['output_unpaired_sampleset_rev_ref'],
+                                                     'description':'Trimmed Unpaired Reverse Reads'})
             except:
                 raise ValueError ("failure saving unpaired fwd output")
         else:
             pass
-
 
         # save report object
         #
