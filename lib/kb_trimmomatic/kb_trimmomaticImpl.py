@@ -590,7 +590,7 @@ execTrimmomaticSingleLibrary() runs Trimmomatic on a single library
         if trimmomatic_retVal.get('output_unpaired_sampleset_rev_ref'):
             try:
                 reportObj['objects_created'].append({'ref':trimmomatic_retVal['output_unpaired_sampleset_rev_ref'],
-                                                     'description':'Trimmed Unpaired Forward Reads'})
+                                                     'description':'Trimmed Unpaired Reverse Reads'})
             except:
                 raise ValueError ("failure saving unpaired fwd output")
         else:
