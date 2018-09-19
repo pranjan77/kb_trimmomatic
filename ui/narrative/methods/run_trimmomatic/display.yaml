@@ -33,14 +33,14 @@ parameters :
 		short-hint : |
 			The read library or read library set to examine
 		long-hint  : |
-			The read library or read library set for which you want to trim.
+			The read library or read library set for trimmming.
 	output_reads_name :
 		ui-name : |
 			Output library (or Set) name <font color=red>*</font>
 		short-hint : |
-			Base name for output read library or read library set object
+			Base name for output read library or read library set object(s)
 		long-hint : |
-			Base name for output read library or read library set object
+			Base name for output read library or read library set object(s)
 	adapterFa :
 		ui-name : |
 			Adapters
@@ -52,9 +52,9 @@ parameters :
 		ui-name : |
 			Seed mismatches
 		short-hint : |
-			Maximum mismatch count which will still allow a full match.
+			Maximum mismatch count, which will still allow a full match.
 		long-hint : |
-			Specifies the maximum mismatch count which will still allow a full match to be performed.
+			Specifies the maximum mismatch count, which will still allow a full match to be performed.
 	palindrome_clip_threshold : 
 		ui-name : |
 			Palindrome clip threshold
@@ -85,32 +85,32 @@ parameters :
 			Perform a sliding window trimming, cutting once the average quality within the window falls below a threshold. By considering multiple bases, a single poor quality base will not cause the removal of high quality data later in the read.
 	crop_length :
 		ui-name : |
-			Post Tail Crop length
+			Post tail crop length
 		short-hint : |
 			The number of bases to keep, from the start of the read (e.g. tail crop 10 bases from a 150 base read: enter "140").
 		long-hint : |
-			Removes bases regardless of quality from the end of the read, so that the read has maximally the specified length after this step has been performed. Steps performed after CROP might of course further shorten the read.
+			Removes bases regardless of quality from the end of a read, so that the read has the specified length after this step has been performed. Steps performed after CROP might further shorten the read.
 	head_crop_length :
 		ui-name : |
 			Head crop length
 		short-hint : |
-			The number of bases to remove from the start of the read (e.g. head crop 10 bases: enter "10").
+			The number of bases to remove from the start of a read (e.g. head crop 10 bases: enter "10").
 		long-hint : |
 			Removes the specified number of bases, regardless of quality, from the beginning of the read.
 	leading_min_quality :
 		ui-name : |
 			Leading minimum quality
 		short-hint : |
-			Specifies the minimum quality required to keep a base at start of read.
+			Specifies the minimum quality required to keep a base at the start of a read.
 		long-hint : |
-			Remove low quality bases from the beginning. As long as a base has a value below this threshold the base is removed and the next base will be investigated.
+			Remove low quality bases from the beginning. As long as a base has a value below this threshold the base is removed and the next base is investigated.
 	trailing_min_quality :
 		ui-name : |
 			Trailing minimum quality
 		short-hint : |
-			Specifies the minimum quality required to keep a base at end of read.
+			Specifies the minimum quality required to keep a base at the end of a read.
 		long-hint : |
-			Remove low quality bases from the end. As long as a base has a value below this threshold the base is removed and the next base (which as trimmomatic is starting from the 3‟ prime end would be base preceding the just removed base) will be investigated. This approach can be used removing the special illumina „low quality segment‟ regions (which are marked with quality score of 2), but we recommend Sliding Window or MaxInfo instead.
+			Remove low quality bases from the end. As long as a base has a value below this threshold it is removed and the next base (if trimmomatic starts from the 3 prime end, it is the base preceding the removed one) will be investigated. This approach is used for removing the special Illumina low quality segment regions (which are marked with a quality score of 2), but we recommend Sliding window or MaxInfo instead.
 	min_length :
 		ui-name : |
 			Minimum read length
@@ -152,44 +152,44 @@ description : |
 	 Trimmomatic version: 0.36: <a href="http://www.usadellab.org/cms/uploads/supplementary/Trimmomatic/Trimmomatic-0.36.zip">binary</a>, <a href="http://www.usadellab.org/cms/uploads/supplementary/Trimmomatic/Trimmomatic-Src-0.36.zip">source</a>, <a href="http://www.usadellab.org/cms/uploads/supplementary/Trimmomatic/TrimmomaticManual_V0.32.pdf">manual</a>.
 	 <br>
 	 <h3>Description</h3>
-	 <p>Trimmomatic performs a variety of useful trimming tasks for illumina paired-end and single ended data. These tasks are performed as a series of steps. At least one step must be specified and steps are run in order.</p>
+	 <p>Trimmomatic performs a variety of useful trimming tasks for Illumina paired-end and single ended data. These tasks are performed as a series of steps. At least one step must be specified, and steps are run in the following order.</p>
 	 <p>The current steps are:</p>
 	 
-	 <h4>Adapter Clipping:</h4> This step will remove Illumina adapters from the reads. To use this, you must select one of the predefined adapter sets and set parameters for match criteria. Suggested adapter sequences are provided for TruSeq2 (as used in GAII machines) and TruSeq3 (as used by HiSeq and MiSeq machines), for both single-end and paired-end mode. You can find more information on the adapters in the <a href="http://www.usadellab.org/cms/uploads/supplementary/Trimmomatic/TrimmomaticManual_V0.32.pdf">Trimmomatic manual</a>.
+	 <h4>Adapter clipping:</h4> This step will remove Illumina adapters from the reads. You need to select one of the predefined adapter sets and set parameters for match criteria. Suggested adapter sequences are provided for TruSeq2 (as used in GAII machines) and TruSeq3 (as used by HiSeq and MiSeq machines), for both single-end and paired-end mode. You can find more information on the adapters in the <a href="http://www.usadellab.org/cms/uploads/supplementary/Trimmomatic/TrimmomaticManual_V0.32.pdf">Trimmomatic manual</a>.
 	 <ul>
 	 <li><b>Adapters</b>: Select one of the predefined adapter sets.</li>
-	 <li><b>Seed Mismatches</b>: The maximum number of mismatches that will allow a full match to be performed. To speed up search, short sections of each adapter (upto 16bp) is tested at all possible positions to find "seeds" that trigger a full alignment. This Seed Mismatch parameters specifies the allowable mismatches for a seed.</li>
-	 <li><b>Simple Clip Threshold</b>: Alignment minimum score threshold for match, suggested values between 7-15. Score equals 0.6 per match minus Q/10 per mismatch.</li>
-	 <li><b>Palindrome Clip Threshold</b>: Using the same scoring as above, the pair of reads are aligned. Suggested value around 30.</li>
+	 <li><b>Seed mismatches</b>: The maximum number of mismatches that will allow a full match to be performed. To speed up search, short sections of each adapter (upto 16bp) are tested at all possible positions to find "seeds" that trigger a full alignment. This Seed mismatch parameter specifies the allowable mismatches for a seed.</li>
+	 <li><b>Simple clip threshold</b>: Alignment minimum score threshold for match, suggested values are 7-15. Score equals 0.6 per match minus Q/10 per mismatch.</li>
+	 <li><b>Palindrome clip threshold</b>: Using the same scoring as above, the pair of reads is aligned. Suggested value around 30.</li>
 	 </ul>
 	 
-	 <h4>Crop reads:</h4> Removes bases, regardless of quality, from the end of the read, so that the read has maximally the specified length after this step has been performed. Steps performed after Crop migh further shorten the read.
+	 <h4>Crop reads:</h4> Removes bases, regardless of their quality, from the end of the read, so that the read has the specified length. Steps performed after Crop might further shorten the read.
 	 <ul>
 	 <li><b>Crop length</b>: Number of bp to keep, from the start of the read.</li>
 	 </ul>
 
-	 <h4>Head Crop:</h4> Removes the specifed number of bases, regardless of quality, from the beginning of the read.
+	 <h4>Head crop:</h4> Removes the specified number of bases, regardless of quality, from the beginning of the read.
 	 <ul>
-	 <li><b>Head crop length</b>: Number of bp to remove from start of the read.</li>
+	 <li><b>Head crop length</b>: Number of bp to remove from the start of a read.</li>
 	 </ul>
 	 
-	 <h4>Leading Minimum Quality:</h4> Remove low quality bases from the beginning. As long as a base has a value below this threshold, the base is removed and the next base will be investigated.
+	 <h4>Leading minimum quality:</h4> Remove low quality bases from the beginning, i.e., bases with a value below this threshold.
 	 <ul>
 	 <li><b>Leading minimum quality</b>: Minimum quality score.</li>
 	 </ul>
 	 
-	 <h4>Trailing Minimum Quality:</h4> Remove low quality bases from the end. As long as a base has a value below this threshold, the base is removed and the next base is investigated. This approach can be used for removing the special illumina 'low quality segment' regions (which have a quality score of 2), but Sliding Window is recommended for this.
+	 <h4>Trailing minimum quality:</h4> Remove low quality bases from the end. As long as a base has a value below this threshold, the base is removed and the next base is investigated. This approach can be used for removing the special Illumina 'low quality segment' regions (which have a quality score of 2), but we recommend Sliding window for that.
 	 <ul>
 	 <li><b>Trailing minimum quality</b>: Minimum quality score.</li>
 	 </ul>
 	 
-	 <h4>Sliding Window:</h4> Performs sliding window trimming by cutting once the average quality within the window falls below specified threshold. By considering multiple bases, a single poor quality base will not cause the removal of high quality data later in the read.
+	 <h4>Sliding window:</h4> Performs sliding window trimming once the average quality within the window falls below specified threshold. By considering multiple bases, a single poor quality base will not cause the removal of high quality data later in the read.
 	 <ul>
-	 <li><b>Sliding Window Size</b>: length of window in bp.</li>
-	 <li><b>Sliding Window Minimum Quality</b>: The average quality required.</li> 
+	 <li><b>Sliding window size</b>: length of window in bp.</li>
+	 <li><b>Sliding window minimum quality</b>: The average quality required.</li> 
 	 </ul>
 	 
-	 <h4>Minimum Read Length:</h4> This removes reads that fall below the specifed minimum length. Reads removed by this step are included in the 'dropped reads' count.
+	 <h4>Minimum read length:</h4> This removes reads that fall below the specified minimum length. Reads removed by this step are included in the 'dropped reads' count.
 	 <ul>
 	 <li><b>Minimum read length</b>: Length in bp.</li>
 	 </ul>
@@ -200,8 +200,8 @@ description : |
 publications :
     -
         pmid: 24695404
-        display-text : |
-            'Bolger AM, Lohse M, Usadel B., (2014) Trimmomatic: a flexible trimmer for Illumina sequence data. Bioinformatics. 2014 Aug 1;30(15):2114-20. doi: 10.1093/bioinformatics/btu170.'
+        display-text: |
+            Bolger AM, Lohse M, Usadel B. Trimmomatic: a flexible trimmer for Illumina sequence data. Bioinformatics. 2014;30: 2114–2120. doi:10.1093/bioinformatics/btu170
         link: http://www.ncbi.nlm.nih.gov/pubmed/24695404
     -
     	link: http://www.usadellab.org/cms/?page=trimmomatic
