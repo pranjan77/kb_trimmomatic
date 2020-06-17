@@ -35,7 +35,7 @@ parameters :
 
 	output_reads_name :
 		ui-name : |
-			Output library (or Set) name <font color=red>*</font>
+			Output library (or Set) name
 		short-hint : |
 			Base name for the output read library or read library set object(s).
 
