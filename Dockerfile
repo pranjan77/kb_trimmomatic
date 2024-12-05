@@ -14,26 +14,26 @@ MAINTAINER KBase Developer
 RUN pip install coverage
 
 # update security libraries in the base image
-RUN pip install cffi --upgrade \
-    && pip install pyopenssl --upgrade \
-    && pip install ndg-httpsclient --upgrade \
-    && pip install pyasn1 --upgrade \
-    && pip install requests --upgrade \
-    && pip install 'requests[security]' --upgrade
+#RUN pip install cffi --upgrade \
+#    && pip install pyopenssl --upgrade \
+#    && pip install ndg-httpsclient --upgrade \
+#    && pip install pyasn1 --upgrade \
+#    && pip install requests --upgrade \
+#    && pip install 'requests[security]' --upgrade
 
 # -----------------------------------------
+WORKDIR /kb/module
+# Install Trimmomatic
+RUN curl http://www.usadellab.org/cms/uploads/supplementary/Trimmomatic/Trimmomatic-0.36.zip -o Trimmomatic-0.36.zip && \
+    unzip Trimmomatic-0.36.zip
+
 
 COPY ./ /kb/module
 RUN mkdir -p /kb/module/work
 RUN chmod -R a+rw /kb/module
 
-WORKDIR /kb/module
 
 RUN make all
-
-# Install Trimmomatic
-RUN curl http://www.usadellab.org/cms/uploads/supplementary/Trimmomatic/Trimmomatic-0.36.zip -o Trimmomatic-0.36.zip && \
-    unzip Trimmomatic-0.36.zip
 
 ENTRYPOINT [ "./scripts/entrypoint.sh" ]
 

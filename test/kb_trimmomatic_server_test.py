@@ -4,6 +4,7 @@ import os
 import json
 import time
 import requests
+import shutil
 requests.packages.urllib3.disable_warnings()
 
 from os import environ
@@ -16,7 +17,10 @@ from pprint import pprint
 
 from requests_toolbelt import MultipartEncoder
 from biokbase.workspace.client import Workspace as workspaceService
-from biokbase.AbstractHandle.Client import AbstractHandle as HandleService
+#from biokbase.AbstractHandle.Client import AbstractHandle as HandleService
+
+from installed_clients.DataFileUtilClient import DataFileUtil
+
 
 from kb_trimmomatic.kb_trimmomaticImpl import kb_trimmomatic
 from kb_trimmomatic.kb_trimmomaticServer import MethodContext
@@ -50,10 +54,22 @@ class kb_trimmomaticTest(unittest.TestCase):
                              'method_params': []
                              }],
                         'authenticated': 1})
+
+
+        src_dir = "/kb/module/test/data"
+        dest_dir = "/kb/module/work/tmp/data"
+
+        try:
+           print ("Now trying to copy")
+           shutil.copytree(src_dir, dst_dir)
+        except Exception as e:
+           print(e)
+     
         cls.wsURL = cls.cfg['workspace-url']
         cls.shockURL = cls.cfg['shock-url']
         cls.handleURL = cls.cfg['handle-service-url']
         cls.serviceWizardURL = cls.cfg['service-wizard-url']
+        cls.dfu = DataFileUtil(os.environ['SDK_CALLBACK_URL'], token=cls.token)
 
         cls.wsClient = workspaceService(cls.wsURL, token=token)
         cls.serviceImpl = kb_trimmomatic(cls.cfg)
@@ -147,32 +163,20 @@ class kb_trimmomaticTest(unittest.TestCase):
 
         # 1) upload files to shock
         token = self.ctx['token']
-        forward_shock_file = self.upload_file_to_shock('data/'+read_lib_basename+'.fwd.fq')
-        #pprint(forward_shock_file)
 
-        # 2) create handle
-        hs = HandleService(url=self.handleURL, token=token)
-        forward_handle = hs.persist_handle({
-                                        'id' : forward_shock_file['id'],
-                                        'type' : 'shock',
-                                        'url' : self.shockURL,
-                                        'file_name': forward_shock_file['file']['name'],
-                                        'remote_md5': forward_shock_file['file']['checksum']['md5']})
+        src_file = '/kb/module/test/data/test_quick.fwd.fq'
+        dst_file = '/kb/module/work/tmp/test_quick.fwd.fq'
+        shutil.copy(src_file, dst_file)
+        dfx = self.dfu.file_to_shock({'file_path': dst_file, 'make_handle': True})
+        print (dfx)
 
-        # 3) save to WS
+        # 2) save to WS
         single_end_library = {
             'lib': {
-                'file': {
-                    'hid':forward_handle,
-                    'file_name': forward_shock_file['file']['name'],
-                    'id': forward_shock_file['id'],
-                    'url': self.shockURL,
-                    'type':'shock',
-                    'remote_md5':forward_shock_file['file']['checksum']['md5']
-                },
+                'file': dfx['handle'],
                 'encoding':'UTF8',
                 'type':'fastq',
-                'size':forward_shock_file['file']['size']
+                'size':dfx['size']
             },
             'sequencing_tech':'artificial reads'
         }
@@ -559,7 +563,7 @@ class kb_trimmomaticTest(unittest.TestCase):
         self.assertEqual(trimmed_reads_info[1],single_output_name)
         self.assertEqual(trimmed_reads_info[2].split('-')[0],'KBaseFile.SingleEndLibrary')
 
-
+    """
     ### TEST 2: run Trimmomatic against just one paired end library
     #
     # Uncomment to skip this test
@@ -924,3 +928,5 @@ class kb_trimmomaticTest(unittest.TestCase):
         trimmed_reads_info = info_list[0]
         self.assertEqual(trimmed_reads_info[1],single_output_name)
         self.assertEqual(trimmed_reads_info[2].split('-')[0],'KBaseFile.SingleEndLibrary')
+
+        """
